@@ -1,0 +1,33 @@
+/* Figtree Font - Loading from provided URL */
+@font-face {
+  font-family: 'Figtree';
+  src: url('https://memorae.ai/l3-assets/_next/static/media/f7aa21714c1c53f8.p.e3544bb0.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Figtree';
+  src: url('https://memorae.ai/l3-assets/_next/static/media/f7aa21714c1c53f8.p.e3544bb0.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Figtree';
+  src: url('https://memorae.ai/l3-assets/_next/static/media/f7aa21714c1c53f8.p.e3544bb0.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Figtree';
+  src: url('https://memorae.ai/l3-assets/_next/static/media/f7aa21714c1c53f8.p.e3544bb0.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+

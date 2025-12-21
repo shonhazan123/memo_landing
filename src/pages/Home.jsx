@@ -1,0 +1,205 @@
+import React from 'react'
+import { Link } from 'react-router-dom'
+import Button from '../components/Button/Button'
+import FeatureCard from '../components/Card/FeatureCard'
+import TestimonialCard from '../components/Card/TestimonialCard'
+import StarBorder from '../components/StarBorder/StarBorder'
+import Logo from '../components/Logo/Logo'
+import heroImage from '../components/Logo/ChatGPT Image Dec 19, 2025, 03_40_34 PM.png'
+
+const Home = () => {
+  const stats = [
+    { number: '10,000+', label: 'משתמשים מרוצים' },
+    { number: '500K+', label: 'משימות הושלמו' },
+    { number: '99%', label: 'שיעור שביעות רצון' },
+    { number: '24/7', label: 'זמינות' },
+  ]
+  
+  const testimonials = [
+    {
+      rating: 5,
+      text: 'מימו שינה לי את החיים. אני כבר לא שוכח שום דבר, והוא עוזר לי להיות מאורגן יותר ממה שאי פעם הייתי.',
+      author: 'דני כהן',
+      title: 'יזם',
+    },
+    {
+      rating: 5,
+      text: 'הדבר הכי טוב שקרה לי השנה. מימו מנהל לי את כל היומן, ואני פשוט מדבר איתו ב-WhatsApp.',
+      author: 'שרה לוי',
+      title: 'מנהלת פרויקטים',
+    },
+    {
+      rating: 5,
+      text: 'פשוט מדהים. אני שולח הודעה למימו, והוא עושה הכל. תזכורות, פגישות, רשימות - הכל במקום אחד.',
+      author: 'מיכאל דוד',
+      title: 'עורך דין',
+    },
+  ]
+  
+  const features = [
+    {
+      icon: '📅',
+      title: 'לדבר עם היומן',
+      description: 'פשוט תגיד למימו מה אתה צריך, והוא ידאג לכל השאר.',
+    },
+    {
+      icon: '🔔',
+      title: 'תזכורות חכמות',
+      description: 'תזכורות שמגיעות בדיוק בזמן הנכון, מבוססות על ההקשר שלך.',
+    },
+    {
+      icon: '🧠',
+      title: 'זיכרון אישי',
+      description: 'מימו זוכר הכל - פרטים חשובים, העדפות, והרגלים שלך.',
+    },
+  ]
+  
+  return (
+    <div dir="rtl" className="min-h-screen">
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-20 md:py-32 relative overflow-hidden">
+        {/* Hero Image with transparency and fade */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="relative w-full h-full max-w-4xl mx-auto">
+            <img 
+              src={heroImage} 
+              alt="מימו" 
+              className="w-full h-auto opacity-80 md:opacity-40 object-contain"
+              style={{
+                filter: 'blur(0.5px)',
+                maskImage: 'radial-gradient(ellipse 80% 70% at center, black 40%, transparent 100%)',
+                WebkitMaskImage: 'radial-gradient(ellipse 80% 70% at center, black 40%, transparent 100%)',
+              }}
+            />
+            {/* Gradient overlay to fade image colors into background */}
+            <div 
+              className="absolute inset-0"
+              style={{
+                background: 'radial-gradient(ellipse 80% 70% at center, transparent 10%, rgba(238, 242, 255, 0.6) 60%, rgba(250, 245, 255, 0.8) 80%, rgba(253, 242, 248, 1) 100%)',
+                mixBlendMode: 'multiply',
+              }}
+            />
+          </div>
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center max-w-3xl mx-auto">
+            {/* Logo above header */}
+            <div className="flex justify-center mb-8">
+              <Logo size="xl" className="hover:scale-105 transition-transform duration-300" />
+            </div>
+            
+            {/* Rating Stars */}
+            <div className="flex justify-center gap-1 mb-6">
+              {[...Array(5)].map((_, i) => (
+                <span key={i} className="text-amber-400 text-2xl">★</span>
+              ))}
+            </div>
+            
+            {/* Main Headline */}
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+              <span className="bg-gradient-to-r from-indigo-600 to-pink-600 bg-clip-text text-transparent">
+                המזכיר האישי שלך
+              </span>
+              <br />
+              <span className="text-gray-900">ב-WhatsApp</span>
+            </h1>
+            
+            {/* Subheadline */}
+            <p className="text-xl md:text-2xl text-gray-700 mb-8 leading-relaxed">
+              דע את היומן שלך, קבל תזכורות חכמות, ונהל את המשימות שלך - הכל בשיחה פשוטה עם מימו
+            </p>
+            
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link to="/login">
+                <StarBorder color="#EC4899" speed="5s" className="rounded-full">
+                  <Button variant="primary">
+                    התחל עכשיו ⬅
+                  </Button>
+                </StarBorder>
+              </Link>
+              <Link to="/superpowers">
+                <Button variant="secondary">
+                  גלה יכולות
+                </Button>
+              </Link>
+            </div>
+          </div>
+          
+          {/* Feature Cards Preview */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
+            {features.map((feature, index) => (
+              <FeatureCard
+                key={index}
+                icon={feature.icon}
+                title={feature.title}
+                description={feature.description}
+                className="animate-fade-in-up"
+                style={{ animationDelay: `${index * 100}ms` }}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+      
+      {/* Stats Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            {stats.map((stat, index) => (
+              <div key={index} className="animate-fade-in-up" style={{ animationDelay: `${index * 100}ms` }}>
+                <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-indigo-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                  {stat.number}
+                </div>
+                <div className="text-gray-600 text-sm md:text-base">
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      
+      {/* Testimonials Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-4xl md:text-6xl font-bold text-center mb-12 text-gray-900">
+            מה אומרים עלינו
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {testimonials.map((testimonial, index) => (
+              <TestimonialCard
+                key={index}
+                {...testimonial}
+                className={index === 1 ? 'md:mt-10' : ''}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+      
+      {/* Final CTA Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-4xl md:text-6xl font-bold mb-6 text-gray-900">
+            מוכן להתחיל?
+          </h2>
+          <p className="text-xl md:text-2xl text-gray-700 mb-8">
+            הצטרף לאלפי משתמשים שכבר מנהלים את החיים שלהם עם מימו
+          </p>
+          <Link to="/login">
+            <StarBorder color="#EC4899" speed="5s" className="rounded-full">
+              <Button variant="primary" size="large">
+                התחל בחינם ⬅
+              </Button>
+            </StarBorder>
+          </Link>
+        </div>
+      </section>
+    </div>
+  )
+}
+
+export default Home
+
