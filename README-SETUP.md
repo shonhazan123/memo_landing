@@ -14,6 +14,24 @@ npm install
 cd ..
 ```
 
+### 1.1. Install React Bits Components (Required)
+
+After installing npm dependencies, you need to add the React Bits components using shadcn CLI:
+
+```bash
+# Install React Bits components
+npx shadcn@latest add @react-bits/LogoLoop-JS-CSS --yes
+npx shadcn@latest add @react-bits/CardNav-JS-CSS --yes
+npx shadcn@latest add @react-bits/CardSwap-JS-CSS --yes
+```
+
+**Note:** These components are required dependencies for the project:
+- `@react-bits/LogoLoop-JS-CSS` - Logo marquee component
+- `@react-bits/CardNav-JS-CSS` - Card navigation component  
+- `@react-bits/CardSwap-JS-CSS` - Card swap animation component
+
+If the shadcn CLI installation fails, the components are already included in the repository and will work after `npm install`.
+
 ### 2. Environment Variables
 
 Create a `.env` file in the project root with the following variables:

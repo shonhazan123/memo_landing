@@ -18,6 +18,8 @@ A modern, mobile-first website for Mimo - your personal secretary service. Built
 - **Tailwind CSS** - Utility-first CSS framework
 - **React Router** - Client-side routing
 - **Supabase** - Backend and authentication (configured, ready for implementation)
+- **React Bits Components** - UI components (LogoLoop, CardNav, CardSwap)
+- **GSAP** - Animation library (required for CardSwap)
 
 ## 📦 Installation
 
@@ -26,7 +28,22 @@ A modern, mobile-first website for Mimo - your personal secretary service. Built
 npm install
 ```
 
-2. Set up environment variables:
+2. Install React Bits components (required):
+```bash
+# Install React Bits components via shadcn CLI
+npx shadcn@latest add @react-bits/LogoLoop-JS-CSS --yes
+npx shadcn@latest add @react-bits/CardNav-JS-CSS --yes
+npx shadcn@latest add @react-bits/CardSwap-JS-CSS --yes
+```
+
+**Required Components:**
+- `@react-bits/LogoLoop-JS-CSS` - Logo marquee component
+- `@react-bits/CardNav-JS-CSS` - Card navigation component
+- `@react-bits/CardSwap-JS-CSS` - Card swap animation component (requires `gsap`)
+
+**Note:** If shadcn CLI installation fails, the components are already included in the repository.
+
+3. Set up environment variables:
    - Copy `.env.example` to `.env`
    - Add your Supabase credentials:
      ```
@@ -58,7 +75,10 @@ mimo-website/
 │   ├── components/
 │   │   ├── Button/               # Button components
 │   │   ├── Card/                 # Card components (Feature, Testimonial, Pricing)
+│   │   ├── CardNav/              # Card navigation component (@react-bits)
+│   │   ├── CardSwap/             # Card swap animation component (@react-bits)
 │   │   ├── Logo/                 # Logo component with placeholder
+│   │   ├── LogoLoop/             # Logo marquee component (@react-bits)
 │   │   └── Menu/                 # Navigation menu
 │   ├── config/
 │   │   └── supabase.js          # Supabase configuration

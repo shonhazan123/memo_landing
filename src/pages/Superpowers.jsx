@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from 'react'
 import FeatureCard from '../components/Card/FeatureCard'
 import StarBorder from '../components/StarBorder/StarBorder'
+import ScrollReveal from '../components/ScrollReveal/ScrollReveal'
+import BlurText from '../components/BlurText/BlurText'
 
 const Superpowers = () => {
   const featureRefs = useRef([])
@@ -116,14 +118,20 @@ const Superpowers = () => {
       <section className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-20 md:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-              <span className="bg-gradient-to-r from-indigo-600 to-pink-600 bg-clip-text text-transparent">
-                היכולות של מימו
-              </span>
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-700 mb-8 leading-relaxed">
-              כל מה שצריך כדי לנהל את החיים שלך בקלות. כל יכולת היא כמו כוח על שמקל עליך את החיים.
-            </p>
+            <BlurText
+              text="היכולות של מימו"
+              delay={150}
+              animateBy="words"
+              direction="top"
+              className="text-5xl md:text-7xl font-bold mb-6 leading-tight bg-gradient-to-r from-indigo-600 to-pink-600 bg-clip-text text-transparent"
+            />
+            <BlurText
+              text="כל מה שצריך כדי לנהל את החיים שלך בקלות. כל יכולת היא כמו כוח על שמקל עליך את החיים."
+              delay={100}
+              animateBy="words"
+              direction="bottom"
+              className="text-xl md:text-2xl text-gray-700 mb-8 leading-relaxed"
+            />
           </div>
         </div>
       </section>
@@ -155,12 +163,22 @@ const Superpowers = () => {
       {/* CTA Section */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-6xl font-bold mb-6 text-gray-900">
+          <ScrollReveal
+            baseOpacity={0}
+            enableBlur={true}
+            baseRotation={5}
+            blurStrength={10}
+            containerClassName="text-4xl md:text-6xl font-bold mb-6 text-gray-900"
+          >
             מוכן להתחיל להשתמש בכוחות האלה?
-          </h2>
-          <p className="text-xl md:text-2xl text-gray-700 mb-8">
-            התחל עכשיו וקבל גישה לכל היכולות האלה
-          </p>
+          </ScrollReveal>
+          <BlurText
+            text="התחל עכשיו וקבל גישה לכל היכולות האלה"
+            delay={100}
+            animateBy="words"
+            direction="bottom"
+            className="text-xl md:text-2xl text-gray-700 mb-8"
+          />
           <a href="/login">
             <StarBorder color="#EC4899" speed="5s" className="rounded-full">
               <button className="bg-gradient-to-r from-indigo-500 to-pink-500 text-white text-xl font-semibold px-12 py-4 rounded-full shadow-lg hover:shadow-xl transition-all">

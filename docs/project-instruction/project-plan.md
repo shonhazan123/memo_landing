@@ -10,6 +10,10 @@ Building a complete React-based website for Mimo, a personal secretary service, 
 - **Backend**: Supabase (for authentication)
 - **Font**: Figtree (from provided URL)
 - **Animation**: GSAP (GreenSock Animation Platform) for CardSwap component
+- **UI Components**: React Bits components via shadcn CLI
+  - `@react-bits/LogoLoop-JS-CSS` - Logo marquee component
+  - `@react-bits/CardNav-JS-CSS` - Card navigation component
+  - `@react-bits/CardSwap-JS-CSS` - Card swap animation component (requires GSAP)
 
 ## Project Structure
 ```
@@ -24,7 +28,9 @@ mimo-website/
 │   │   ├── Logo/
 │   │   ├── Button/
 │   │   ├── Card/
-│   │   ├── CardSwap/
+│   │   ├── CardNav/              # @react-bits/CardNav-JS-CSS
+│   │   ├── CardSwap/             # @react-bits/CardSwap-JS-CSS
+│   │   ├── LogoLoop/             # @react-bits/LogoLoop-JS-CSS
 │   │   └── ...
 │   ├── context/
 │   │   └── AuthContext.jsx       # Auth state management
@@ -65,11 +71,13 @@ mimo-website/
 ### Phase 1: Project Setup ✅
 - [x] Save design system documentation
 - [x] Create project plan file
-- [ ] Initialize React project
-- [ ] Install dependencies (React Router, Tailwind, Supabase)
-- [ ] Configure Tailwind CSS
-- [ ] Set up Figtree font
-- [ ] Create base folder structure
+- [x] Initialize React project
+- [x] Install dependencies (React Router, Tailwind, Supabase, GSAP)
+- [x] Configure Tailwind CSS
+- [x] Set up Figtree font
+- [x] Create base folder structure
+- [x] Install React Bits components (LogoLoop, CardNav, CardSwap)
+- [x] Configure shadcn CLI and components.json
 
 ### Phase 2: Core Components ✅
 - [ ] Logo component (with placeholder)
@@ -174,6 +182,27 @@ mimo-website/
 - All design tokens from design system implemented via Tailwind
 - Authentication documentation: See `docs/project-instruction/authentication-flow.md`
 - Database schema: See `src/backend/database/schema.sql`
+
+## Required Dependencies
+
+### npm Dependencies
+All dependencies are listed in `package.json`. Key dependencies include:
+- `react`, `react-dom`, `react-router-dom` - Core React framework
+- `@supabase/supabase-js` - Supabase client
+- `gsap` - Animation library (required for CardSwap component)
+- `tailwindcss`, `autoprefixer`, `postcss` - Styling
+- `class-variance-authority`, `clsx`, `tailwind-merge` - Utility libraries (shadcn dependencies)
+- `lucide-react` - Icon library (shadcn dependency)
+
+### React Bits Components (via shadcn CLI)
+After cloning the repository, install these components:
+```bash
+npx shadcn@latest add @react-bits/LogoLoop-JS-CSS --yes
+npx shadcn@latest add @react-bits/CardNav-JS-CSS --yes
+npx shadcn@latest add @react-bits/CardSwap-JS-CSS --yes
+```
+
+**Note:** These components are already included in the repository. The shadcn CLI command is for updating or reinstalling them.
 
 ## Environment Variables Needed
 Create `.env` file with:

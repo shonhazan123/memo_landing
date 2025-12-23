@@ -1,0 +1,21 @@
+.scroll-reveal {
+  margin: 0;
+}
+
+.scroll-reveal-text {
+  margin: 0;
+  line-height: inherit;
+}
+
+.word {
+  display: inline-block;
+}
+
+/* Ensure gradient text remains visible even with GSAP opacity animations */
+.word.bg-clip-text {
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: inherit;
+}
+

@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import PricingCard from '../components/Card/PricingCard'
 import Button from '../components/Button/Button'
 import StarBorder from '../components/StarBorder/StarBorder'
+import ScrollReveal from '../components/ScrollReveal/ScrollReveal'
+import BlurText from '../components/BlurText/BlurText'
 
 const FAQItem = ({ question, answer }) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -163,12 +165,20 @@ const Pricing = () => {
       {/* Hero Section */}
       <section className="py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-gray-900">
-            תמחור פשוט וברור
-          </h1>
-          <p className="text-xl md:text-2xl text-gray-700 mb-8 max-w-3xl mx-auto">
-            בחר את התוכנית שמתאימה לך. כל התוכניות כוללות תקופת ניסיון של 14 יום.
-          </p>
+          <BlurText
+            text="תמחור פשוט וברור"
+            delay={150}
+            animateBy="words"
+            direction="top"
+            className="text-5xl md:text-7xl font-bold mb-6 text-gray-900"
+          />
+          <BlurText
+            text="בחר את התוכנית שמתאימה לך. כל התוכניות כוללות תקופת ניסיון של 14 יום."
+            delay={100}
+            animateBy="words"
+            direction="bottom"
+            className="text-xl md:text-2xl text-gray-700 mb-8 max-w-3xl mx-auto"
+          />
           
           {/* Billing Toggle */}
           <div className="flex justify-center mb-12">
@@ -226,9 +236,15 @@ const Pricing = () => {
       {/* Feature Comparison */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-semibold text-center mb-8 text-gray-900">
+          <ScrollReveal
+            baseOpacity={0}
+            enableBlur={true}
+            baseRotation={5}
+            blurStrength={10}
+            containerClassName="text-2xl font-semibold text-center mb-8 text-gray-900"
+          >
             השווה יכולות
-          </h2>
+          </ScrollReveal>
           <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
             {features.map((feature, index) => (
               <div
@@ -246,9 +262,13 @@ const Pricing = () => {
       {/* Coming Soon */}
       <section className="py-12 bg-white border-t border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6 text-center">
-            בקרוב
-          </h2>
+          <BlurText
+            text="בקרוב"
+            delay={150}
+            animateBy="words"
+            direction="top"
+            className="text-xl font-semibold text-gray-900 mb-6 text-center"
+          />
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
             {comingSoon.map((item, index) => (
               <div
@@ -266,9 +286,13 @@ const Pricing = () => {
       {/* FAQ Section */}
       <section className="py-16 bg-white">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-4xl md:text-6xl font-bold text-center mb-12 text-gray-900">
-            שאלות נפוצות
-          </h2>
+          <BlurText
+            text="שאלות נפוצות"
+            delay={150}
+            animateBy="words"
+            direction="top"
+            className="text-4xl md:text-6xl font-bold text-center mb-12 text-gray-900"
+          />
           <div className="space-y-4">
             {faqs.map((faq, index) => (
               <FAQItem key={index} question={faq.question} answer={faq.answer} />
@@ -280,12 +304,22 @@ const Pricing = () => {
       {/* Final CTA */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-6xl font-bold mb-6 text-gray-900">
+          <ScrollReveal
+            baseOpacity={0}
+            enableBlur={true}
+            baseRotation={5}
+            blurStrength={10}
+            containerClassName="text-4xl md:text-6xl font-bold mb-6 text-gray-900"
+          >
             מוכן להתחיל?
-          </h2>
-          <p className="text-xl md:text-2xl text-gray-700 mb-8">
-            התחל תקופת ניסיון של 14 יום ללא תשלום
-          </p>
+          </ScrollReveal>
+          <BlurText
+            text="התחל תקופת ניסיון של 14 יום ללא תשלום"
+            delay={100}
+            animateBy="words"
+            direction="bottom"
+            className="text-xl md:text-2xl text-gray-700 mb-8"
+          />
           <a href="/login">
             <StarBorder color="#EC4899" speed="5s" className="rounded-full">
               <Button variant="primary" size="large">

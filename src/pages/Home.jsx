@@ -7,6 +7,8 @@ import StarBorder from '../components/StarBorder/StarBorder'
 import Logo from '../components/Logo/Logo'
 import heroImage from '../components/Logo/ChatGPT Image Dec 19, 2025, 03_40_34 PM.png'
 import CardSwap, { Card } from '../components/CardSwap/CardSwap'
+import ScrollReveal from '../components/ScrollReveal/ScrollReveal'
+import BlurText from '../components/BlurText/BlurText'
 import './Home.css'
 
 const Home = () => {
@@ -102,18 +104,37 @@ const Home = () => {
             </div>
             
             {/* Main Headline */}
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-              <span className="bg-gradient-to-r from-indigo-600 to-pink-600 bg-clip-text text-transparent">
+            <div className="mb-6 leading-tight">
+              <ScrollReveal
+                as="h1"
+                baseOpacity={0}
+                enableBlur={true}
+                baseRotation={5}
+                blurStrength={10}
+                containerClassName="text-5xl md:text-7xl font-bold"
+                textClassName="bg-gradient-to-r from-indigo-600 to-pink-600 bg-clip-text text-transparent"
+              >
                 המזכיר האישי שלך
-              </span>
+              </ScrollReveal>
               <br />
-              <span className="text-gray-900">ב-WhatsApp</span>
-            </h1>
+              <BlurText
+                as="h1"
+                text="ב-WhatsApp"
+                delay={150}
+                animateBy="words"
+                direction="top"
+                className="text-5xl md:text-7xl font-bold text-gray-900"
+              />
+            </div>
             
             {/* Subheadline */}
-            <p className="text-xl md:text-2xl text-gray-700 mb-8 leading-relaxed">
-              דע את היומן שלך, קבל תזכורות חכמות, ונהל את המשימות שלך - הכל בשיחה פשוטה עם מימו
-            </p>
+            <BlurText
+              text="דע את היומן שלך, קבל תזכורות חכמות, ונהל את המשימות שלך - הכל בשיחה פשוטה עם מימו"
+              delay={100}
+              animateBy="words"
+              direction="bottom"
+              className="text-xl md:text-2xl text-gray-700 mb-8 leading-relaxed"
+            />
             
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -134,9 +155,13 @@ const Home = () => {
           
           {/* Feature Cards Preview */}
           <div className="mt-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-900 max-w-4xl mx-auto leading-relaxed">
-              ניהול הזמן שלך מתבצע במקום אחד, בלי עוד אפליקציות שדורשות תכנון ניהול, פשוט שגר מה שעל הראש!
-            </h2>
+            <BlurText
+              text="ניהול הזמן שלך מתבצע במקום אחד, בלי עוד אפליקציות שדורשות תכנון ניהול, פשוט שגר מה שעל הראש!"
+              delay={120}
+              animateBy="words"
+              direction="top"
+              className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-900 max-w-4xl mx-auto leading-relaxed"
+            />
             <div className="flex justify-center items-center" style={{ height: '700px', position: 'relative' }}>
               <CardSwap
                 cardDistance={80}
@@ -197,12 +222,22 @@ const Home = () => {
         <div className="section-fade-top stats-to-cta-fade"></div>
         <div className="section-fade-bottom cta-to-testimonials-fade"></div>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center section-content relative z-10" style={{ paddingTop: '15px', paddingBottom: '15px' }}>
-          <h2 className="text-4xl md:text-6xl font-bold mb-6 text-gray-900">
+          <ScrollReveal
+            baseOpacity={0}
+            enableBlur={true}
+            baseRotation={5}
+            blurStrength={10}
+            containerClassName="text-4xl md:text-6xl font-bold mb-6 text-gray-900"
+          >
             מוכן להתחיל?
-          </h2>
-          <p className="text-xl md:text-2xl text-gray-700 mb-8">
-            הצטרף לאלפי משתמשים שכבר מנהלים את החיים שלהם עם מימו
-          </p>
+          </ScrollReveal>
+          <BlurText
+            text="הצטרף לאלפי משתמשים שכבר מנהלים את החיים שלהם עם מימו"
+            delay={100}
+            animateBy="words"
+            direction="bottom"
+            className="text-xl md:text-2xl text-gray-700 mb-8"
+          />
           <Link to="/login">
             <StarBorder color="#EC4899" speed="5s" className="rounded-full">
               <Button variant="primary" size="large">
@@ -217,9 +252,13 @@ const Home = () => {
       <section className="home-section py-1 bg-gray-50 relative" style={{ paddingTop: '15px' }}>
         <div className="section-fade-top cta-to-testimonials-fade"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 section-content relative z-10" style={{ display: 'grid', flexWrap: 'wrap', marginTop: '0px', paddingTop: '10px', paddingBottom: '10px' }}>
-          <h2 className="text-4xl md:text-6xl font-bold text-center mb-1 text-gray-900">
-            מה אומרים עלינו
-          </h2>
+          <BlurText
+            text="מה אומרים עלינו"
+            delay={150}
+            animateBy="words"
+            direction="top"
+            className="text-4xl md:text-6xl font-bold text-center mb-1 text-gray-900"
+          />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {testimonials.map((testimonial, index) => (
               <TestimonialCard
