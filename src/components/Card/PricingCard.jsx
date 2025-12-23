@@ -55,7 +55,7 @@ const PricingCard = ({
           className={`w-full mb-6 ${isPopular ? '' : 'bg-indigo-500 hover:bg-indigo-600'}`}
           onClick={onCtaClick}
         >
-          {ctaText} ⬅
+          {ctaText}
         </Button>
         
         {/* Features */}

@@ -1,40 +1,24 @@
+/**
+ * Supabase Configuration
+ * Note: Most auth logic is now handled by the backend server.
+ * This file is kept for any direct Supabase operations needed in frontend.
+ */
+
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || import.meta.env.REACT_APP_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.REACT_APP_SUPABASE_ANON_KEY
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || ''
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 
-// Create Supabase client
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Create Supabase client (if needed for real-time subscriptions, etc.)
+export const supabase = supabaseUrl && supabaseAnonKey 
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null
 
-// Authentication helpers (prepared for future implementation)
-export const auth = {
-  signInWithGoogle: async () => {
-    // TODO: Implement Google OAuth
-    // const { data, error } = await supabase.auth.signInWithOAuth({
-    //   provider: 'google',
-    //   options: {
-    //     redirectTo: `${window.location.origin}/login`
-    //   }
-    // })
-    // return { data, error }
-  },
-  
-  signOut: async () => {
-    // TODO: Implement sign out
-    // const { error } = await supabase.auth.signOut()
-    // return { error }
-  },
-  
-  getSession: async () => {
-    // TODO: Get current session
-    // const { data: { session } } = await supabase.auth.getSession()
-    // return session
-  },
-  
-  getUser: async () => {
-    // TODO: Get current user
-    // const { data: { user } } = await supabase.auth.getUser()
-    // return user
-  }
+/**
+ * Check if Supabase is configured
+ */
+export const isSupabaseConfigured = () => {
+  return Boolean(supabaseUrl && supabaseAnonKey)
 }
 
+export default supabase

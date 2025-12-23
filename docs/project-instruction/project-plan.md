@@ -9,34 +9,54 @@ Building a complete React-based website for Mimo, a personal secretary service, 
 - **Routing**: React Router
 - **Backend**: Supabase (for authentication)
 - **Font**: Figtree (from provided URL)
+- **Animation**: GSAP (GreenSock Animation Platform) for CardSwap component
 
 ## Project Structure
 ```
 mimo-website/
 ├── public/
 │   └── (logo placeholder)
-├── src/
+├── src/                          # Frontend (React + Vite)
+│   ├── api/
+│   │   └── client.js             # HTTP client for backend API
 │   ├── components/
 │   │   ├── Menu/
 │   │   ├── Logo/
 │   │   ├── Button/
 │   │   ├── Card/
+│   │   ├── CardSwap/
 │   │   └── ...
+│   ├── context/
+│   │   └── AuthContext.jsx       # Auth state management
 │   ├── pages/
 │   │   ├── Home.jsx
 │   │   ├── Pricing.jsx
 │   │   ├── Superpowers.jsx
-│   │   └── Login.jsx (prepared, not implemented)
+│   │   ├── Login.jsx             # Redirects to Signup
+│   │   └── Signup.jsx            # Multi-step auth flow
 │   ├── config/
 │   │   └── supabase.js
 │   ├── styles/
 │   │   ├── index.css
 │   │   └── fonts.css
 │   └── App.jsx
+├── server/                       # Backend (Express.js MVC)
+│   ├── src/
+│   │   ├── config/               # Database & OAuth config
+│   │   ├── controllers/          # Request handlers
+│   │   ├── middleware/           # Auth middleware
+│   │   ├── models/               # Database models
+│   │   ├── routes/               # API routes
+│   │   ├── services/             # Business logic
+│   │   ├── database/
+│   │   │   └── schema.sql        # Database schema
+│   │   └── index.js              # Server entry point
+│   └── package.json
 ├── docs/
 │   └── project-instruction/
 │       ├── design-system.md
-│       └── project-plan.md
+│       ├── project-plan.md
+│       └── authentication-flow.md
 └── package.json
 ```
 
@@ -83,11 +103,14 @@ mimo-website/
 - [ ] Final CTA
 
 ### Phase 6: Supabase & Authentication Setup ✅
-- [ ] Create Supabase configuration file
-- [ ] Set up environment variables structure
-- [ ] Create authentication context/provider
-- [ ] Prepare Google OAuth integration structure
-- [ ] Add authentication utilities (not implemented, structure only)
+- [x] Create Supabase configuration file
+- [x] Set up environment variables structure
+- [x] Create authentication context/provider
+- [x] Prepare Google OAuth integration structure
+- [x] Add authentication utilities
+- [x] Create backend services folder
+- [x] Implement multi-step signup flow
+- [x] Create database schema SQL
 
 ### Phase 7: Styling & Polish ✅
 - [ ] RTL support implementation
@@ -126,18 +149,31 @@ mimo-website/
 - ✅ Project structure scalable and organized
 
 ### In Progress
-- 🔄 Ready for Supabase credentials and Google OAuth implementation
+- 🔄 Testing and QA for authentication flow
 
 ### Pending
-- ⏳ Google OAuth implementation (structure ready, needs Supabase setup)
+- ⏳ Configure Supabase project with credentials
+- ⏳ Set up Google OAuth in Google Cloud Console
 - ⏳ Logo image addition (placeholder component ready)
 - ⏳ Production deployment
 
+### Completed in Phase 6
+- ✅ Multi-step signup flow (Google Auth → Phone Number → WhatsApp)
+- ✅ Backend services architecture (GoogleOAuthService, UserService, SignupFlowService)
+- ✅ AuthContext for state management across signup flow
+- ✅ Database schema (users, user_google_tokens tables)
+- ✅ Phone number validation for Israeli numbers
+- ✅ WhatsApp integration with pre-filled messages
+- ✅ State persistence in localStorage
+- ✅ Automatic redirect for returning users
+
 ## Notes & Decisions
 - Logo placeholder will be added - component ready to accept logo image
-- Login page structure prepared but not implemented (as requested)
-- Supabase connection configured but Google auth not implemented yet
-- All design tokens from design system will be implemented via Tailwind
+- Login page now redirects to Signup page for unified flow
+- Full authentication flow implemented with Google OAuth + Phone Number + WhatsApp
+- All design tokens from design system implemented via Tailwind
+- Authentication documentation: See `docs/project-instruction/authentication-flow.md`
+- Database schema: See `src/backend/database/schema.sql`
 
 ## Environment Variables Needed
 Create `.env` file with:

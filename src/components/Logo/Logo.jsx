@@ -19,6 +19,7 @@ const Logo = ({ className = '', size = 'xl', clickable = true }) => {
         src={logoSrc} 
         alt="מימו" 
         className={`${logoSize} w-auto cursor-pointer transition-opacity hover:opacity-80`}
+        style={{ marginLeft: '10px', marginRight: '10px' }}
         onError={(e) => {
           // Fallback: try public folder path
           if (e.target.src !== '/Gemini_Generated_Image_1mpjsw1mpjsw1mpj-remove-background.com (1).png') {

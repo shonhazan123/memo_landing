@@ -289,7 +289,7 @@ const Pricing = () => {
           <a href="/login">
             <StarBorder color="#EC4899" speed="5s" className="rounded-full">
               <Button variant="primary" size="large">
-                התחל עכשיו ⬅
+                התחל עכשיו
               </Button>
             </StarBorder>
           </a>

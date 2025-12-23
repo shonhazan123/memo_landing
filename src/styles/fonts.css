@@ -1,33 +1,36 @@
-/* Figtree Font - Loading from provided URL */
+/* Figtree Font - Using Google Fonts CDN (CORS-friendly) */
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap');
+
+/* Fallback: If the external font fails, use system fonts */
 @font-face {
   font-family: 'Figtree';
-  src: url('https://memorae.ai/l3-assets/_next/static/media/f7aa21714c1c53f8.p.e3544bb0.woff2') format('woff2');
+  font-style: normal;
   font-weight: 400;
-  font-style: normal;
   font-display: swap;
+  src: local('Figtree Regular'), local('Figtree-Regular');
 }
 
 @font-face {
   font-family: 'Figtree';
-  src: url('https://memorae.ai/l3-assets/_next/static/media/f7aa21714c1c53f8.p.e3544bb0.woff2') format('woff2');
+  font-style: normal;
   font-weight: 500;
-  font-style: normal;
   font-display: swap;
+  src: local('Figtree Medium'), local('Figtree-Medium');
 }
 
 @font-face {
   font-family: 'Figtree';
-  src: url('https://memorae.ai/l3-assets/_next/static/media/f7aa21714c1c53f8.p.e3544bb0.woff2') format('woff2');
+  font-style: normal;
   font-weight: 600;
-  font-style: normal;
   font-display: swap;
+  src: local('Figtree SemiBold'), local('Figtree-SemiBold');
 }
 
 @font-face {
   font-family: 'Figtree';
-  src: url('https://memorae.ai/l3-assets/_next/static/media/f7aa21714c1c53f8.p.e3544bb0.woff2') format('woff2');
-  font-weight: 700;
   font-style: normal;
+  font-weight: 700;
   font-display: swap;
+  src: local('Figtree Bold'), local('Figtree-Bold');
 }
 

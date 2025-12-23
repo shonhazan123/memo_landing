@@ -166,6 +166,13 @@ The Mimo website is designed with a mobile-first, calm, and human-centered appro
 - p-6 rounded-3xl
 - (Most popular: gradient border)
 
+#### CardSwap Container
+- position: relative
+- perspective: 900px
+- overflow: visible
+- Cards positioned absolutely with 3D transforms
+- Responsive scaling: 0.9x on tablet, 0.75x on mobile
+
 ### Navigation
 
 #### Header
@@ -218,6 +225,23 @@ The Mimo website is designed with a mobile-first, calm, and human-centered appro
 ### Loading States
 - disabled:opacity-50
 - cursor-not-allowed
+
+### CardSwap Animation Component
+- **Purpose**: Animated card stacking effect for feature showcases
+- **Library**: GSAP (GreenSock Animation Platform)
+- **Location**: `src/components/CardSwap/CardSwap.jsx`
+- **Usage**: Wraps feature cards in a 3D stacked animation that cycles through cards
+- **Props**:
+  - `cardDistance`: Horizontal spacing between cards (default: 60px)
+  - `verticalDistance`: Vertical offset for stacking (default: 70px)
+  - `delay`: Time between card swaps in milliseconds (default: 5000ms)
+  - `pauseOnHover`: Pause animation on hover (default: false)
+  - `width`: Card width in pixels (default: 500px)
+  - `height`: Card height in pixels (default: 400px)
+  - `skewAmount`: 3D skew effect amount (default: 6)
+  - `easing`: Animation easing type - 'elastic' or 'power1.inOut' (default: 'elastic')
+- **Implementation**: Used on Home page for feature cards preview section
+- **Styling**: Cards maintain FeatureCard styling (bg-white/80, backdrop-blur-sm, rounded-2xl)
 
 ## 🎪 Special Effects
 

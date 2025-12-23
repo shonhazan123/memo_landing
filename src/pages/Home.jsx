@@ -6,6 +6,8 @@ import TestimonialCard from '../components/Card/TestimonialCard'
 import StarBorder from '../components/StarBorder/StarBorder'
 import Logo from '../components/Logo/Logo'
 import heroImage from '../components/Logo/ChatGPT Image Dec 19, 2025, 03_40_34 PM.png'
+import CardSwap, { Card } from '../components/CardSwap/CardSwap'
+import './Home.css'
 
 const Home = () => {
   const stats = [
@@ -57,7 +59,10 @@ const Home = () => {
   return (
     <div dir="rtl" className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-20 md:py-32 relative overflow-hidden">
+      <section className="home-section bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-20 md:py-32 relative overflow-hidden" style={{ height: '1400px' }}>
+        <div className="section-fade-bottom hero-to-stats-fade"></div>
+        {/* Bottom fade for hero image - covers entire hero section */}
+        <div className="hero-image-fade"></div>
         {/* Hero Image with transparency and fade */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="relative w-full h-full max-w-4xl mx-auto">
@@ -82,10 +87,10 @@ const Home = () => {
           </div>
         </div>
         
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 section-content">
           <div className="text-center max-w-3xl mx-auto">
             {/* Logo above header */}
-            <div className="flex justify-center mb-8">
+            <div className="flex justify-center mb-0">
               <Logo size="xl" className="hover:scale-105 transition-transform duration-300" />
             </div>
             
@@ -115,7 +120,7 @@ const Home = () => {
               <Link to="/login">
                 <StarBorder color="#EC4899" speed="5s" className="rounded-full">
                   <Button variant="primary">
-                    התחל עכשיו ⬅
+                    התחל עכשיו
                   </Button>
                 </StarBorder>
               </Link>
@@ -128,24 +133,50 @@ const Home = () => {
           </div>
           
           {/* Feature Cards Preview */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
-            {features.map((feature, index) => (
-              <FeatureCard
-                key={index}
-                icon={feature.icon}
-                title={feature.title}
-                description={feature.description}
-                className="animate-fade-in-up"
-                style={{ animationDelay: `${index * 100}ms` }}
-              />
-            ))}
+          <div className="mt-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-900 max-w-4xl mx-auto leading-relaxed">
+              ניהול הזמן שלך מתבצע במקום אחד, בלי עוד אפליקציות שדורשות תכנון ניהול, פשוט שגר מה שעל הראש!
+            </h2>
+            <div className="flex justify-center items-center" style={{ height: '700px', position: 'relative' }}>
+              <CardSwap
+                cardDistance={80}
+                verticalDistance={90}
+                delay={5000}
+                pauseOnHover={false}
+                width={500}
+                height={450}
+              >
+              {features.map((feature, index) => (
+                <Card 
+                  key={index} 
+                  customClass="bg-white/80 backdrop-blur-sm shadow-md hover:shadow-lg transition-all duration-300 rounded-2xl md:rounded-3xl overflow-hidden"
+                >
+                  <div className="p-6 md:p-8 h-full flex flex-col">
+                    {feature.icon && (
+                      <div className="text-4xl mb-4">
+                        {feature.icon}
+                      </div>
+                    )}
+                    <h3 className="text-3xl md:text-4xl font-bold mb-4">{feature.title}</h3>
+                    {feature.description && (
+                      <p className="text-lg md:text-xl text-gray-600 mb-6 leading-relaxed">
+                        {feature.description}
+                      </p>
+                    )}
+                  </div>
+                </Card>
+              ))}
+              </CardSwap>
+            </div>
           </div>
         </div>
       </section>
       
       {/* Stats Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="home-section py-1 bg-white relative" style={{ paddingBottom: '15px' }}>
+        <div className="section-fade-top hero-to-stats-fade"></div>
+        <div className="section-fade-bottom stats-to-cta-fade"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 section-content relative z-10" style={{ display: 'grid', flexWrap: 'wrap', marginTop: '0px', paddingTop: '10px', paddingBottom: '10px' }}>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {stats.map((stat, index) => (
               <div key={index} className="animate-fade-in-up" style={{ animationDelay: `${index * 100}ms` }}>
@@ -161,10 +192,32 @@ const Home = () => {
         </div>
       </section>
       
+      {/* Final CTA Section */}
+      <section className="home-section py-1 bg-white relative">
+        <div className="section-fade-top stats-to-cta-fade"></div>
+        <div className="section-fade-bottom cta-to-testimonials-fade"></div>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center section-content relative z-10" style={{ paddingTop: '15px', paddingBottom: '15px' }}>
+          <h2 className="text-4xl md:text-6xl font-bold mb-6 text-gray-900">
+            מוכן להתחיל?
+          </h2>
+          <p className="text-xl md:text-2xl text-gray-700 mb-8">
+            הצטרף לאלפי משתמשים שכבר מנהלים את החיים שלהם עם מימו
+          </p>
+          <Link to="/login">
+            <StarBorder color="#EC4899" speed="5s" className="rounded-full">
+              <Button variant="primary" size="large">
+                התחל בחינם
+              </Button>
+            </StarBorder>
+          </Link>
+        </div>
+      </section>
+      
       {/* Testimonials Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-4xl md:text-6xl font-bold text-center mb-12 text-gray-900">
+      <section className="home-section py-1 bg-gray-50 relative" style={{ paddingTop: '15px' }}>
+        <div className="section-fade-top cta-to-testimonials-fade"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 section-content relative z-10" style={{ display: 'grid', flexWrap: 'wrap', marginTop: '0px', paddingTop: '10px', paddingBottom: '10px' }}>
+          <h2 className="text-4xl md:text-6xl font-bold text-center mb-1 text-gray-900">
             מה אומרים עלינו
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -176,25 +229,6 @@ const Home = () => {
               />
             ))}
           </div>
-        </div>
-      </section>
-      
-      {/* Final CTA Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-6xl font-bold mb-6 text-gray-900">
-            מוכן להתחיל?
-          </h2>
-          <p className="text-xl md:text-2xl text-gray-700 mb-8">
-            הצטרף לאלפי משתמשים שכבר מנהלים את החיים שלהם עם מימו
-          </p>
-          <Link to="/login">
-            <StarBorder color="#EC4899" speed="5s" className="rounded-full">
-              <Button variant="primary" size="large">
-                התחל בחינם ⬅
-              </Button>
-            </StarBorder>
-          </Link>
         </div>
       </section>
     </div>

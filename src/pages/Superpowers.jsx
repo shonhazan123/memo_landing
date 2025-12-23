@@ -164,7 +164,7 @@ const Superpowers = () => {
           <a href="/login">
             <StarBorder color="#EC4899" speed="5s" className="rounded-full">
               <button className="bg-gradient-to-r from-indigo-500 to-pink-500 text-white text-xl font-semibold px-12 py-4 rounded-full shadow-lg hover:shadow-xl transition-all">
-                התחל עכשיו ⬅
+                התחל עכשיו
               </button>
             </StarBorder>
           </a>

@@ -64,10 +64,6 @@ const CardNav = ({
           <button
             className="card-nav-cta-button"
             onClick={() => handleItemClick('/login')}
-            style={{
-              backgroundColor: buttonBgColor,
-              color: buttonTextColor
-            }}
           >
             נסה עכשיו
           </button>

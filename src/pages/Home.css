@@ -1,0 +1,145 @@
+/* Seamless section transitions */
+.home-section {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Gradient fade overlays for seamless transitions */
+.section-fade-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 400px;
+  pointer-events: none;
+  z-index: 0;
+  will-change: opacity;
+}
+
+.section-fade-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 400px;
+  pointer-events: none;
+  z-index: 0;
+  will-change: opacity;
+}
+
+/* Hero to Stats transition - gradual fade from hero image colors (indigo/purple/pink) to white */
+.hero-to-stats-fade {
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 75%,
+    rgba(238, 242, 255, 0.05) 82%,
+    rgba(250, 245, 255, 0.1) 87%,
+    rgba(253, 242, 248, 0.2) 91%,
+    rgba(255, 248, 252, 0.35) 94%,
+    rgba(255, 250, 253, 0.5) 96%,
+    rgba(255, 252, 254, 0.7) 97.5%,
+    rgba(255, 253, 255, 0.85) 98.5%,
+    rgba(255, 254, 255, 0.93) 99.2%,
+    rgba(255, 255, 255, 0.97) 99.7%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  backdrop-filter: blur(120px) saturate(180%);
+  -webkit-backdrop-filter: blur(120px) saturate(180%);
+  z-index: 3;
+}
+
+/* Stats to CTA transition - both white, subtle blur for seamless transition */
+.stats-to-cta-fade {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 30%,
+    rgba(255, 255, 255, 0.6) 60%,
+    rgba(255, 255, 255, 0.85) 80%,
+    rgba(255, 255, 255, 0.95) 90%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  backdrop-filter: blur(80px) saturate(150%);
+  -webkit-backdrop-filter: blur(80px) saturate(150%);
+}
+
+/* CTA to Testimonials transition - from white (#FFFFFF) to gray-50 (#F9FAFB) */
+.cta-to-testimonials-fade {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.15) 8%,
+    rgba(255, 255, 255, 0.3) 20%,
+    rgba(254, 254, 255, 0.5) 35%,
+    rgba(252, 252, 253, 0.7) 50%,
+    rgba(250, 250, 251, 0.85) 65%,
+    rgba(249, 250, 251, 0.93) 78%,
+    rgba(249, 250, 251, 0.97) 88%,
+    rgba(249, 250, 251, 0.99) 94%,
+    rgba(249, 250, 251, 1) 100%
+  );
+  backdrop-filter: blur(100px) saturate(180%);
+  -webkit-backdrop-filter: blur(100px) saturate(180%);
+}
+
+/* Testimonials to CTA transition - from gray-50 (#F9FAFB) to white (#FFFFFF) */
+.testimonials-to-cta-fade {
+  background: linear-gradient(
+    to bottom,
+    rgba(249, 250, 251, 0) 0%,
+    rgba(249, 250, 251, 0.2) 10%,
+    rgba(251, 251, 252, 0.4) 25%,
+    rgba(253, 253, 254, 0.6) 40%,
+    rgba(254, 254, 255, 0.75) 55%,
+    rgba(255, 255, 255, 0.85) 70%,
+    rgba(255, 255, 255, 0.93) 82%,
+    rgba(255, 255, 255, 0.97) 90%,
+    rgba(255, 255, 255, 0.99) 95%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  backdrop-filter: blur(100px) saturate(180%);
+  -webkit-backdrop-filter: blur(100px) saturate(180%);
+}
+
+/* Hero image bottom fade - starts with actual image colors (indigo/purple/pink), gradually fades to white */
+.hero-image-fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 800px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 75%,
+    rgba(238, 242, 255, 0.03) 82%,
+    rgba(238, 242, 255, 0.08) 87%,
+    rgba(250, 245, 255, 0.12) 91%,
+    rgba(253, 242, 248, 0.2) 94%,
+    rgba(253, 242, 248, 0.3) 96%,
+    rgba(254, 247, 251, 0.45) 97.5%,
+    rgba(255, 250, 253, 0.6) 98.5%,
+    rgba(255, 252, 254, 0.75) 99.2%,
+    rgba(255, 253, 255, 0.88) 99.7%,
+    rgba(255, 255, 255, 0.95) 99.9%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  backdrop-filter: blur(150px) saturate(180%);
+  -webkit-backdrop-filter: blur(150px) saturate(180%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Ensure content stays above fades */
+.section-content {
+  position: relative;
+  z-index: 10;
+}
+
+/* Smooth transitions between sections */
+.home-section + .home-section {
+  margin-top: 0;
+}
+
