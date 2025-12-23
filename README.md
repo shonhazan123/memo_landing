@@ -28,20 +28,15 @@ A modern, mobile-first website for Mimo - your personal secretary service. Built
 npm install
 ```
 
-2. Install React Bits components (required):
-```bash
-# Install React Bits components via shadcn CLI
-npx shadcn@latest add @react-bits/LogoLoop-JS-CSS --yes
-npx shadcn@latest add @react-bits/CardNav-JS-CSS --yes
-npx shadcn@latest add @react-bits/CardSwap-JS-CSS --yes
-```
+2. **✅ All components are already included!** 
 
-**Required Components:**
-- `@react-bits/LogoLoop-JS-CSS` - Logo marquee component
-- `@react-bits/CardNav-JS-CSS` - Card navigation component
-- `@react-bits/CardSwap-JS-CSS` - Card swap animation component (requires `gsap`)
+The following React Bits components are committed to the repository:
+- `LogoLoop` - Logo marquee component
+- `CardNav` - Card navigation component  
+- `CardSwap` - Card swap animation component (requires `gsap`)
+- `Galaxy` - Galaxy starfield background component
 
-**Note:** If shadcn CLI installation fails, the components are already included in the repository.
+No additional installation needed - just run `npm install` and everything will work!
 
 3. Set up environment variables:
    - Copy `.env.example` to `.env`
