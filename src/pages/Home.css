@@ -5,13 +5,155 @@
   isolation: isolate;
 }
 
+/* CSS Variables for Hero Layout - Viewport-based positioning */
+/* Using viewport units (vw) ensures both video and text use the same coordinate system */
+:root {
+  --hero-video-width: 420px; /* Manual control - video width in pixels */
+  --hero-gap: 48px; /* Gap between video and text */
+}
+
+/* Hero Section Root: Full viewport dimensions, relative positioning for absolute children */
+/* Using 100vw ensures viewport-based coordinate system for all children */
+.hero-section-root {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Video Container: Viewport-anchored, fills entire viewport */
+/* Using 50vw (not 50%) ensures positioning relative to viewport, not parent container */
+/* This allows text to calculate position using the same viewport coordinate system */
+/* CRITICAL: Container MUST have explicit height - height: auto causes video to disappear */
+.hero-video-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* Fill entire viewport */
+  width: 100vw;
+  height: 100vh;
+  /* Video stays behind text but above background fades */
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Text Container: Viewport-anchored, positioned to the right side */
+/* Since video fills entire viewport, text is positioned on the right side with padding */
+.hero-text-container {
+  position: absolute;
+  top: 50%;
+  /* Position on right side of viewport with padding */
+  right: 5%;
+  /* Vertically center text */
+  transform: translateY(-50%);
+  /* Max-width prevents text from stretching too wide */
+  max-width: 520px;
+  z-index: 10;
+}
+
+/* Text Content: Right-aligned for RTL Hebrew text */
+.hero-text-content {
+  text-align: right; /* RTL alignment for Hebrew text */
+}
+
+/* ============================================
+   MOBILE-ONLY ADJUSTMENTS (max-width: 900px)
+   ============================================
+   These styles ONLY apply to mobile/phone sizes.
+   Desktop styles remain unchanged above this breakpoint.
+   ============================================ */
+@media (max-width: 900px) {
+  /* ============================================
+     MOBILE VIDEO CONTAINER - Full screen, no crop
+     ============================================
+     Keep video container full screen on mobile.
+     Video position adjustment is done via object-position
+     in BackgroundVideo.css (mobile section below).
+     ============================================ */
+  .hero-video-container {
+    width: 100vw;
+    height: 100vh;
+    /* NO transform scale - keep full screen, no cropping */
+  }
+  
+  /* ============================================
+     MOBILE TEXT CONTAINER - Right-aligned, smaller
+     ============================================
+     Position text on the right side of screen (not centered).
+     Positioned 10% above the middle of the screen (40% from top).
+     Make it smaller to fit better on mobile.
+     ============================================ */
+  .hero-text-container {
+    top: 30%; /* 10% above middle (50% - 10% = 40%) */
+    bottom: auto;
+    /* Right-align instead of center */
+    right: 5%;
+    left: auto;
+    transform: none; /* Remove centering transform */
+    /* Smaller max-width for mobile */
+    max-width: 85%;
+  }
+  
+  /* ============================================
+     MOBILE TEXT CONTENT - Right-aligned
+     ============================================ */
+  .hero-text-content {
+    text-align: right; /* Right-align for RTL Hebrew */
+  }
+  
+  /* ============================================
+     MOBILE BUTTONS - Bigger size, right-aligned
+     ============================================
+     Make buttons bigger on mobile and ensure they
+     align from right to left (RTL layout).
+     ============================================ */
+  .hero-buttons-mobile a {
+    display: inline-block;
+  }
+  
+  /* Target buttons inside hero section on mobile - override Tailwind classes */
+  .hero-buttons-mobile button,
+  .hero-buttons-mobile .rounded-full {
+    /* Bigger button size on mobile - override default px-12 py-4 text-xl */
+    padding: 1rem 2rem !important; /* Bigger padding for better touch targets */
+    font-size: 1rem !important; /* 16px - larger font for better readability */
+    line-height: 1.5rem;
+    min-height: 48px; /* Ensure minimum touch target size */
+  }
+  
+  /* Ensure buttons don't stretch full width on mobile */
+  .hero-buttons-mobile > * {
+    width: auto;
+    max-width: 100%;
+  }
+  
+  /* Hero buttons container styling - MOBILE ONLY */
+  .hero-buttons-mobile {
+    padding-top: 100px;
+    justify-content: flex-start;
+    padding-right: 5px;
+  }
+  
+  /* Hero text container - mb-6 div styling - MOBILE ONLY */
+  .hero-text-content .mb-6 {
+    margin-bottom: 0px;
+    font-size: 20px;
+  }
+  
+  /* StarBorder thickness override for mobile - remove padding */
+  .hero-buttons-mobile .star-border-container {
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+  }
+}
+
 /* Gradient fade overlays for seamless transitions */
 .section-fade-bottom {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 400px;
+  height: 00px;
   pointer-events: none;
   z-index: 0;
   will-change: opacity;
@@ -28,25 +170,26 @@
   will-change: opacity;
 }
 
-/* Hero to Stats transition - gradual fade from hero image colors (indigo/purple/pink) to white */
+/* Hero to Stats transition - seamless fade from video colors to white */
 .hero-to-stats-fade {
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    transparent 75%,
-    rgba(238, 242, 255, 0.05) 82%,
-    rgba(250, 245, 255, 0.1) 87%,
-    rgba(253, 242, 248, 0.2) 91%,
-    rgba(255, 248, 252, 0.35) 94%,
-    rgba(255, 250, 253, 0.5) 96%,
-    rgba(255, 252, 254, 0.7) 97.5%,
-    rgba(255, 253, 255, 0.85) 98.5%,
-    rgba(255, 254, 255, 0.93) 99.2%,
-    rgba(255, 255, 255, 0.97) 99.7%,
+    transparent 60%,
+    rgba(255, 255, 255, 0.15) 70%,
+    rgba(255, 255, 255, 0.3) 75%,
+    rgba(255, 255, 255, 0.45) 80%,
+    rgba(255, 255, 255, 0.6) 85%,
+    rgba(255, 255, 255, 0.72) 88%,
+    rgba(255, 255, 255, 0.82) 90%,
+    rgba(255, 255, 255, 0.88) 92%,
+    rgba(255, 255, 255, 0.93) 94%,
+    rgba(255, 255, 255, 0.96) 96%,
+    rgba(255, 255, 255, 0.98) 97.5%,
+    rgba(255, 255, 255, 0.99) 98.5%,
     rgba(255, 255, 255, 1) 100%
   );
-  backdrop-filter: blur(120px) saturate(180%);
-  -webkit-backdrop-filter: blur(120px) saturate(180%);
+  /* No backdrop-filter to keep video sharp and clear */
   z-index: 3;
 }
 
@@ -103,33 +246,37 @@
   -webkit-backdrop-filter: blur(100px) saturate(180%);
 }
 
-/* Hero image bottom fade - starts with actual image colors (indigo/purple/pink), gradually fades to white */
+/* Hero video bottom fade - seamless transition from video colors to white background */
+/* This overlay sits above the video to create a smooth white fade at the bottom */
 .hero-image-fade {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 800px;
+  height: 100%;
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    transparent 75%,
-    rgba(238, 242, 255, 0.03) 82%,
-    rgba(238, 242, 255, 0.08) 87%,
-    rgba(250, 245, 255, 0.12) 91%,
-    rgba(253, 242, 248, 0.2) 94%,
-    rgba(253, 242, 248, 0.3) 96%,
-    rgba(254, 247, 251, 0.45) 97.5%,
-    rgba(255, 250, 253, 0.6) 98.5%,
-    rgba(255, 252, 254, 0.75) 99.2%,
-    rgba(255, 253, 255, 0.88) 99.7%,
-    rgba(255, 255, 255, 0.95) 99.9%,
+    transparent 60%,
+    rgba(255, 255, 255, 0.1) 70%,
+    rgba(255, 255, 255, 0.2) 75%,
+    rgba(255, 255, 255, 0.35) 80%,
+    rgba(255, 255, 255, 0.5) 85%,
+    rgba(255, 255, 255, 0.65) 88%,
+    rgba(255, 255, 255, 0.75) 90%,
+    rgba(255, 255, 255, 0.82) 92%,
+    rgba(255, 255, 255, 0.88) 94%,
+    rgba(255, 255, 255, 0.92) 96%,
+    rgba(255, 255, 255, 0.95) 97%,
+    rgba(255, 255, 255, 0.97) 98%,
+    rgba(255, 255, 255, 0.99) 99%,
     rgba(255, 255, 255, 1) 100%
   );
-  backdrop-filter: blur(150px) saturate(180%);
-  -webkit-backdrop-filter: blur(150px) saturate(180%);
+  /* No backdrop-filter to keep video sharp and clear */
   pointer-events: none;
-  z-index: 0;
+  z-index: 3; /* Above video (z-index: 2) to create visible fade overlay */
+  /* Ensure smooth transition */
+  will-change: opacity;
 }
 
 /* Ensure content stays above fades */

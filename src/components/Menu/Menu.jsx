@@ -51,9 +51,9 @@ const Menu = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`text-base transition-colors duration-200 hover:text-indigo-600 ${
+                className={`text-base transition-colors duration-200 hover:text-[#DB4BEA] ${
                   isActive(link.path)
-                    ? 'text-indigo-600 font-semibold border-b-2 border-indigo-600 pb-1'
+                    ? 'text-[#DB4BEA] font-semibold border-b-2 border-[#DB4BEA] pb-1'
                     : 'text-gray-700'
                 }`}
               >
@@ -61,7 +61,7 @@ const Menu = () => {
               </Link>
             ))}
             <Link to="/login">
-              <StarBorder color="#EC4899" speed="5s" className="rounded-full">
+              <StarBorder color="var(--theme-accent)" speed="5s" className="rounded-full">
                 <Button variant="primary" size="small">
                   נסה עכשיו
                 </Button>
@@ -102,9 +102,9 @@ const Menu = () => {
                 key={link.path}
                 to={link.path}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`text-base text-right transition-colors duration-200 hover:text-indigo-600 ${
+                className={`text-base text-right transition-colors duration-200 hover:text-[var(--theme-accent)] ${
                   isActive(link.path)
-                    ? 'text-indigo-600 font-semibold'
+                    ? 'text-[var(--theme-accent)] font-semibold'
                     : 'text-gray-700'
                 }`}
               >
@@ -116,7 +116,7 @@ const Menu = () => {
               onClick={() => setIsMobileMenuOpen(false)}
               className="mt-4"
             >
-              <StarBorder color="#EC4899" speed="5s" className="rounded-full w-full">
+              <StarBorder color="#DB4BEA" speed="5s" className="rounded-full w-full">
                 <Button variant="primary" className="w-full">
                   נסה עכשיו
                 </Button>

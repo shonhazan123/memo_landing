@@ -123,7 +123,7 @@ const Superpowers = () => {
               delay={150}
               animateBy="words"
               direction="top"
-              className="text-5xl md:text-7xl font-bold mb-6 leading-tight bg-gradient-to-r from-indigo-600 to-pink-600 bg-clip-text text-transparent"
+              className="text-5xl md:text-7xl font-bold mb-6 leading-tight theme-gradient-text"
             />
             <BlurText
               text="כל מה שצריך כדי לנהל את החיים שלך בקלות. כל יכולת היא כמו כוח על שמקל עליך את החיים."
@@ -180,8 +180,8 @@ const Superpowers = () => {
             className="text-xl md:text-2xl text-gray-700 mb-8"
           />
           <a href="/login">
-            <StarBorder color="#EC4899" speed="5s" className="rounded-full">
-              <button className="bg-gradient-to-r from-indigo-500 to-pink-500 text-white text-xl font-semibold px-12 py-4 rounded-full shadow-lg hover:shadow-xl transition-all">
+            <StarBorder color="var(--theme-accent)" speed="5s" className="rounded-full">
+              <button className="theme-gradient-bg text-white text-xl font-semibold px-12 py-4 rounded-full shadow-lg hover:shadow-xl transition-all">
                 התחל עכשיו
               </button>
             </StarBorder>

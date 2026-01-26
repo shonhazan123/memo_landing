@@ -143,7 +143,9 @@ const PhoneNumberStep = ({ onSubmit, isLoading, error }) => {
   const displayError = localError || error
 
   return (
-    <div className="signup-step fade-in">
+    <div className="signup-step fade-in">המזכיר האישי שלך
+
+
       {/* Logo */}
       <div className="flex justify-center mb-6">
         <Logo size="lg" className="hover:scale-105 transition-transform duration-300" />
@@ -194,7 +196,7 @@ const PhoneNumberStep = ({ onSubmit, isLoading, error }) => {
         )}
         
         {/* Submit Button */}
-        <StarBorder color="#EC4899" speed="5s" className="rounded-full w-full">
+        <StarBorder color="var(--theme-accent)" speed="5s" className="rounded-full w-full">
           <Button
             type="submit"
             variant="primary"

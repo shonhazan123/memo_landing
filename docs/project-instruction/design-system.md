@@ -243,6 +243,32 @@ The Mimo website is designed with a mobile-first, calm, and human-centered appro
 - **Implementation**: Used on Home page for feature cards preview section
 - **Styling**: Cards maintain FeatureCard styling (bg-white/80, backdrop-blur-sm, rounded-2xl)
 
+### BackgroundVideo Component
+- **Purpose**: GIF-like background video that autoplays, loops infinitely, and behaves as a background element
+- **Location**: `src/components/BackgroundVideo/BackgroundVideo.jsx`
+- **Usage**: Renders a native HTML5 `<video>` element behind content for immersive hero sections
+- **Props**:
+  - `src`: Path to the video file (required)
+  - `poster`: Fallback image shown before video loads (optional)
+  - `className`: Additional classes for the container (optional)
+  - `videoClassName`: Additional classes for the video element (optional)
+  - `children`: Overlay content rendered above the video (optional)
+- **Video Attributes**:
+  - `autoPlay`: Starts playback automatically on page load
+  - `loop`: Infinite playback, restarts when video ends
+  - `muted`: Required for autoplay on modern browsers
+  - `playsInline`: Prevents fullscreen on iOS Safari
+  - `disablePictureInPicture`: Hides PiP overlay button
+  - `disableRemotePlayback`: Hides casting/AirPlay controls
+- **Implementation**: Used on Home page hero section with `/videos/dona_video.mp4`
+- **Styling**: 
+  - Container: `position: absolute; inset: 0; z-index: 0`
+  - Video: `object-fit: cover` fills container like background-size: cover
+  - Opacity controlled via className prop (e.g., `opacity-60 md:opacity-40`)
+  - **Mobile (max-width: 900px)**: Video scaled to 85% (`transform: scale(0.85)`) to zoom out and make avatar appear smaller without cropping
+  - **Mobile positioning**: `object-position: 30% center` to show avatar on left side
+- **Accessibility**: Respects `prefers-reduced-motion` - hides video for users who prefer reduced motion
+
 ## 🎪 Special Effects
 
 ### Backdrop Blur
@@ -273,8 +299,11 @@ The Mimo website is designed with a mobile-first, calm, and human-centered appro
 ## 📊 Section-Specific Design
 
 ### Hero Section
-- **Background**: Gradient: indigo-50 → purple-50 → pink-50, Overlay image with 10% opacity
+- **Background**: Gradient: indigo-50 → purple-50 → pink-50, Background video (dona_video.mp4) with 60% opacity mobile / 40% desktop
+- **Video**: Uses BackgroundVideo component with radial gradient overlay for seamless blending
+- **Mobile Video**: Scaled to 85% (`transform: scale(0.85)`) to zoom out and make avatar appear smaller without cropping
 - **Content Hierarchy**: Rating stars (social proof), Main headline (value proposition), Subheadline (explanation), CTA buttons (action), Feature cards (capabilities)
+- **Mobile Buttons**: Larger size on mobile (padding: 1rem 2rem, font-size: 1rem, min-height: 48px) for better touch targets and visibility
 
 ### Stats Section
 - **Layout**: 2 columns on mobile, 4 columns on desktop, Centered alignment
@@ -428,6 +457,12 @@ Remove friction from onboarding. Make the user feel confident about connecting t
 - **Logged In**: [בית] [יכולות] [תמחור] [שם המשתמש ▼] [נסה עכשיו]
 - **User Dropdown**: absolute top-full left-0, bg-white, border border-gray-200, rounded-lg, shadow-lg, py-2, min-w-[200px]
 - **Dropdown Items**: px-4 py-2, hover:bg-gray-50, text-gray-700, transition: background-color 200ms
+
+### CardNav Component (Floating Pill Nav)
+- **Location**: `src/components/CardNav/`, used on Home and other pages
+- **Logo (xl size)**: height 60px, width 90px (Tailwind: `h-[60px] w-[90px]`)
+- **CTA Button ("נסה עכשיו")**: min-width 50px, font-size 13px at max-width 400px breakpoint, base font-size 0.875rem
+- **Styling**: CardNav.css; Logo uses Tailwind utilities
 
 ### Smooth Scroll Navigation
 - **Anchor Links**: href="#home", href="#superpowers", href="#pricing"

@@ -9,6 +9,7 @@ import heroImage from '../components/Logo/ChatGPT Image Dec 19, 2025, 03_40_34 P
 import CardSwap, { Card } from '../components/CardSwap/CardSwap'
 import ScrollReveal from '../components/ScrollReveal/ScrollReveal'
 import BlurText from '../components/BlurText/BlurText'
+import BackgroundVideo from '../components/BackgroundVideo/BackgroundVideo'
 import './Home.css'
 
 const Home = () => {
@@ -60,50 +61,35 @@ const Home = () => {
   
   return (
     <div dir="rtl" className="min-h-screen">
-      {/* Hero Section */}
-      <section className="home-section bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-20 md:py-32 relative overflow-hidden" style={{ height: '1400px' }}>
-        <div className="section-fade-bottom hero-to-stats-fade"></div>
-        {/* Bottom fade for hero image - covers entire hero section */}
-        <div className="hero-image-fade"></div>
-        {/* Hero Image with transparency and fade */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="relative w-full h-full max-w-4xl mx-auto">
-            <img 
-              src={heroImage} 
-              alt="מימו" 
-              className="w-full h-auto opacity-80 md:opacity-40 object-contain"
-              style={{
-                filter: 'blur(0.5px)',
-                maskImage: 'radial-gradient(ellipse 80% 70% at center, black 40%, transparent 100%)',
-                WebkitMaskImage: 'radial-gradient(ellipse 80% 70% at center, black 40%, transparent 100%)',
-              }}
-            />
-            {/* Gradient overlay to fade image colors into background */}
-            <div 
-              className="absolute inset-0"
-              style={{
-                background: 'radial-gradient(ellipse 80% 70% at center, transparent 10%, rgba(238, 242, 255, 0.6) 60%, rgba(250, 245, 255, 0.8) 80%, rgba(253, 242, 248, 1) 100%)',
-                mixBlendMode: 'multiply',
-              }}
-            />
-          </div>
+      {/* Hero Section - Viewport-based positioning */}
+      {/* Both video and text use viewport units (vw) for consistent coordinate system */}
+      <section className="home-section bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 relative overflow-hidden hero-section-root">
+        {/* Video Container: Viewport-anchored, horizontally centered */}
+        {/* Using 50vw (not 50%) ensures positioning relative to viewport, not parent */}
+        {/* This allows text to calculate position using the same viewport coordinate system */}
+        {/* Video does NOT participate in flex/grid and does NOT affect text positioning */}
+        <div className="hero-video-container">
+          <BackgroundVideo 
+            src="/videos/dona_video.mp4"
+          />
         </div>
         
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 section-content">
-          <div className="text-center max-w-3xl mx-auto">
+        {/* Bottom fade for hero video - positioned in hero section to match video */}
+        <div className="hero-image-fade"></div>
+        
+        {/* Text Container: Viewport-anchored, positioned to the right of video using math */}
+        {/* Forbidden zone: Video's right edge = 50vw + (var(--hero-video-width) / 2) */}
+        {/* Text starts at: calc(50vw + (var(--hero-video-width) / 2) + var(--hero-gap)) */}
+        {/* Using viewport units (vw) ensures both video and text share the same coordinate system */}
+        <div className="hero-text-container">
+          <div className="hero-text-content">
             {/* Logo above header */}
-            <div className="flex justify-center mb-0">
-              <Logo size="xl" className="hover:scale-105 transition-transform duration-300" />
-            </div>
+
             
-            {/* Rating Stars */}
-            <div className="flex justify-center gap-1 mb-6">
-              {[...Array(5)].map((_, i) => (
-                <span key={i} className="text-amber-400 text-2xl">★</span>
-              ))}
-            </div>
+
             
             {/* Main Headline */}
+            {/* Mobile: text-3xl (smaller), Desktop: text-7xl (larger) */}
             <div className="mb-6 leading-tight">
               <ScrollReveal
                 as="h1"
@@ -111,35 +97,30 @@ const Home = () => {
                 enableBlur={true}
                 baseRotation={5}
                 blurStrength={10}
-                containerClassName="text-5xl md:text-7xl font-bold"
-                textClassName="bg-gradient-to-r from-indigo-600 to-pink-600 bg-clip-text text-transparent"
+                containerClassName="text-3xl md:text-7xl font-bold"
+                textClassName="theme-gradient-text"
               >
-                המזכיר האישי שלך
+                המזכירה האישית  ב-WhatsApp
               </ScrollReveal>
               <br />
               <BlurText
                 as="h1"
-                text="ב-WhatsApp"
                 delay={150}
                 animateBy="words"
                 direction="top"
-                className="text-5xl md:text-7xl font-bold text-gray-900"
+                className="text-3xl md:text-7xl font-bold text-gray-900"
               />
             </div>
             
             {/* Subheadline */}
-            <BlurText
-              text="דע את היומן שלך, קבל תזכורות חכמות, ונהל את המשימות שלך - הכל בשיחה פשוטה עם מימו"
-              delay={100}
-              animateBy="words"
-              direction="bottom"
-              className="text-xl md:text-2xl text-gray-700 mb-8 leading-relaxed"
-            />
+            {/* Mobile: text-base (smaller), Desktop: text-2xl (larger) */}
+
             
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            {/* Mobile: Smaller buttons, right-aligned. Desktop: Normal size, left-aligned */}
+            <div className="flex flex-row gap-3 md:gap-4 items-start hero-buttons-mobile">
               <Link to="/login">
-                <StarBorder color="#EC4899" speed="5s" className="rounded-full">
+                <StarBorder color="var(--theme-accent)" speed="5s" className="w-full">
                   <Button variant="primary">
                     התחל עכשיו
                   </Button>
@@ -152,9 +133,16 @@ const Home = () => {
               </Link>
             </div>
           </div>
-          
+        </div>
+      </section>
+      
+      {/* Feature Cards Section - Separate section between hero and stats */}
+      <section className="home-section bg-white relative py-16 md:py-24">
+        <div className="section-fade-top hero-to-stats-fade"></div>
+        <div className="section-fade-bottom stats-to-cta-fade"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 section-content">
           {/* Feature Cards Preview */}
-          <div className="mt-16">
+          <div>
             <BlurText
               text="ניהול הזמן שלך מתבצע במקום אחד, בלי עוד אפליקציות שדורשות תכנון ניהול, פשוט שגר מה שעל הראש!"
               delay={120}
@@ -199,13 +187,12 @@ const Home = () => {
       
       {/* Stats Section */}
       <section className="home-section py-1 bg-white relative" style={{ paddingBottom: '15px' }}>
-        <div className="section-fade-top hero-to-stats-fade"></div>
         <div className="section-fade-bottom stats-to-cta-fade"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 section-content relative z-10" style={{ display: 'grid', flexWrap: 'wrap', marginTop: '0px', paddingTop: '10px', paddingBottom: '10px' }}>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {stats.map((stat, index) => (
               <div key={index} className="animate-fade-in-up" style={{ animationDelay: `${index * 100}ms` }}>
-                <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-indigo-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                <div className="text-4xl md:text-5xl font-bold theme-gradient-text mb-2">
                   {stat.number}
                 </div>
                 <div className="text-gray-600 text-sm md:text-base">
@@ -239,7 +226,7 @@ const Home = () => {
             className="text-xl md:text-2xl text-gray-700 mb-8"
           />
           <Link to="/login">
-            <StarBorder color="#EC4899" speed="5s" className="rounded-full">
+            <StarBorder color="var(--theme-accent)" speed="5s" className="rounded-full">
               <Button variant="primary" size="large">
                 התחל בחינם
               </Button>

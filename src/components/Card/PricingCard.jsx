@@ -15,7 +15,7 @@ const PricingCard = ({
   className = '' 
 }) => {
   const cardClasses = isPopular 
-    ? 'bg-gradient-to-r from-indigo-500 to-pink-500 p-0.5 rounded-3xl md:scale-105 z-10'
+    ? 'theme-gradient-bg p-0.5 rounded-3xl md:scale-105 z-10'
     : 'bg-zinc-950 rounded-3xl'
   
   const innerClasses = isPopular

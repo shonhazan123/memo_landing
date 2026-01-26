@@ -1,0 +1,15 @@
+/* Mobile-specific button styles */
+@media (max-width: 900px) {
+  /* Primary button width on mobile - target button with gradient background */
+  .hero-buttons-mobile a:first-child button,
+  .hero-buttons-mobile button.text-white.shadow-lg {
+    width: 180px !important;
+  }
+  
+  /* Secondary button padding on mobile - target button with white background */
+  .hero-buttons-mobile a:last-child button,
+  .hero-buttons-mobile button.bg-white.text-gray-700 {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+}

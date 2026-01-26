@@ -1,4 +1,5 @@
 import React from 'react'
+import './Button.css'
 
 const Button = ({ 
   children, 
@@ -10,12 +11,12 @@ const Button = ({
   type = 'button',
   ...props 
 }) => {
-  const baseClasses = 'font-semibold rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+  const baseClasses = 'font-semibold rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2'
   
   const variants = {
-    primary: 'bg-gradient-to-r from-indigo-500 to-pink-500 text-white shadow-lg hover:shadow-xl',
-    secondary: 'bg-white text-gray-700 border-2 border-gray-200 hover:border-indigo-300',
-    small: 'bg-gradient-to-r from-indigo-500 to-pink-500 text-white hover:shadow-lg'
+    primary: 'text-white shadow-lg hover:shadow-xl',
+    secondary: 'bg-white text-gray-700 border-2 border-gray-200',
+    small: 'text-white hover:shadow-lg'
   }
   
   const sizes = {
@@ -26,10 +27,18 @@ const Button = ({
   
   const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed' : ''
   
+  // Apply gradient using CSS variables for primary and small variants
+  const buttonStyle = (variant === 'primary' || variant === 'small') 
+    ? { 
+        background: `linear-gradient(to right, var(--theme-gradient-start), var(--theme-gradient-end))`,
+      }
+    : {}
+  
   return (
     <button
       type={type}
       className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${disabledClasses} ${className}`}
+      style={buttonStyle}
       onClick={onClick}
       disabled={disabled}
       {...props}

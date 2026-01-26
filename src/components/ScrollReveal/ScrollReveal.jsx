@@ -35,20 +35,38 @@ const ScrollReveal = ({
       cls.includes('from-') ||
       cls.includes('to-') ||
       cls.includes('via-') ||
-      cls.includes('bg-clip')
+      cls.includes('bg-clip') ||
+      cls === 'theme-gradient-text' // Add support for theme-gradient-text class
     ).join(' ') : '';
+    
+    // Check if theme-gradient-text is being used
+    const isThemeGradient = textClassName && textClassName.includes('theme-gradient-text');
     
     return text.split(/(\s+)/).map((word, index) => {
       if (word.match(/^\s+$/)) return word;
+      
+      // Apply gradient styles for theme-gradient-text
+      const gradientStyle = isThemeGradient ? {
+        display: 'inline-block',
+        background: 'linear-gradient(to right, var(--theme-text-gradient-start), var(--theme-text-gradient-end))',
+        WebkitBackgroundClip: 'text',
+        backgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        color: 'transparent',
+        filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2))',
+        opacity: 1,
+        visibility: 'visible'
+      } : (gradientClasses ? { 
+        display: 'inline-block',
+        WebkitBackgroundClip: 'text',
+        backgroundClip: 'text'
+      } : {});
+      
       return (
         <span 
           className={`word ${gradientClasses}`} 
           key={index}
-          style={gradientClasses ? { 
-            display: 'inline-block',
-            WebkitBackgroundClip: 'text',
-            backgroundClip: 'text'
-          } : {}}
+          style={gradientStyle}
         >
           {word}
         </span>

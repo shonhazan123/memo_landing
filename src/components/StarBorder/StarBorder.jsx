@@ -4,9 +4,9 @@ import './StarBorder.css'
 const StarBorder = ({
   as: Component = 'div',
   className = '',
-  color = '#A78BFA', // Default purple to match gradient
+  color = 'var(--theme-accent)', // Default accent color from theme
   speed = '5s',
-  thickness = 3,
+  thickness = 1,
   children,
   ...rest
 }) => {

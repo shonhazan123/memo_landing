@@ -1,0 +1,100 @@
+/**
+ * BackgroundVideo Component Styles
+ * 
+ * Positions the video as a background layer that fills its container
+ * and stays behind any content rendered above it.
+ */
+
+/* Container: Fills the parent element completely */
+/* When inside hero-video-container, this fills the absolutely positioned container */
+.background-video-container {
+  position: absolute;
+  inset: 0; /* Equivalent to top: 0; right: 0; bottom: 0; left: 0; */
+  overflow: hidden;
+  z-index: 0; /* Behind content but above parent background */
+  pointer-events: none; /* Allow clicks to pass through to content above */
+  /* Ensure video extends to all edges of its container */
+  width: 100%;
+  height: 100%;
+  /* Prevent any rendering issues */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* Video element: Fills its container completely - REQUIRED for hero visuals */
+/* CRITICAL: Must use object-fit: cover (not contain) for hero videos */
+/* contain causes letterboxing and empty space - cover fills the container */
+.background-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Cover fills container completely - no letterboxing, no empty space */
+  object-fit: cover;
+  object-position: center center;
+  /* Ensure video stays behind text content */
+  z-index: -1;
+  /* Hardware acceleration for smooth rendering */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  /* Smooth video rendering */
+  will-change: auto;
+}
+
+/* Fallback text for browsers without video support */
+.background-video-fallback {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #666;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* 
+ * Responsive adjustments
+ * On mobile devices, ensure video still covers the viewport
+ */
+@media (max-width: 900px) {
+  /* ============================================
+     MOBILE VIDEO ZOOM OUT WITHOUT CROPPING
+     ============================================
+     To zoom out the video without cropping:
+     1. Use object-fit: contain to show entire video (no cropping)
+     2. Increase video dimensions (width/height > 100%) so contain scales it down
+     3. This makes the avatar appear smaller while showing the full video
+     ============================================ */
+  .background-video {
+    /* Change from cover to contain to show entire video without cropping */
+    object-fit: cover;
+    /* Increase dimensions so contain scales it down, creating zoom-out effect */
+    width: 100%;
+    height: 100%;
+    /* Center the video within the container */
+    top: 50%;
+    left: 50%;
+    transform: translate(-80%, -50%) translateZ(0);
+    -webkit-transform: translate(-50%, -50%) translateZ(0);
+    /* Reposition video to show avatar on left side */
+    object-position: 35% center; /* 30% from left, vertically centered */
+  }
+}
+
+/*
+ * Optional: Reduce motion for users who prefer it
+ * This pauses the video for accessibility
+ */
+@media (prefers-reduced-motion: reduce) {
+  .background-video {
+    /* Hide video and show poster image instead */
+    display: none;
+  }
+  
+  .background-video-container {
+    /* If poster is set, it will show as background */
+    background-size: cover;
+    background-position: center;
+  }
+}

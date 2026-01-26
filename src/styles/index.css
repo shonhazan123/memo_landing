@@ -38,6 +38,16 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    
+    /* Theme Gradient Colors - Global Color Template */
+    /* Button/Background Gradient: Soft purple to vibrant pink */
+    --theme-gradient-start: #A08CEB;
+    --theme-gradient-end: #FF6392;
+    /* Text Gradient: Darker, more saturated colors for better contrast and visibility */
+    --theme-text-gradient-start: #6B46C1;
+    --theme-text-gradient-end: #EC4899;
+    /* Accent Color: Magenta for borders, hovers, etc. */
+    --theme-accent: #E050AE;
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -68,6 +78,39 @@
 }
 
 @layer utilities {
+  /* Theme Gradient Utilities - Use CSS Variables */
+  .theme-gradient-bg {
+    background: linear-gradient(to right, var(--theme-gradient-start), var(--theme-gradient-end));
+  }
+  
+  .theme-gradient-text {
+    background: linear-gradient(to right, var(--theme-text-gradient-start), var(--theme-text-gradient-end));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    /* Add text shadow for better contrast and visibility against video background */
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+    /* Ensure text is always visible - override any opacity */
+    opacity: 1 !important;
+    /* Force visibility */
+    visibility: visible !important;
+  }
+  
+  /* Ensure gradient text words in ScrollReveal are visible */
+  .theme-gradient-text .word,
+  .scroll-reveal-text.theme-gradient-text,
+  .scroll-reveal-text.theme-gradient-text .word {
+    opacity: 1 !important;
+    visibility: visible !important;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+  }
+  
+  /* Ensure ScrollReveal container doesn't hide gradient text */
+  .scroll-reveal .scroll-reveal-text.theme-gradient-text {
+    opacity: 1 !important;
+  }
+  
   /* Custom scroll animations */
   @keyframes fadeInUp {
     from {

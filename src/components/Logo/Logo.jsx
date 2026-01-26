@@ -3,22 +3,23 @@ import { Link } from 'react-router-dom'
 import logoSrc from './logo.png'
 
 const Logo = ({ className = '', size = 'xl', clickable = true }) => {
-  // Size options: 'small' (h-8), 'default' (h-12), 'large' (h-16), 'xl' (h-20)
+  // Size options: 'small' (h-8), 'default' (h-12), 'large' (h-16), 'xl' (h-[60px] w-[90px])
   const sizeClasses = {
     small: 'h-8',
     default: 'h-12',
     large: 'h-16',
-    xl: 'h-20',
+    xl: 'h-[60px] w-[90px]',
   }
   
   const logoSize = sizeClasses[size] || sizeClasses.default
+  const useAutoWidth = size !== 'xl'
   
   const logoElement = (
     <div className={`flex items-center ${className}`}>
       <img 
         src={logoSrc} 
         alt="מימו" 
-        className={`${logoSize} w-auto cursor-pointer transition-opacity hover:opacity-80`}
+        className={`${logoSize} ${useAutoWidth ? 'w-auto' : ''} cursor-pointer transition-opacity hover:opacity-80`}
         style={{ marginLeft: '10px', marginRight: '10px' }}
         onError={(e) => {
           // Fallback: try public folder path

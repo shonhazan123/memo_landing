@@ -187,7 +187,7 @@ const Pricing = () => {
                 onClick={() => setBillingPeriod('monthly')}
                 className={`px-6 py-2 rounded-full transition-all duration-300 ${
                   billingPeriod === 'monthly'
-                    ? 'bg-gradient-to-r from-indigo-500 to-pink-500 text-white'
+                    ? 'bg-gradient-to-r from-[#A7B3E3] via-[#DB4BEA] to-[#FF6363] text-white'
                     : 'text-white'
                 }`}
               >
@@ -197,7 +197,7 @@ const Pricing = () => {
                 onClick={() => setBillingPeriod('annual')}
                 className={`px-6 py-2 rounded-full transition-all duration-300 relative ${
                   billingPeriod === 'annual'
-                    ? 'bg-gradient-to-r from-indigo-500 to-pink-500 text-white'
+                    ? 'theme-gradient-bg text-white'
                     : 'text-white'
                 }`}
               >
@@ -321,7 +321,7 @@ const Pricing = () => {
             className="text-xl md:text-2xl text-gray-700 mb-8"
           />
           <a href="/login">
-            <StarBorder color="#EC4899" speed="5s" className="rounded-full">
+            <StarBorder color="var(--theme-accent)" speed="5s" className="rounded-full">
               <Button variant="primary" size="large">
                 התחל עכשיו
               </Button>
