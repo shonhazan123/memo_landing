@@ -5,6 +5,12 @@
   isolation: isolate;
 }
 
+/* Override background for testimonials section */
+.home-section.bg-gray-50 {
+  background: unset !important;
+  background-color: unset !important;
+}
+
 /* CSS Variables for Hero Layout - Viewport-based positioning */
 /* Using viewport units (vw) ensures both video and text use the same coordinate system */
 :root {
@@ -73,7 +79,8 @@
   .hero-video-container {
     width: 100vw;
     height: 100vh;
-    /* NO transform scale - keep full screen, no cropping */
+    /* Zoom out effect for video: scale down video content without cropping */
+    /* Achieve zoom out by letting child .background-video stretch larger and fit-to-container via BackgroundVideo.css */    
   }
   
   /* ============================================
@@ -128,10 +135,11 @@
   }
   
   /* Hero buttons container styling - MOBILE ONLY */
+  /* Center buttons horizontally on mobile */
   .hero-buttons-mobile {
     padding-top: 100px;
-    justify-content: flex-start;
-    padding-right: 5px;
+    padding-right: 20px;
+    justify-content: center;
   }
   
   /* Hero text container - mb-6 div styling - MOBILE ONLY */
@@ -204,25 +212,15 @@
     rgba(255, 255, 255, 0.95) 90%,
     rgba(255, 255, 255, 1) 100%
   );
-  backdrop-filter: blur(80px) saturate(150%);
-  -webkit-backdrop-filter: blur(80px) saturate(150%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 /* CTA to Testimonials transition - from white (#FFFFFF) to gray-50 (#F9FAFB) */
 .cta-to-testimonials-fade {
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.15) 8%,
-    rgba(255, 255, 255, 0.3) 20%,
-    rgba(254, 254, 255, 0.5) 35%,
-    rgba(252, 252, 253, 0.7) 50%,
-    rgba(250, 250, 251, 0.85) 65%,
-    rgba(249, 250, 251, 0.93) 78%,
-    rgba(249, 250, 251, 0.97) 88%,
-    rgba(249, 250, 251, 0.99) 94%,
-    rgba(249, 250, 251, 1) 100%
-  );
+  background: unset;
+  background-color: unset;
+  background-image: none;
   backdrop-filter: blur(100px) saturate(180%);
   -webkit-backdrop-filter: blur(100px) saturate(180%);
 }
@@ -290,3 +288,10 @@
   margin-top: 0;
 }
 
+/* BlurText paragraph styling in Feature Cards section */
+.section-content p.text-3xl {
+  font-size: 25px;
+  vertical-align: bottom;
+  left: auto;
+  top: auto;
+}

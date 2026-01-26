@@ -1,0 +1,21 @@
+/* Custom styles for Pricing page */
+
+/* Hero Section - Custom padding overrides */
+.pricing-hero-section {
+  padding-top: 84px !important;
+  padding-bottom: 1px !important;
+}
+
+/* BlurText in Hero Section - Custom font-size and color */
+/* Override base text-5xl (48px) to 38px, but keep md:text-7xl (72px) on larger screens */
+.pricing-hero-blurtext {
+  font-size: 38px !important;
+  color: rgba(55, 65, 81, 1) !important;
+}
+
+/* Responsive: Keep md:text-7xl (72px) for larger screens - don't override */
+@media (min-width: 768px) {
+  .pricing-hero-blurtext {
+    font-size: 4.5rem !important; /* md:text-7xl = 72px = 4.5rem */
+  }
+}

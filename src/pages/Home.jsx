@@ -6,7 +6,7 @@ import TestimonialCard from '../components/Card/TestimonialCard'
 import StarBorder from '../components/StarBorder/StarBorder'
 import Logo from '../components/Logo/Logo'
 import heroImage from '../components/Logo/ChatGPT Image Dec 19, 2025, 03_40_34 PM.png'
-import CardSwap, { Card } from '../components/CardSwap/CardSwap'
+import Gallery from '../components/Gallery/Gallery'
 import ScrollReveal from '../components/ScrollReveal/ScrollReveal'
 import BlurText from '../components/BlurText/BlurText'
 import BackgroundVideo from '../components/BackgroundVideo/BackgroundVideo'
@@ -57,6 +57,26 @@ const Home = () => {
       title: 'זיכרון אישי',
       description: 'מימו זוכר הכל - פרטים חשובים, העדפות, והרגלים שלך.',
     },
+  ]
+
+  // Gallery images from public/photos/
+  const galleryImages = [
+    {
+      src: '/photos/ChatGPT Image Jan 26, 2026, 04_51_35 PM.png',
+      title: ''
+    },
+    {
+      src: '/photos/ChatGPT Image Jan 26, 2026, 04_57_29 PM.png',
+      title: ''
+    },
+    {
+      src: '/photos/ChatGPT Image Jan 26, 2026, 05_06_37 PM.png',
+      title: ''
+    },
+    {
+      src: '/photos/ChatGPT Image Jan 26, 2026, 06_06_20 PM.png',
+      title: ''
+    }
   ]
   
   return (
@@ -136,50 +156,31 @@ const Home = () => {
         </div>
       </section>
       
-      {/* Feature Cards Section - Separate section between hero and stats */}
+      {/* Gallery Section - Replaces Feature Cards Section */}
       <section className="home-section bg-white relative py-16 md:py-24">
         <div className="section-fade-top hero-to-stats-fade"></div>
         <div className="section-fade-bottom stats-to-cta-fade"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 section-content">
-          {/* Feature Cards Preview */}
           <div>
             <BlurText
-              text="ניהול הזמן שלך מתבצע במקום אחד, בלי עוד אפליקציות שדורשות תכנון ניהול, פשוט שגר מה שעל הראש!"
+              text="בוא נדבר תאכלס , שום אפליקציית TODO  לא עובדת. אנחנו מתעצלים 😴 או שוכחים 🧠 להוסיף משימות ותזכורות בעצמנו📝, מהיום דונה המזכירה האישית שלך עושה הכל בשבילך ✨! ללא עוד אפליקציה מיותרת 📱, פשוט תבקש ממנה בשפה טבעית מה אתה רוצה והיא תדאג לכל השאר !"
               delay={120}
               animateBy="words"
               direction="top"
               className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-900 max-w-4xl mx-auto leading-relaxed"
             />
-            <div className="flex justify-center items-center" style={{ height: '700px', position: 'relative' }}>
-              <CardSwap
-                cardDistance={80}
-                verticalDistance={90}
-                delay={5000}
-                pauseOnHover={false}
-                width={500}
-                height={450}
-              >
-              {features.map((feature, index) => (
-                <Card 
-                  key={index} 
-                  customClass="bg-white/80 backdrop-blur-sm shadow-md hover:shadow-lg transition-all duration-300 rounded-2xl md:rounded-3xl overflow-hidden"
-                >
-                  <div className="p-6 md:p-8 h-full flex flex-col">
-                    {feature.icon && (
-                      <div className="text-4xl mb-4">
-                        {feature.icon}
-                      </div>
-                    )}
-                    <h3 className="text-3xl md:text-4xl font-bold mb-4">{feature.title}</h3>
-                    {feature.description && (
-                      <p className="text-lg md:text-xl text-gray-600 mb-6 leading-relaxed">
-                        {feature.description}
-                      </p>
-                    )}
-                  </div>
-                </Card>
-              ))}
-              </CardSwap>
+            <div className="mb-8">
+              <Gallery images={galleryImages} scrollStep={400} />
+            </div>
+            <div className="flex justify-center mt-8">
+              <Link to="/superpowers">
+                <Button variant="primary" size="large" className="flex items-center gap-2">
+                  לכל היכולות של דונה
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -262,4 +263,3 @@ const Home = () => {
 }
 
 export default Home
-

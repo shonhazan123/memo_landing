@@ -240,8 +240,34 @@ The Mimo website is designed with a mobile-first, calm, and human-centered appro
   - `height`: Card height in pixels (default: 400px)
   - `skewAmount`: 3D skew effect amount (default: 6)
   - `easing`: Animation easing type - 'elastic' or 'power1.inOut' (default: 'elastic')
-- **Implementation**: Used on Home page for feature cards preview section
+- **Implementation**: Previously used on Home page for feature cards preview section (replaced by Gallery component)
 - **Styling**: Cards maintain FeatureCard styling (bg-white/80, backdrop-blur-sm, rounded-2xl)
+
+### Gallery Component
+- **Purpose**: Horizontal scrolling image gallery with navigation arrows and title placeholders
+- **Location**: `src/components/Gallery/Gallery.jsx`
+- **Usage**: Displays a horizontally scrollable gallery of images with left/right navigation arrows. Each card features an image with an editable title placeholder overlay on top.
+- **Props**:
+  - `images`: Array of image objects with `src` (string) and `title` (string) properties (required)
+  - `scrollStep`: Pixels to scroll per arrow click (default: 400px)
+  - `className`: Additional CSS classes for the container (optional)
+- **Features**:
+  - Horizontal scrolling with smooth behavior
+  - Left/right navigation arrow buttons
+  - Title placeholder input on each card (editable)
+  - Responsive design (mobile-friendly)
+  - RTL support for Hebrew text
+  - Automatic arrow state management (disabled at start/end)
+  - Touch scrolling support on mobile devices
+- **Implementation**: Used on Home page to replace CardSwap component, displaying photos from `public/photos/` directory
+- **Styling**:
+  - Cards: `rounded-2xl` (16px), `shadow-md hover:shadow-lg`, 500px width × 450px height (desktop)
+  - Navigation arrows: Circular buttons (48px), dark grey background (`rgba(55, 65, 81, 0.9)`), white arrow icons
+  - Title overlay: Gradient background (black with transparency), large white text (2rem), positioned at top of card
+  - Container: Horizontal scroll with hidden scrollbar, smooth scroll behavior
+  - **Mobile (max-width: 768px)**: Cards scale to 400px × 360px, smaller arrows (40px)
+  - **Mobile (max-width: 480px)**: Cards scale to 320px × 288px, smaller arrows (36px)
+- **Accessibility**: Arrow buttons include `aria-label` attributes, disabled state properly handled
 
 ### BackgroundVideo Component
 - **Purpose**: GIF-like background video that autoplays, loops infinitely, and behaves as a background element

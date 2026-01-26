@@ -8,26 +8,22 @@ const PricingCard = ({
   period, 
   savings, 
   features = [], 
-  isPopular = false,
   badge,
   ctaText = 'נסה בחינם',
   onCtaClick,
   className = '' 
 }) => {
-  const cardClasses = isPopular 
-    ? 'theme-gradient-bg p-0.5 rounded-3xl md:scale-105 z-10'
-    : 'bg-zinc-950 rounded-3xl'
-  
-  const innerClasses = isPopular
-    ? 'bg-zinc-950 rounded-3xl p-6'
-    : 'p-6'
+  const cardStyle = {
+    textAlign: 'center',
+    background: 'radial-gradient(ellipse at 50% 50%, rgba(175, 181, 253, 1) 0%, rgba(255, 255, 255, 1) 100%)',
+  }
   
   return (
-    <div className={`${cardClasses} ${className}`}>
-      <div className={innerClasses}>
+    <div className={`rounded-3xl ${className}`} style={cardStyle}>
+      <div className="p-6">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-2xl font-semibold text-white">{name}</h3>
+          <h3 className="text-2xl font-semibold text-gray-700">{name}</h3>
           {badge && (
             <span className="bg-lime-400 text-black text-xs px-2 py-1 rounded">
               {badge}
@@ -38,7 +34,7 @@ const PricingCard = ({
         {/* Price */}
         <div className="mb-6">
           <div className="flex items-baseline gap-2 mb-2">
-            <span className="text-4xl font-bold text-white">{price}</span>
+            <span className="text-4xl font-bold text-gray-700">{price}</span>
             {originalPrice && (
               <span className="text-2xl text-gray-400 line-through">{originalPrice}</span>
             )}
@@ -51,8 +47,8 @@ const PricingCard = ({
         
         {/* CTA Button */}
         <Button
-          variant={isPopular ? 'primary' : 'primary'}
-          className={`w-full mb-6 ${isPopular ? '' : 'bg-indigo-500 hover:bg-indigo-600'}`}
+          variant="primary"
+          className="w-full mb-6 bg-indigo-500 hover:bg-indigo-600"
           onClick={onCtaClick}
         >
           {ctaText}
@@ -61,9 +57,9 @@ const PricingCard = ({
         {/* Features */}
         <ul className="space-y-3">
           {features.map((feature, index) => (
-            <li key={index} className="text-gray-300 text-sm flex items-start">
+            <li key={index} className="text-sm flex items-start">
               <span className="text-green-500 mr-2">✓</span>
-              <span>{feature}</span>
+              <span className="text-[rgba(5,5,5)] font-semibold">{feature}</span>
             </li>
           ))}
         </ul>

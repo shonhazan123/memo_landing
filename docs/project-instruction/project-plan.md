@@ -29,7 +29,8 @@ mimo-website/
 │   │   ├── Button/
 │   │   ├── Card/
 │   │   ├── CardNav/              # @react-bits/CardNav-JS-CSS
-│   │   ├── CardSwap/             # @react-bits/CardSwap-JS-CSS
+│   │   ├── CardSwap/             # @react-bits/CardSwap-JS-CSS (kept for potential future use)
+│   │   ├── Gallery/              # Horizontal scrolling image gallery component
 │   │   ├── LogoLoop/             # @react-bits/LogoLoop-JS-CSS
 │   │   └── ...
 │   ├── context/
@@ -77,6 +78,7 @@ mimo-website/
 - [x] Set up Figtree font
 - [x] Create base folder structure
 - [x] Install React Bits components (LogoLoop, CardNav, CardSwap)
+- [x] Create Gallery component (replaces CardSwap on Home page)
 - [x] Configure shadcn CLI and components.json
 
 ### Phase 2: Core Components ✅
@@ -90,7 +92,7 @@ mimo-website/
 - [ ] Hero section with gradient background
 - [ ] Stats section (4 stats, responsive grid)
 - [ ] Testimonials section (3 cards, staggered layout)
-- [ ] Feature preview cards
+- [ ] Gallery section (horizontal scrolling image gallery with navigation arrows)
 - [ ] Final CTA section
 
 ### Phase 4: Superpowers Page ✅
@@ -147,7 +149,8 @@ mimo-website/
 - ✅ Tailwind CSS configured with design tokens
 - ✅ Figtree font integrated from URL
 - ✅ Base components created (Button, Cards, Logo, Menu)
-- ✅ Home page implemented (Hero, Stats, Testimonials, CTA)
+- ✅ Home page implemented (Hero, Stats, Testimonials, Gallery, CTA)
+- ✅ Gallery component created (replaces CardSwap on Home page)
 - ✅ Superpowers page implemented (6 feature cards with scroll animations)
 - ✅ Pricing page implemented (Toggle, Cards, FAQ, Feature comparison)
 - ✅ Login page structure created (prepared for Supabase auth)
@@ -201,6 +204,8 @@ npx shadcn@latest add @react-bits/LogoLoop-JS-CSS --yes
 npx shadcn@latest add @react-bits/CardNav-JS-CSS --yes
 npx shadcn@latest add @react-bits/CardSwap-JS-CSS --yes
 ```
+
+**Note:** Gallery component has been created to replace CardSwap on the Home page. CardSwap component is kept in the codebase for potential future use.
 
 **Note:** These components are already included in the repository. The shadcn CLI command is for updating or reinstalling them.
 

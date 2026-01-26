@@ -28,10 +28,21 @@ const BlurText = ({
 }) => {
   const elements = animateBy === 'words' ? text.split(' ') : text.split('');
   const [inView, setInView] = useState(false);
+  const [shouldCenter, setShouldCenter] = useState(false);
   const ref = useRef(null);
 
   useEffect(() => {
     if (!ref.current) return;
+    
+    // Check if parent has text-center class or text-align: center
+    const parent = ref.current.parentElement;
+    if (parent) {
+      const hasTextCenter = parent.classList.contains('text-center');
+      const computedStyle = window.getComputedStyle(parent);
+      const textAlign = computedStyle.textAlign;
+      setShouldCenter(hasTextCenter || textAlign === 'center');
+    }
+    
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -72,7 +83,15 @@ const BlurText = ({
   const times = Array.from({ length: stepCount }, (_, i) => (stepCount === 1 ? 0 : i / (stepCount - 1)));
 
   return (
-    <Tag ref={ref} className={className} style={{ display: 'flex', flexWrap: 'wrap' }}>
+    <Tag 
+      ref={ref} 
+      className={className} 
+      style={{ 
+        display: 'flex', 
+        flexWrap: 'wrap',
+        justifyContent: shouldCenter ? 'center' : 'flex-start'
+      }}
+    >
       {elements.map((segment, index) => {
         const animateKeyframes = buildKeyframes(fromSnapshot, toSnapshots);
 

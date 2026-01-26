@@ -6,7 +6,7 @@ const StarBorder = ({
   className = '',
   color = 'var(--theme-accent)', // Default accent color from theme
   speed = '5s',
-  thickness = 1,
+  thickness = 2,
   children,
   ...rest
 }) => {

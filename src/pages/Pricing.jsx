@@ -4,6 +4,7 @@ import Button from '../components/Button/Button'
 import StarBorder from '../components/StarBorder/StarBorder'
 import ScrollReveal from '../components/ScrollReveal/ScrollReveal'
 import BlurText from '../components/BlurText/BlurText'
+import './Pricing.css'
 
 const FAQItem = ({ question, answer }) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -38,7 +39,7 @@ const Pricing = () => {
     monthly: [
       {
         name: 'בסיסי',
-        price: '₪49',
+        price: '₪25',
         period: 'חודש',
         features: [
           'תזכורות ללא הגבלה',
@@ -163,26 +164,38 @@ const Pricing = () => {
   return (
     <div dir="rtl" className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="py-16 md:py-24">
+      <section className="py-16 md:py-24 pricing-hero-section">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <BlurText
-            text="תמחור פשוט וברור"
+            text="בנית חיים סביב לזכור הכל. זה למה אתה מותש."
             delay={150}
             animateBy="words"
             direction="top"
-            className="text-5xl md:text-7xl font-bold mb-6 text-gray-900"
+            className="text-5xl md:text-7xl font-bold mb-6 text-gray-900 pricing-hero-blurtext"
           />
           <BlurText
-            text="בחר את התוכנית שמתאימה לך. כל התוכניות כוללות תקופת ניסיון של 14 יום."
+            text="דונה הופכת את WhatsApp למוח השני שלך — כך שתוכל לחשוב פחות ולעשות יותר."
             delay={100}
             animateBy="words"
             direction="bottom"
             className="text-xl md:text-2xl text-gray-700 mb-8 max-w-3xl mx-auto"
           />
-          
+        </div>
+      </section>
+      
+      {/* Pricing Cards + Billing Toggle */}
+      <section className="py-8" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(252, 207, 246, 1) 0%, rgba(255, 255, 255, 1) 73%)' }}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Billing Toggle */}
           <div className="flex justify-center mb-12">
-            <div className="bg-stone-900 border border-white/20 rounded-full p-1 flex items-center gap-2">
+            <div 
+              className="rounded-full p-1 flex items-center gap-2 justify-start"
+              style={{
+                background: 'radial-gradient(ellipse at 50% 50%, rgba(175, 181, 253, 1) 29%, rgba(255, 255, 255, 1) 100%)',
+                border: 'none',
+                boxShadow: '0px 4px 12px 10px rgba(0, 0, 0, 0.15)'
+              }}
+            >
               <button
                 onClick={() => setBillingPeriod('monthly')}
                 className={`px-6 py-2 rounded-full transition-all duration-300 ${
@@ -208,12 +221,6 @@ const Pricing = () => {
               </button>
             </div>
           </div>
-        </div>
-      </section>
-      
-      {/* Pricing Cards */}
-      <section className="py-8 bg-zinc-900">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {currentPlans.map((plan, index) => (
               <PricingCard
