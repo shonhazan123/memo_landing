@@ -161,7 +161,7 @@ const Home = () => {
         <div className="section-fade-top hero-to-stats-fade"></div>
         <div className="section-fade-bottom stats-to-cta-fade"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 section-content">
-          <div>
+          <div className="text-center">
             <BlurText
               text="בוא נדבר תאכלס , שום אפליקציית TODO  לא עובדת. אנחנו מתעצלים 😴 או שוכחים 🧠 להוסיף משימות ותזכורות בעצמנו📝, מהיום דונה המזכירה האישית שלך עושה הכל בשבילך ✨! ללא עוד אפליקציה מיותרת 📱, פשוט תבקש ממנה בשפה טבעית מה אתה רוצה והיא תדאג לכל השאר !"
               delay={120}
