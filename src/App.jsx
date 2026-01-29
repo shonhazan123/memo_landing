@@ -24,7 +24,7 @@ function App() {
       bgColor: '#170D27',
       textColor: '#fff',
       links: [
-        { label: 'כל היכולות', path: '/superpowers', ariaLabel: 'כל היכולות של מימו' }
+        { label: 'כל היכולות', path: '/superpowers', ariaLabel: 'כל היכולות של דונה' }
       ]
     },
     {

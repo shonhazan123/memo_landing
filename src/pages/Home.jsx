@@ -1,5 +1,7 @@
-import React from 'react'
+import React, { useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Button from '../components/Button/Button'
 import FeatureCard from '../components/Card/FeatureCard'
 import TestimonialCard from '../components/Card/TestimonialCard'
@@ -12,7 +14,67 @@ import BlurText from '../components/BlurText/BlurText'
 import BackgroundVideo from '../components/BackgroundVideo/BackgroundVideo'
 import './Home.css'
 
+gsap.registerPlugin(ScrollTrigger)
+
+// Chapter 3 – Real Life Examples: "You ask. Dona does."
+const chapter3Examples = [
+  {
+    userText: 'עוד 10 דקות תזכירי לי לצאת',
+    explanation: 'דונה יוצרת תזכורת חכמה — ואם צריך, גם תנודניק עד שזה קורה.',
+  },
+  {
+    userText: 'אני צריך לסיים את המצגת',
+    explanation: 'הודעה פשוטה הופכת למשימה, בלי למלא טפסים ובלי לבחור קטגוריות.',
+  },
+  {
+    userText: '(הודעה קולית)',
+    explanation: 'דונה מתמללת, מבינה כוונה, ויוצרת משימה או תזכורת במקום.',
+  },
+  {
+    userText: '(צילום מסך / תמונה)',
+    explanation: 'דונה מזהה תאריכים ובקשות והופכת אותן לפעולות.',
+  },
+  {
+    userText: 'יש לי זמן לפגישה מחר בצהריים?',
+    explanation: 'דונה בודקת את היומן ועונה לך מיד.',
+  },
+  {
+    userText: 'בוקר טוב',
+    explanation: 'דונה שולחת סיכום יומי עם משימות, פגישות ומה חשוב היום.',
+  },
+]
+
 const Home = () => {
+  const chapter3SectionRef = useRef(null)
+  const chapter3CardsRef = useRef(null)
+
+  // Chapter 3 – scroll reveal for example cards (fade + translate up, staggered)
+  useEffect(() => {
+    const container = chapter3SectionRef.current
+    if (!container) return
+    const cards = container.querySelectorAll('.chapter3-card')
+    const triggers = []
+    cards.forEach((el, i) => {
+      const tween = gsap.fromTo(
+        el,
+        { opacity: 0, y: 28 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top bottom-=12%',
+            toggleActions: 'play none none none',
+          },
+          delay: i * 0.08,
+        }
+      )
+      if (tween.scrollTrigger) triggers.push(tween.scrollTrigger)
+    })
+    return () => triggers.forEach((t) => t.kill())
+  }, [])
   const stats = [
     { number: '10,000+', label: 'משתמשים מרוצים' },
     { number: '500K+', label: 'משימות הושלמו' },
@@ -23,19 +85,19 @@ const Home = () => {
   const testimonials = [
     {
       rating: 5,
-      text: 'מימו שינה לי את החיים. אני כבר לא שוכח שום דבר, והוא עוזר לי להיות מאורגן יותר ממה שאי פעם הייתי.',
+      text: 'דונה שינה לי את החיים. אני כבר לא שוכח שום דבר, והוא עוזר לי להיות מאורגן יותר ממה שאי פעם הייתי.',
       author: 'דני כהן',
       title: 'יזם',
     },
     {
       rating: 5,
-      text: 'הדבר הכי טוב שקרה לי השנה. מימו מנהל לי את כל היומן, ואני פשוט מדבר איתו ב-WhatsApp.',
+      text: 'הדבר הכי טוב שקרה לי השנה. דונה מנהל לי את כל היומן, ואני פשוט מדבר איתו ב-WhatsApp.',
       author: 'שרה לוי',
       title: 'מנהלת פרויקטים',
     },
     {
       rating: 5,
-      text: 'פשוט מדהים. אני שולח הודעה למימו, והוא עושה הכל. תזכורות, פגישות, רשימות - הכל במקום אחד.',
+      text: 'פשוט מדהים. אני שולח הודעה לדונה, והוא עושה הכל. תזכורות, פגישות, רשימות - הכל במקום אחד.',
       author: 'מיכאל דוד',
       title: 'עורך דין',
     },
@@ -45,7 +107,7 @@ const Home = () => {
     {
       icon: '📅',
       title: 'לדבר עם היומן',
-      description: 'פשוט תגיד למימו מה אתה צריך, והוא ידאג לכל השאר.',
+      description: 'פשוט תגיד לדונה מה אתה צריך, והוא ידאג לכל השאר.',
     },
     {
       icon: '🔔',
@@ -55,7 +117,7 @@ const Home = () => {
     {
       icon: '🧠',
       title: 'זיכרון אישי',
-      description: 'מימו זוכר הכל - פרטים חשובים, העדפות, והרגלים שלך.',
+      description: 'דונה זוכר הכל - פרטים חשובים, העדפות, והרגלים שלך.',
     },
   ]
 
@@ -103,55 +165,91 @@ const Home = () => {
         {/* Using viewport units (vw) ensures both video and text share the same coordinate system */}
         <div className="hero-text-container">
           <div className="hero-text-content">
-            {/* Logo above header */}
+            {/* Wrapper: mobile = buttons above H1 (CSS order); desktop = H1 then buttons */}
+            <div className="hero-text-and-buttons">
+              {/* Main Headline – desktop first; on mobile CSS order puts it below buttons */}
+              <div className="text-center mb-6 leading-tight hero-headline-block">
+                <ScrollReveal
+                  as="h1"
+                  baseOpacity={0}
+                  enableBlur={true}
+                  baseRotation={5}
+                  blurStrength={10}
+                  containerClassName="text-3xl md:text-7xl font-bold"
+                  textClassName="text-center theme-gradient-text"
+                >
+                  המזכירה האישית  ב-WhatsApp
+                </ScrollReveal>
+                <br />
+                <BlurText
+                  as="h1"
+                  delay={150}
+                  animateBy="words"
+                  direction="top"
+                  className=" text-3xl md:text-7xl font-bold text-gray-900"
+                />
+              </div>
 
-            
+              {/* CTA Buttons – two stacked on mobile, row on desktop */}
+              <div className="hero-buttons-mobile flex flex-row gap-3 md:gap-4 items-start justify-start">
+                <Link to="/login">
+                  <StarBorder color="var(--theme-accent)" speed="5s" className="w-full" thickness={2}>
+                    <Button variant="primary" >
+                      התחל עכשיו
+                    </Button>
+                  </StarBorder>
+                </Link>
+                <Link to="/superpowers" className="gradient-border-pill hero-cta-pill">
+                  <span className="gradient-border-pill-inner hero-cta-pill-inner">גלה יכולות</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-            
-            {/* Main Headline */}
-            {/* Mobile: text-3xl (smaller), Desktop: text-7xl (larger) */}
-            <div className="mb-6 leading-tight">
-              <ScrollReveal
-                as="h1"
-                baseOpacity={0}
-                enableBlur={true}
-                baseRotation={5}
-                blurStrength={10}
-                containerClassName="text-3xl md:text-7xl font-bold"
-                textClassName="theme-gradient-text"
+      {/* Chapter 3 – Real Life Examples: "You ask. Dona does." */}
+      <section
+        ref={chapter3SectionRef}
+        className="home-section chapter3-section bg-white relative py-16 md:py-24"
+        aria-labelledby="chapter3-title"
+      >
+        <div className="chapter3-container max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12 md:mb-16">
+            <ScrollReveal
+              as="h2"
+              id="chapter3-title"
+              baseOpacity={0}
+              enableBlur={true}
+              baseRotation={3}
+              blurStrength={8}
+              containerClassName="text-3xl md:text-4xl font-bold text-gray-900 mb-3"
+              textClassName="text-gray-900"
+            >
+              אתה מבקש. דונה מבצעת.
+            </ScrollReveal>
+            <BlurText
+              text="מה שאתה כותב או אומר — הופך לפעולה אמיתית"
+              delay={80}
+              animateBy="words"
+              direction="top"
+              className="text-base md:text-lg text-gray-600"
+            />
+          </div>
+          <div ref={chapter3CardsRef} className="chapter3-grid grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+            {chapter3Examples.map((item, index) => (
+              <div
+                key={index}
+                className="chapter3-card rounded-2xl bg-gray-50 p-5 md:p-6 text-right border border-gray-100"
               >
-                המזכירה האישית  ב-WhatsApp
-              </ScrollReveal>
-              <br />
-              <BlurText
-                as="h1"
-                delay={150}
-                animateBy="words"
-                direction="top"
-                className="text-3xl md:text-7xl font-bold text-gray-900"
-              />
-            </div>
-            
-            {/* Subheadline */}
-            {/* Mobile: text-base (smaller), Desktop: text-2xl (larger) */}
-
-            
-            {/* CTA Buttons */}
-            {/* Mobile: Smaller buttons, right-aligned. Desktop: Normal size, left-aligned */}
-            <div className="flex flex-row gap-3 md:gap-4 items-start hero-buttons-mobile">
-              <Link to="/login">
-                <StarBorder color="var(--theme-accent)" speed="5s" className="w-full">
-                  <Button variant="primary">
-                    התחל עכשיו
-                  </Button>
-                </StarBorder>
-              </Link>
-              <Link to="/superpowers">
-                <Button variant="secondary">
-                  גלה יכולות
-                </Button>
-              </Link>
-            </div>
+                <p className="font-bold text-gray-900 text-base md:text-lg mb-2 leading-relaxed">
+                  {item.userText}
+                </p>
+                <p className="text-gray-600 text-sm md:text-base leading-relaxed">
+                  {item.explanation}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -163,7 +261,7 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 section-content">
           <div className="text-center">
             <BlurText
-              text="בוא נדבר תאכלס , שום אפליקציית TODO  לא עובדת. אנחנו מתעצלים 😴 או שוכחים 🧠 להוסיף משימות ותזכורות בעצמנו📝, מהיום דונה המזכירה האישית שלך עושה הכל בשבילך ✨! ללא עוד אפליקציה מיותרת 📱, פשוט תבקש ממנה בשפה טבעית מה אתה רוצה והיא תדאג לכל השאר !"
+              text="בוא נדבר תאכלס שום אפליקציית TODO לא באמת עובדת. אנחנו שוכחים 🧠 מתעצלים 😴 או פשוט לא נכנסים אליהן. מהיום, דונה המזכירה האישית שלך עושה את זה בשבילך ✨בלי אפליקציה חדשה, בלי מאמץ. פשוט מבקשים בשפה טבעית והיא דואגת לכל השאר."
               delay={120}
               animateBy="words"
               direction="top"
@@ -172,13 +270,11 @@ const Home = () => {
             <div className="mb-8">
               <Gallery images={galleryImages} scrollStep={400} />
             </div>
-            <div className="flex justify-center mt-8">
+            <div className=" flex justify-center mt-8">
               <Link to="/superpowers">
-                <Button variant="primary" size="large" className="flex items-center gap-2">
+                <Button variant="primary" size="large" className="flex items-center ">
                   לכל היכולות של דונה
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
+
                 </Button>
               </Link>
             </div>
@@ -220,7 +316,7 @@ const Home = () => {
             מוכן להתחיל?
           </ScrollReveal>
           <BlurText
-            text="הצטרף לאלפי משתמשים שכבר מנהלים את החיים שלהם עם מימו"
+            text="הצטרף לאלפי משתמשים שכבר מנהלים את החיים שלהם עם דונה"
             delay={100}
             animateBy="words"
             direction="bottom"

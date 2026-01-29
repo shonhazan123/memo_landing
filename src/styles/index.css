@@ -40,9 +40,10 @@
     --radius: 0.5rem;
     
     /* Theme Gradient Colors - Global Color Template */
-    /* Button/Background Gradient: Soft purple to vibrant pink */
+    /* Button/Background Gradient: Blue → purple → pink → red → orange */
     --theme-gradient-start: #A08CEB;
     --theme-gradient-end: #FF6392;
+    --theme-button-gradient: linear-gradient(104deg, #3e86c6 0%, #a666aa 22.1231%, #ec4492 50.5298%, #ee4454 76.1508%, #f05427 100%);
     /* Text Gradient: Darker, more saturated colors for better contrast and visibility */
     --theme-text-gradient-start: #6B46C1;
     --theme-text-gradient-end: #EC4899;
@@ -80,11 +81,34 @@
 @layer utilities {
   /* Theme Gradient Utilities - Use CSS Variables */
   .theme-gradient-bg {
-    background: linear-gradient(to right, var(--theme-gradient-start), var(--theme-gradient-end));
+    background: var(--theme-button-gradient);
+  }
+
+  /* Reusable gradient-border pill: gradient "border" + white inner + dark text (e.g. CardNav CTA, hero secondary) */
+  .gradient-border-pill {
+    display: inline-flex;
+    background: var(--theme-button-gradient);
+    border-radius: 100px;
+    padding: 2px;
+    text-decoration: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  .gradient-border-pill:hover {
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+    transform: translateY(-1px);
+  }
+  .gradient-border-pill-inner {
+    background: rgb(255, 255, 255) !important;
+    border: none !important;
+    border-radius: 100px;
+    color: rgb(0, 0, 0) !important;
+    font-weight: 700;
+    letter-spacing: 0.02em;
   }
   
   .theme-gradient-text {
-    background: linear-gradient(to right, var(--theme-text-gradient-start), var(--theme-text-gradient-end));
+    background: var(--theme-button-gradient);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;

@@ -113,7 +113,7 @@ To implement:
 
 ## 🖼️ Logo
 
-Add your logo to `public/logo.png`. The Logo component will automatically display it when available, falling back to text "מימו" if not found.
+Add your logo to `public/logo.png`. The Logo component will automatically display it when available, falling back to text "דונה" if not found.
 
 ## 📱 Responsive Breakpoints
 

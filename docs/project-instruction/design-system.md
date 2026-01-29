@@ -127,7 +127,7 @@ The Mimo website is designed with a mobile-first, calm, and human-centered appro
 ### Buttons
 
 #### Primary CTA
-- bg-gradient-to-r from-indigo-500 to-pink-500
+- Background: `var(--theme-button-gradient)` — linear-gradient(104deg, #3e86c6 → #a666aa → #ec4492 → #ee4454 → #f05427)
 - text-white text-xl font-semibold
 - px-12 py-4 rounded-full
 - shadow-lg hover:shadow-xl
@@ -210,6 +210,13 @@ The Mimo website is designed with a mobile-first, calm, and human-centered appro
 - **Mobile**: gap-4 (16px)
 - **Desktop**: md:gap-6 (24px)
 
+#### Home Hero (Mobile Only, max-width: 900px)
+- **Placement**: Content in the **right half** of the screen (`left: 38%`, `right: 4%`) so it does not overlap the video/character on the left; vertically centered (`top: 50%`, `transform: translateY(-50%)`).
+- **Order**: CTAs above headline — `.hero-text-and-buttons` uses `flex-direction: column-reverse` so buttons appear first, then text.
+- **Buttons**: Stacked vertically (`.hero-buttons-mobile` → `flex-direction: column`), max-width 280px; primary CTA "התחלק עכשיו", secondary "גלה יכולות".
+- **Text**: Centered within the content block (`text-align: center`); headline ~1.5rem on mobile; content block max-width 280px.
+- **Scope**: All of the above apply only inside `@media (max-width: 900px)` in `Home.css`; desktop layout unchanged.
+
 ## ✨ Animations & Interactions
 
 ### Transitions
@@ -268,6 +275,14 @@ The Mimo website is designed with a mobile-first, calm, and human-centered appro
   - **Mobile (max-width: 768px)**: Cards scale to 400px × 360px, smaller arrows (40px)
   - **Mobile (max-width: 480px)**: Cards scale to 320px × 288px, smaller arrows (36px)
 - **Accessibility**: Arrow buttons include `aria-label` attributes, disabled state properly handled
+
+### Chapter 3 – Real Life Examples (Home)
+- **Purpose**: Show how the WhatsApp assistant works in real life: "אתה מבקש. דונה מבצעת." (You ask. Dona does.)
+- **Location**: `src/pages/Home.jsx` (section after Hero, before Gallery)
+- **Content**: Hebrew-only; section title + optional subtitle; 6 example cards (user phrase + short explanation). No feature lists, no AI/buzzwords.
+- **Layout**: Full-width white section; centered title; grid 1 col mobile / 2 cols desktop; each example is a card (rounded-2xl, bg-gray-50, user text bold, explanation lighter).
+- **Animation**: Section title via ScrollReveal; subtitle via BlurText; each card uses GSAP ScrollTrigger (fade + translate up, staggered delay). Reuses existing ScrollReveal/BlurText/GSAP stack.
+- **Styling**: `chapter3-section`, `chapter3-container`, `chapter3-grid`, `chapter3-card` in `Home.css`; mobile-first padding and typography scale.
 
 ### BackgroundVideo Component
 - **Purpose**: GIF-like background video that autoplays, loops infinitely, and behaves as a background element

@@ -3,14 +3,16 @@
   /* Primary button width on mobile - target button with gradient background */
   .hero-buttons-mobile a:first-child button,
   .hero-buttons-mobile button.text-white.shadow-lg {
-    width: 180px !important;
+    width: 150px !important;
+    height: 50px !important;
   }
   
   /* Secondary button width and padding on mobile - target button with white background */
   /* Match primary button width for consistent sizing */
   .hero-buttons-mobile a:last-child button,
   .hero-buttons-mobile button.bg-white.text-gray-700 {
-    width: 180px !important;
+    width: 150px !important;
+    height: 50px !important;
     padding-left: 0px !important;
     padding-right: 10px !important;
   }

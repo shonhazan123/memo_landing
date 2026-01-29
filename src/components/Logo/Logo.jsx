@@ -18,7 +18,7 @@ const Logo = ({ className = '', size = 'xl', clickable = true }) => {
     <div className={`flex items-center ${className}`}>
       <img 
         src={logoSrc} 
-        alt="מימו" 
+        alt="דונה" 
         className={`${logoSize} ${useAutoWidth ? 'w-auto' : ''} cursor-pointer transition-opacity hover:opacity-80`}
         style={{ marginLeft: '10px', marginRight: '10px' }}
         onError={(e) => {
@@ -36,7 +36,7 @@ const Logo = ({ className = '', size = 'xl', clickable = true }) => {
         }}
       />
       <span className="text-logo-fallback text-2xl font-bold text-indigo-600 ml-2" style={{ display: 'none' }}>
-        מימו
+        דונה
       </span>
     </div>
   )

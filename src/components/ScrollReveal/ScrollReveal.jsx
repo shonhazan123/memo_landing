@@ -48,7 +48,7 @@ const ScrollReveal = ({
       // Apply gradient styles for theme-gradient-text
       const gradientStyle = isThemeGradient ? {
         display: 'inline-block',
-        background: 'linear-gradient(to right, var(--theme-text-gradient-start), var(--theme-text-gradient-end))',
+        background: 'var(--theme-button-gradient)',
         WebkitBackgroundClip: 'text',
         backgroundClip: 'text',
         WebkitTextFillColor: 'transparent',

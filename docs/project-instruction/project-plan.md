@@ -89,10 +89,11 @@ mimo-website/
 - [ ] Base layout wrapper
 
 ### Phase 3: Home Page ✅
-- [ ] Hero section with gradient background
+- [ ] Hero section with gradient background (Chapter 1 & 2 – video, headline, CTAs)
+- [ ] **Chapter 3 – Real Life Examples**: section "אתה מבקש. דונה מבצעת." with 6 example cards (scroll-reveal, fade + translate up, Hebrew only); placed after Hero, before Gallery
+- [ ] Gallery section (horizontal scrolling image gallery with navigation arrows)
 - [ ] Stats section (4 stats, responsive grid)
 - [ ] Testimonials section (3 cards, staggered layout)
-- [ ] Gallery section (horizontal scrolling image gallery with navigation arrows)
 - [ ] Final CTA section
 
 ### Phase 4: Superpowers Page ✅
@@ -149,7 +150,7 @@ mimo-website/
 - ✅ Tailwind CSS configured with design tokens
 - ✅ Figtree font integrated from URL
 - ✅ Base components created (Button, Cards, Logo, Menu)
-- ✅ Home page implemented (Hero, Stats, Testimonials, Gallery, CTA)
+- ✅ Home page implemented (Hero, Chapter 3 Real Life Examples, Gallery, Stats, Testimonials, CTA)
 - ✅ Gallery component created (replaces CardSwap on Home page)
 - ✅ Superpowers page implemented (6 feature cards with scroll animations)
 - ✅ Pricing page implemented (Toggle, Cards, FAQ, Feature comparison)

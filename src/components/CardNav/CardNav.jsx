@@ -62,10 +62,10 @@ const CardNav = ({
             <span className="hamburger-line"></span>
           </button>
           <button
-            className="card-nav-cta-button"
+            className="card-nav-cta-button gradient-border-pill"
             onClick={() => handleItemClick('/login')}
           >
-            נסה עכשיו
+            <span className="card-nav-cta-button-inner gradient-border-pill-inner">נסה עכשיו</span>
           </button>
         </div>
         <div className="card-nav-content">

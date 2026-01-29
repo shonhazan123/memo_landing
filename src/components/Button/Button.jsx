@@ -22,15 +22,15 @@ const Button = ({
   const sizes = {
     default: 'px-12 py-4 text-xl',
     small: 'px-6 py-2 text-base',
-    large: 'px-16 py-5 text-2xl'
+    large: 'px-[50px] py-5 text-2xl h-[60px]'
   }
   
   const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed' : ''
   
-  // Apply gradient using CSS variables for primary and small variants
+  // Apply gradient using theme button gradient for primary and small variants
   const buttonStyle = (variant === 'primary' || variant === 'small') 
     ? { 
-        background: `linear-gradient(to right, var(--theme-gradient-start), var(--theme-gradient-end))`,
+        background: 'var(--theme-button-gradient)',
       }
     : {}
   

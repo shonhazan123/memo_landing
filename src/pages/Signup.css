@@ -178,7 +178,7 @@
 }
 
 .progress-step.completed .step-circle {
-  background: linear-gradient(135deg, #6366f1, #ec4899);
+  background: var(--theme-button-gradient);
   border-color: transparent;
   color: white;
 }
@@ -207,7 +207,7 @@
 }
 
 .step-line.active {
-  background: linear-gradient(90deg, #6366f1, #ec4899);
+  background: var(--theme-button-gradient);
 }
 
 /* Phone input */

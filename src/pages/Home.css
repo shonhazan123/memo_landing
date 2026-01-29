@@ -1,3 +1,16 @@
+/* Hero gradient pill CTA – same look as CardNav "נסה עכשיו" (thin gradient border, white inner, black text), larger size */
+.hero-cta-pill-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100px;
+  padding: 0 1.5rem;
+  min-height: 56px;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
 /* Seamless section transitions */
 .home-section {
   position: relative;
@@ -65,93 +78,152 @@
 /* ============================================
    MOBILE-ONLY ADJUSTMENTS (max-width: 900px)
    ============================================
-   These styles ONLY apply to mobile/phone sizes.
-   Desktop styles remain unchanged above this breakpoint.
+   Vertical stack: two buttons on top, H1 below.
+   Centered on screen (no side-by-side with character).
    ============================================ */
 @media (max-width: 900px) {
-  /* ============================================
-     MOBILE VIDEO CONTAINER - Full screen, no crop
-     ============================================
-     Keep video container full screen on mobile.
-     Video position adjustment is done via object-position
-     in BackgroundVideo.css (mobile section below).
-     ============================================ */
   .hero-video-container {
     width: 100vw;
     height: 100vh;
-    /* Zoom out effect for video: scale down video content without cropping */
-    /* Achieve zoom out by letting child .background-video stretch larger and fit-to-container via BackgroundVideo.css */    
   }
-  
-  /* ============================================
-     MOBILE TEXT CONTAINER - Right-aligned, smaller
-     ============================================
-     Position text on the right side of screen (not centered).
-     Positioned 10% above the middle of the screen (40% from top).
-     Make it smaller to fit better on mobile.
-     ============================================ */
+
+  /* Hero content centered on screen */
   .hero-text-container {
-    top: 30%; /* 10% above middle (50% - 10% = 40%) */
+    top: 70%;
     bottom: auto;
-    /* Right-align instead of center */
-    right: 5%;
-    left: auto;
-    transform: none; /* Remove centering transform */
-    /* Smaller max-width for mobile */
-    max-width: 85%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    max-width: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 1rem;
   }
-  
-  /* ============================================
-     MOBILE TEXT CONTENT - Right-aligned
-     ============================================ */
+
   .hero-text-content {
-    text-align: right; /* Right-align for RTL Hebrew */
+    text-align: center;
+    width: 100%;
+    max-width: 320px;
   }
-  
-  /* ============================================
-     MOBILE BUTTONS - Bigger size, right-aligned
-     ============================================
-     Make buttons bigger on mobile and ensure they
-     align from right to left (RTL layout).
-     ============================================ */
+
+  /* Vertical stack only: buttons on top, H1 below. High specificity. */
+  .hero-section-root .hero-text-container .hero-text-content .hero-text-and-buttons {
+    display: flex !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    align-items: center;
+    gap: 1.5rem;
+    width: 100%;
+  }
+
+  .hero-section-root .hero-text-container .hero-text-content .hero-text-and-buttons .hero-buttons-mobile {
+    order: 1;
+    width: 190px;
+    height: 80px;
+    flex: 0 0 auto;
+    max-width: 190px;
+  }
+
+  .hero-section-root .hero-text-container .hero-text-content .hero-text-and-buttons .hero-headline-block {
+    order: 2;
+    width: 100%;
+    flex: 0 0 auto;
+    max-width: 320px;
+  }
+
+  /* Buttons stacked vertically (override Tailwind flex-row) */
+  .hero-section-root .hero-buttons-mobile {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 0.75rem;
+    width: 190px;
+    height: 80px;
+    padding: 0;
+  }
+
   .hero-buttons-mobile a {
-    display: inline-block;
+    display: block;
+    width: 100%;
+    box-sizing: content-box;
   }
-  
-  /* Target buttons inside hero section on mobile - override Tailwind classes */
+
+  /* Gradient-border pill (secondary CTA) – smaller on mobile; same look as CardNav "נסה עכשיו" */
+  .hero-buttons-mobile a.gradient-border-pill {
+    display: flex ;
+    width: 140px;
+  }
+  .hero-buttons-mobile a.hero-cta-pill {
+    width: 140px;
+    max-width: 100%;
+    align-self: center;
+    
+  }
+  .hero-buttons-mobile a.gradient-border-pill .gradient-border-pill-inner,
+  .hero-buttons-mobile a.gradient-border-pill button {
+    width: 100% !important;
+    min-width: 0;
+    width: 140px;
+
+  }
+  .hero-buttons-mobile a.hero-cta-pill .hero-cta-pill-inner {
+    min-width: 0;
+    padding: 0 1rem;
+    min-height: 44px;
+    font-size: 0.875rem;
+    width: 140px;
+
+  }
+
   .hero-buttons-mobile button,
   .hero-buttons-mobile .rounded-full {
-    /* Bigger button size on mobile - override default px-12 py-4 text-xl */
-    padding: 1rem 2rem !important; /* Bigger padding for better touch targets */
-    font-size: 1rem !important; /* 16px - larger font for better readability */
-    line-height: 1.5rem;
-    min-height: 48px; /* Ensure minimum touch target size */
+    width: 100% !important;
+    padding: 0.875rem 1.25rem !important;
+    font-size: 1rem !important;
+    line-height: 1.4;
+    min-height: 48px;
   }
-  
-  /* Ensure buttons don't stretch full width on mobile */
-  .hero-buttons-mobile > * {
-    width: auto;
-    max-width: 100%;
+
+  .hero-buttons-mobile > a:first-child button,
+  .hero-buttons-mobile > a:first-child .rounded-full {
+    padding: 1rem 1.5rem !important;
+    font-size: 1.0625rem !important;
+    font-weight: 600;
   }
-  
-  /* Hero buttons container styling - MOBILE ONLY */
-  /* Center buttons horizontally on mobile */
-  .hero-buttons-mobile {
-    padding-top: 100px;
-    padding-right: 20px;
-    justify-content: center;
+
+  .hero-buttons-mobile button.bg-white.text-gray-700,
+  .hero-buttons-mobile > a:last-child button {
+    margin-bottom: 10px;
   }
-  
-  /* Hero text container - mb-6 div styling - MOBILE ONLY */
-  .hero-text-content .mb-6 {
-    margin-bottom: 0px;
-    font-size: 20px;
+
+  .hero-text-content .hero-headline-block {
+    margin-bottom: 0;
+    font-size: 1rem;
+    line-height: 1.4;
   }
-  
-  /* StarBorder thickness override for mobile - remove padding */
+
+  .hero-text-content .hero-headline-block h1,
+  .hero-text-content .hero-headline-block .text-3xl {
+    font-size: 1.5rem !important;
+    line-height: 1.35 !important;
+  }
+
   .hero-buttons-mobile .star-border-container {
-    padding-top: 0px !important;
-    padding-bottom: 0px !important;
+    padding: 0 !important;
+  }
+}
+
+/* Desktop: hero gradient pill "גלה יכולות" – same visual size as mobile (190px) so both viewports match */
+@media (min-width: 901px) {
+  .hero-section-root .hero-buttons-mobile a.hero-cta-pill {
+    min-width: 190px;
+  }
+  .hero-section-root .hero-buttons-mobile .hero-cta-pill-inner {
+    min-width: 100%;
+    box-sizing: border-box;
   }
 }
 
@@ -294,4 +366,37 @@
   vertical-align: bottom;
   left: auto;
   top: auto;
+}
+
+/* ============================================
+   Chapter 3 – Real Life Examples
+   Full-width white section, cards with scroll reveal
+   ============================================ */
+.chapter3-section {
+  position: relative;
+  isolation: isolate;
+}
+
+.chapter3-container {
+  position: relative;
+  z-index: 10;
+}
+
+.chapter3-grid {
+  display: grid;
+  width: 100%;
+}
+
+.chapter3-card {
+  will-change: opacity, transform;
+}
+
+@media (max-width: 768px) {
+  .chapter3-section {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+  .chapter3-card {
+    padding: 1.25rem 1.25rem;
+  }
 }
