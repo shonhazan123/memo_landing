@@ -56,6 +56,30 @@
   pointer-events: none;
 }
 
+/* Hero video source wrappers: one for desktop, one for phone – CSS shows the right one by viewport */
+.hero-video-source {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  top: 10%;
+}
+
+/* Default: show desktop video, hide phone video */
+.hero-video-mobile {
+  display: none;
+}
+
+/* Phone viewport (≤900px): show phone video (dona_iphone.mp4), hide desktop video */
+@media (max-width: 900px) {
+  .hero-video-desktop {
+    display: none;
+  }
+  .hero-video-mobile {
+    display: block;
+  }
+}
+
 /* Text Container: Viewport-anchored, positioned to the right side */
 /* Since video fills entire viewport, text is positioned on the right side with padding */
 .hero-text-container {

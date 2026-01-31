@@ -151,9 +151,14 @@ const Home = () => {
         {/* This allows text to calculate position using the same viewport coordinate system */}
         {/* Video does NOT participate in flex/grid and does NOT affect text positioning */}
         <div className="hero-video-container">
-          <BackgroundVideo 
-            src="/videos/dona_video.mp4"
-          />
+          {/* Desktop hero video – visible at viewport > 900px */}
+          <div className="hero-video-source hero-video-desktop">
+            <BackgroundVideo src="/videos/dona_video.mp4" />
+          </div>
+          {/* Phone hero video – visible at viewport ≤ 900px (mobile/phone size) */}
+          <div className="hero-video-source hero-video-mobile">
+            <BackgroundVideo src="/videos/dona_iphone.mp4" />
+          </div>
         </div>
         
         {/* Bottom fade for hero video - positioned in hero section to match video */}

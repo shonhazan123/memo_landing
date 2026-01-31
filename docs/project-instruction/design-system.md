@@ -301,7 +301,9 @@ The Mimo website is designed with a mobile-first, calm, and human-centered appro
   - `playsInline`: Prevents fullscreen on iOS Safari
   - `disablePictureInPicture`: Hides PiP overlay button
   - `disableRemotePlayback`: Hides casting/AirPlay controls
-- **Implementation**: Used on Home page hero section with `/videos/dona_video.mp4`
+- **Implementation**: Used on Home page hero section. Two videos by viewport:
+  - **Desktop (viewport > 900px)**: `/videos/dona_video.mp4` (`.hero-video-desktop`)
+  - **Phone (viewport ≤ 900px)**: `/videos/dona_iphone.mp4` (`.hero-video-mobile`). CSS shows/hides the correct source so the phone-sized hero plays the iPhone-optimized video.
 - **Styling**: 
   - Container: `position: absolute; inset: 0; z-index: 0`
   - Video: `object-fit: cover` fills container like background-size: cover
@@ -340,9 +342,9 @@ The Mimo website is designed with a mobile-first, calm, and human-centered appro
 ## 📊 Section-Specific Design
 
 ### Hero Section
-- **Background**: Gradient: indigo-50 → purple-50 → pink-50, Background video (dona_video.mp4) with 60% opacity mobile / 40% desktop
-- **Video**: Uses BackgroundVideo component with radial gradient overlay for seamless blending
-- **Mobile Video**: Scaled to 85% (`transform: scale(0.85)`) to zoom out and make avatar appear smaller without cropping
+- **Background**: Gradient: indigo-50 → purple-50 → pink-50, Background video switches by viewport
+- **Video**: Uses BackgroundVideo component. Desktop (viewport > 900px): `dona_video.mp4`. Phone (viewport ≤ 900px): `dona_iphone.mp4` (iPhone-optimized hero). CSS toggles `.hero-video-desktop` / `.hero-video-mobile` so only the appropriate video is visible and plays.
+- **Mobile Video**: On phone size the hero plays `dona_iphone.mp4`; existing mobile styling (scale/position) applies to that video
 - **Content Hierarchy**: Rating stars (social proof), Main headline (value proposition), Subheadline (explanation), CTA buttons (action), Feature cards (capabilities)
 - **Mobile Buttons**: Larger size on mobile (padding: 1rem 2rem, font-size: 1rem, min-height: 48px) for better touch targets and visibility
 
