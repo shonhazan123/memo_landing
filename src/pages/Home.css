@@ -62,7 +62,8 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  top: 10%;
+  top: 5%;
+  right: 1.5%;
 }
 
 /* Default: show desktop video, hide phone video */
