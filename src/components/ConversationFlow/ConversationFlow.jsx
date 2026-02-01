@@ -1,28 +1,54 @@
-import React from 'react'
+import React, { useRef, useEffect } from 'react'
 import './ConversationFlow.css'
 
 const ConversationFlow = () => {
+  const sectionRefs = useRef([])
+
+  useEffect(() => {
+    const sections = sectionRefs.current.filter(Boolean)
+    const observerOptions = {
+      threshold: 0.3,
+      rootMargin: '0px 0px -100px 0px'
+    }
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible')
+        }
+      })
+    }, observerOptions)
+    sections.forEach((el) => observer.observe(el))
+    return () => sections.forEach((el) => observer.unobserve(el))
+  }, [])
   const conversations = [
     {
       id: 1,
+      heading: 'כותבים לו הודעה בוואטסאפ',
+      subheading: 'במילים שלכם, בלי פקודות מסובכות',
       userMessage: 'היי דונה , יש לי כמה דברים על הראש. אני צריל לשלם חשבון חשמל בערב , לתזכר את רום על הפגישה ברביעי בבוקר ולזרוק את הזבל בשמונה אחרי העבודה',
       donnaResponse: 'סידרתי לך הכל !  הוספתי עבורך שלושה תזכורות: לשלם חשבון חשמל 🏦 זמן: היום ב-20:00 לתזכר את רום על הפגישה 📆 זמן: יום רביעי 4 בפבואר , 08:00 לזרוק את הזבל 🗑️ זמן: היום ב-20:00 צריך משהו נוסף ? אני כאן 😊',
       timestamp: '10:30'
     },
     {
       id: 2,
+      heading: 'תזכורות במילה אחת',
+      subheading: 'כותבים מה צריך — דונה יוצרת תזכורת',
       userMessage: 'תזכיר לי לסיים את המצגת',
       donnaResponse: 'תזכורת נוצרה: לסיים את המצגת ⏰ זמן: היום ב-18:00 אעדכן אותך כשתסיים! 💪',
       timestamp: '14:20'
     },
     {
       id: 3,
+      heading: 'מבין את היומן שלכם',
+      subheading: 'בודק זמינות ומשיב מיד',
       userMessage: 'יש לי זמן לפגישה מחר בצהריים?',
       donnaResponse: 'בודקת את היומן שלך... ✅ יש לך זמן מחר בצהריים! רוצה שאקבע את הפגישה?',
       timestamp: '16:45'
     },
     {
       id: 4,
+      heading: 'מתחיל את היום איתכם',
+      subheading: 'סיכום יומי חכם כל בוקר',
       userMessage: 'בוקר טוב',
       donnaResponse: 'בוקר טוב! ☀️ הנה הסיכום היומי שלך: 📅 3 פגישות היום ⏰ 2 תזכורות חשובות 📝 1 משימה שצריך לסיים רוצה שאתחיל עם משהו ספציפי?',
       timestamp: '08:00'
@@ -32,15 +58,28 @@ const ConversationFlow = () => {
   return (
     <div className="conversation-flow-container">
       {conversations.map((conversation, index) => (
-        <div key={conversation.id} className="conversation-section">
-          {/* Donna Header */}
+        <div
+          key={conversation.id}
+          ref={(el) => (sectionRefs.current[index] = el)}
+          className="conversation-section scenario"
+        >
+          {/* Scenario header – above each conversation */}
+          <div className="scenario-header">
+            <h2 className="scenario-heading">{conversation.heading}</h2>
+            <p className="scenario-subheading">{conversation.subheading}</p>
+          </div>
+
+          {/* WhatsApp container: Donna header + messages */}
+          <div className="whatsapp-wrapper">
           <div className="donna-header">
             <div className="donna-header-content">
+              <div className="donna-avatar">
+                <img src="/photos/donna_whatssap_hero.png" alt="Donna" className="donna-avatar-img" />
+              </div>
               <div className="donna-name-section">
                 <div className="donna-name">Donna</div>
-                <div className="donna-status">{conversation.timestamp}</div>
+                <div className="donna-status">מקוון</div>
               </div>
-              <div className="donna-avatar"></div>
             </div>
           </div>
 
@@ -67,6 +106,16 @@ const ConversationFlow = () => {
               </div>
             </div>
           </div>
+          </div>
+
+          {/* Arrow below each conversation – scroll cue (hidden on last) */}
+          {index < conversations.length - 1 && (
+            <div className="scenario-arrow">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="flow-arrow">
+                <path d="M7 10L12 15L17 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+          )}
 
           {/* Divider (except for last conversation) */}
           {index < conversations.length - 1 && (
