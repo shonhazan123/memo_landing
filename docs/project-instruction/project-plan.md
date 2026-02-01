@@ -90,7 +90,7 @@ mimo-website/
 
 ### Phase 3: Home Page ✅
 - [ ] Hero section with gradient background (Chapter 1 & 2 – video, headline, CTAs)
-- [ ] **Chapter 3 – Real Life Examples**: section "אתה מבקש. דונה מבצעת." with 6 example cards (scroll-reveal, fade + translate up, Hebrew only); placed after Hero, before Gallery
+- [x] **Chapter 3 – Conversation Flow**: section "אתה מבקש. דונה מבצעת." with conversation flow UI showing real WhatsApp-style messages between user and Donna (ConversationFlow component); placed after Hero, before Gallery
 - [ ] Gallery section (horizontal scrolling image gallery with navigation arrows)
 - [ ] Stats section (4 stats, responsive grid)
 - [ ] Testimonials section (3 cards, staggered layout)

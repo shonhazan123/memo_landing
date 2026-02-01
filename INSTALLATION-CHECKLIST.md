@@ -91,3 +91,6 @@ After installation, verify:
 - **Video Files**: Large video files are in `public/videos/` folder
 - **Configuration**: All shadcn/config files are committed and ready to use
 
+
+
+

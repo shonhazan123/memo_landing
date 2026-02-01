@@ -276,13 +276,14 @@ The Mimo website is designed with a mobile-first, calm, and human-centered appro
   - **Mobile (max-width: 480px)**: Cards scale to 320px × 288px, smaller arrows (36px)
 - **Accessibility**: Arrow buttons include `aria-label` attributes, disabled state properly handled
 
-### Chapter 3 – Real Life Examples (Home)
+### Chapter 3 – Conversation Flow (Home)
 - **Purpose**: Show how the WhatsApp assistant works in real life: "אתה מבקש. דונה מבצעת." (You ask. Dona does.)
 - **Location**: `src/pages/Home.jsx` (section after Hero, before Gallery)
-- **Content**: Hebrew-only; section title + optional subtitle; 6 example cards (user phrase + short explanation). No feature lists, no AI/buzzwords.
-- **Layout**: Full-width white section; centered title; grid 1 col mobile / 2 cols desktop; each example is a card (rounded-2xl, bg-gray-50, user text bold, explanation lighter).
-- **Animation**: Section title via ScrollReveal; subtitle via BlurText; each card uses GSAP ScrollTrigger (fade + translate up, staggered delay). Reuses existing ScrollReveal/BlurText/GSAP stack.
-- **Styling**: `chapter3-section`, `chapter3-container`, `chapter3-grid`, `chapter3-card` in `Home.css`; mobile-first padding and typography scale.
+- **Component**: `src/components/ConversationFlow/ConversationFlow.jsx`
+- **Content**: Hebrew-only; section title + optional subtitle; conversation flow UI showing real WhatsApp-style message exchanges between user and Donna. Displays multiple conversation examples with message bubbles, timestamps, and Donna's branded header.
+- **Layout**: Full-width white section; centered title; conversation flow container (max-width 375px mobile, scales up on desktop); each conversation shows Donna header (green background #07A854), user messages (light green #DCFFC6, left-aligned), Donna responses (white, right-aligned), with dividers between conversations.
+- **Animation**: Section title via ScrollReveal; subtitle via BlurText; conversation flow uses scroll reveal animations.
+- **Styling**: `conversation-flow-container`, `donna-header`, `user-message-bubble`, `donna-message-bubble` in `ConversationFlow.css`; mobile-first padding and typography scale; RTL support for Hebrew text.
 
 ### BackgroundVideo Component
 - **Purpose**: GIF-like background video that autoplays, loops infinitely, and behaves as a background element

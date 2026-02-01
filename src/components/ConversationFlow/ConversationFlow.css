@@ -1,0 +1,208 @@
+/* Conversation Flow Container */
+.conversation-flow-container {
+  width: 100%;
+  max-width: 375px;
+  margin: 0 auto;
+  padding: 64px 20px 0;
+  background: linear-gradient(180deg, #F9FAFB 0%, #FFFFFF 100%);
+  direction: rtl;
+}
+
+/* Conversation Section */
+.conversation-section {
+  margin-bottom: 56px;
+}
+
+.conversation-section:last-child {
+  margin-bottom: 0;
+}
+
+/* Donna Header */
+.donna-header {
+  background: #07A854;
+  border-radius: 24px 24px 0 0;
+  padding: 12px 16px;
+  margin-bottom: 0;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+}
+
+.donna-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.donna-name-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.donna-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #FFFFFF;
+  line-height: 20px;
+  margin-bottom: 0;
+}
+
+.donna-status {
+  font-size: 12px;
+  font-weight: 400;
+  color: #E6E8EB;
+  line-height: 16px;
+  margin-top: 0;
+}
+
+.donna-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #D1D5DB;
+  flex-shrink: 0;
+}
+
+/* Messages Container */
+.messages-container {
+  background: #E5DDD5;
+  border-radius: 0 0 24px 24px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  min-height: 200px;
+}
+
+/* User Message Bubble */
+.user-message-bubble {
+  align-self: flex-start;
+  max-width: 256px;
+  margin-right: auto;
+  margin-left: 0;
+  width: fit-content;
+}
+
+.user-message-bubble .message-content {
+  background: #DCFFC6;
+  border-radius: 16px;
+  padding: 10px 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.user-message-bubble .message-text {
+  font-size: 14px;
+  font-weight: 400;
+  color: #111827;
+  line-height: 20px;
+  margin: 0 0 4px 0;
+  text-align: right;
+}
+
+.user-message-bubble .message-timestamp {
+  font-size: 12px;
+  font-weight: 400;
+  color: #4B5563;
+  line-height: 15px;
+  text-align: right;
+}
+
+/* Donna Message Bubble */
+.donna-message-bubble {
+  align-self: flex-end;
+  max-width: 226px;
+  margin-left: auto;
+  margin-right: 0;
+  width: fit-content;
+}
+
+.donna-message-bubble .message-content {
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 10px 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.donna-message-bubble .message-text {
+  font-size: 14px;
+  font-weight: 400;
+  color: #111827;
+  line-height: 20px;
+  margin: 0 0 3.5px 0;
+  text-align: right;
+}
+
+.donna-message-bubble .message-footer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: flex-end;
+  margin-top: 3.5px;
+}
+
+.donna-message-bubble .message-footer svg {
+  width: 7.88px;
+  height: 9px;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.donna-message-bubble .message-timestamp {
+  font-size: 12px;
+  font-weight: 400;
+  color: #4B5563;
+  line-height: 15px;
+}
+
+/* Conversation Divider */
+.conversation-divider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 28px 0;
+}
+
+.conversation-divider svg {
+  width: 24px;
+  height: 24px;
+  color: #D1D5DB;
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+  .conversation-flow-container {
+    max-width: 500px;
+    padding: 0 40px;
+  }
+
+  .user-message-bubble {
+    max-width: 320px;
+  }
+
+  .donna-message-bubble {
+    max-width: 280px;
+  }
+
+  .user-message-bubble .message-text,
+  .donna-message-bubble .message-text {
+    font-size: 15px;
+    line-height: 22px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .conversation-flow-container {
+    max-width: 600px;
+  }
+
+  .user-message-bubble {
+    max-width: 400px;
+  }
+
+  .donna-message-bubble {
+    max-width: 350px;
+  }
+}
+

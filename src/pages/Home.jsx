@@ -12,6 +12,7 @@ import Gallery from '../components/Gallery/Gallery'
 import ScrollReveal from '../components/ScrollReveal/ScrollReveal'
 import BlurText from '../components/BlurText/BlurText'
 import BackgroundVideo from '../components/BackgroundVideo/BackgroundVideo'
+import ConversationFlow from '../components/ConversationFlow/ConversationFlow'
 import './Home.css'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -213,7 +214,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Chapter 3 – Real Life Examples: "You ask. Dona does." */}
+      {/* Chapter 3 – Conversation Flow: "You ask. Dona does." */}
       <section
         ref={chapter3SectionRef}
         className="home-section chapter3-section bg-white relative py-16 md:py-24"
@@ -241,20 +242,36 @@ const Home = () => {
               className="text-base md:text-lg text-gray-600"
             />
           </div>
-          <div ref={chapter3CardsRef} className="chapter3-grid grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-            {chapter3Examples.map((item, index) => (
-              <div
-                key={index}
-                className="chapter3-card rounded-2xl bg-gray-50 p-5 md:p-6 text-right border border-gray-100"
-              >
-                <p className="font-bold text-gray-900 text-base md:text-lg mb-2 leading-relaxed">
-                  {item.userText}
-                </p>
-                <p className="text-gray-600 text-sm md:text-base leading-relaxed">
-                  {item.explanation}
-                </p>
-              </div>
-            ))}
+          <ConversationFlow />
+          
+          {/* Final CTA Section */}
+          <div className="text-center mt-16 md:mt-20">
+            <ScrollReveal
+              baseOpacity={0}
+              enableBlur={true}
+              baseRotation={5}
+              blurStrength={10}
+              containerClassName="text-2xl md:text-3xl font-bold mb-4 text-gray-900"
+            >
+              פשוט כותבים והכל קורה
+            </ScrollReveal>
+            <BlurText
+              text="בלי אפליקציה חדשה, בלי מאמץ. פשוט מבקשים בשפה טבעית והיא דואגת לכל השאר."
+              delay={100}
+              animateBy="words"
+              direction="top"
+              className="text-base md:text-lg text-gray-600 mb-8"
+            />
+            <Link to="/login">
+              <StarBorder color="var(--theme-accent)" speed="5s" className="inline-block">
+                <Button variant="primary" size="large" className="flex items-center gap-2 mx-auto">
+                  התחל עכשיו
+                  <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 1L14 8L0 15" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </Button>
+              </StarBorder>
+            </Link>
           </div>
         </div>
       </section>
