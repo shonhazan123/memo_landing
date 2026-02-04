@@ -1,5 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import ComingSoonBadge from '../ComingSoonBadge/ComingSoonBadge'
 import './AbilityCard.css'
 
 const AbilityCard = ({ ability, className = '' }) => {
@@ -38,6 +39,12 @@ const AbilityCard = ({ ability, className = '' }) => {
             <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </div>
+        {(ability.slug === 'emails' || ability.slug === 'google-workspace') && (
+          <ComingSoonBadge 
+            position={{ bottom: '10px', right: '10px' }}
+            size={{ width: '200px', height: '60px' }}
+          />
+        )}
       </div>
     </div>
   )

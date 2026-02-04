@@ -9,7 +9,7 @@ export const abilities = [
     slug: 'calendar-management',
     title: 'ניהול יומן',
     description: 'דונה מנהל את היומן שלך בצורה חכמה. תזמון פגישות, ביטול, שינוי - הכל בשיחה טבעית.',
-    image: '/photos/ChatGPT Image Jan 26, 2026, 04_51_35 PM.png',
+    image: '/photos/Calendar.png',
     conversationsFile: 'calendar-management'
   },
   {
@@ -17,7 +17,7 @@ export const abilities = [
     slug: 'tasks-reminders',
     title: 'משימות ותזכורות',
     description: 'תזכורות חכמות שמגיעות בדיוק בזמן הנכון. תזכורות מבוססות זמן, מיקום, והקשר.',
-    image: '/photos/ChatGPT Image Jan 26, 2026, 04_57_29 PM.png',
+    image: '/photos/Reminders.png',
     conversationsFile: 'tasks-reminders'
   },
   {
@@ -25,7 +25,7 @@ export const abilities = [
     slug: 'emails',
     title: 'אימיילים',
     description: 'ניהול אימיילים בצורה חכמה. דונה עוזר לך לנהל, לסנן, ולענות על אימיילים חשובים.',
-    image: '/photos/ChatGPT Image Jan 26, 2026, 05_06_37 PM.png',
+    image: '/photos/Gmail.png',
     conversationsFile: 'emails'
   },
   {
@@ -33,7 +33,7 @@ export const abilities = [
     slug: 'google-workspace',
     title: 'Google Work Space',
     description: 'אינטגרציה מלאה עם Google Workspace. ניהול מסמכים, קבצים, וכל הכלים של Google במקום אחד.',
-    image: '/photos/ChatGPT Image Jan 26, 2026, 06_06_20 PM.png',
+    image: '/photos/Google_Workspace.png',
     conversationsFile: 'google-workspace'
   }
 ]

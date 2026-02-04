@@ -13,6 +13,7 @@ import ScrollReveal from '../components/ScrollReveal/ScrollReveal'
 import BlurText from '../components/BlurText/BlurText'
 import BackgroundVideo from '../components/BackgroundVideo/BackgroundVideo'
 import ConversationFlow from '../components/ConversationFlow/ConversationFlow'
+import { getAllAbilities } from '../data/abilities'
 import './Home.css'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -122,25 +123,14 @@ const Home = () => {
     },
   ]
 
-  // Gallery images from public/photos/
-  const galleryImages = [
-    {
-      src: '/photos/ChatGPT Image Jan 26, 2026, 04_51_35 PM.png',
-      title: ''
-    },
-    {
-      src: '/photos/ChatGPT Image Jan 26, 2026, 04_57_29 PM.png',
-      title: ''
-    },
-    {
-      src: '/photos/ChatGPT Image Jan 26, 2026, 05_06_37 PM.png',
-      title: ''
-    },
-    {
-      src: '/photos/ChatGPT Image Jan 26, 2026, 06_06_20 PM.png',
-      title: ''
-    }
-  ]
+  // Gallery images from abilities data
+  const abilities = getAllAbilities()
+  const galleryImages = abilities.map(ability => ({
+    id: ability.id,
+    src: ability.image,
+    title: ability.title,
+    slug: ability.slug
+  }))
   
   return (
     <div dir="rtl" className="min-h-screen">
