@@ -144,8 +144,10 @@ const Gallery = ({ images = [], scrollStep = 400, className = '' }) => {
                   </div>
                   {(image.slug === 'emails' || image.slug === 'google-workspace') && (
                     <ComingSoonBadge 
-                      position={{ bottom: '10px', right: '0px' }}
-                      size={{ width: '130px', height: '60px' }}
+                      positionMobile={{ bottom: '0%', right: '0%', left: '28%', top: '62%' }}
+                      positionDesktop={{ bottom: '-25%', right: '-30%' }}
+                      sizeMobile={{ width: '100%', aspectRatio: '1.33' }}
+                      sizeDesktop={{ width: '100%', aspectRatio: '1.33' }}
                     />
                   )}
                 </div>

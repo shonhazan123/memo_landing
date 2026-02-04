@@ -41,8 +41,10 @@ const AbilityCard = ({ ability, className = '' }) => {
         </div>
         {(ability.slug === 'emails' || ability.slug === 'google-workspace') && (
           <ComingSoonBadge 
-            position={{ bottom: '10px', right: '10px' }}
-            size={{ width: '200px', height: '60px' }}
+            positionMobile={{ bottom: '10%', right: '-28%', left: '80%', top: '38%' }}
+            positionDesktop={{ bottom: '-10%', right: '-40%' }}
+            sizeMobile={{ width: '100%', aspectRatio: '1.33' }}
+            sizeDesktop={{ width: '100%', aspectRatio: '3.33' }}
           />
         )}
       </div>
