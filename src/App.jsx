@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext'
 import CardNav from './components/CardNav/CardNav'
 import Home from './pages/Home'
 import Superpowers from './pages/Superpowers'
+import AbilityDetail from './pages/AbilityDetail'
 import Pricing from './pages/Pricing'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
@@ -53,6 +54,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/superpowers" element={<Superpowers />} />
+              <Route path="/superpowers/:slug" element={<AbilityDetail />} />
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />

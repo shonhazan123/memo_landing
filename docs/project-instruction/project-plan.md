@@ -32,13 +32,23 @@ mimo-website/
 │   │   ├── CardSwap/             # @react-bits/CardSwap-JS-CSS (kept for potential future use)
 │   │   ├── Gallery/              # Horizontal scrolling image gallery component
 │   │   ├── LogoLoop/             # @react-bits/LogoLoop-JS-CSS
+│   │   ├── AbilityCard/          # Clickable ability card for grid view
+│   │   ├── ConversationGallery/   # Horizontal carousel for conversation examples
 │   │   └── ...
+│   ├── data/
+│   │   ├── abilities.js           # Central abilities configuration
+│   │   └── conversations/         # Conversation data files per ability
+│   │       ├── calendar-management.js
+│   │       ├── tasks-reminders.js
+│   │       ├── emails.js
+│   │       └── google-workspace.js
 │   ├── context/
 │   │   └── AuthContext.jsx       # Auth state management
 │   ├── pages/
 │   │   ├── Home.jsx
 │   │   ├── Pricing.jsx
-│   │   ├── Superpowers.jsx
+│   │   ├── Superpowers.jsx        # Grid view of all abilities
+│   │   ├── AbilityDetail.jsx      # Dynamic ability detail page
 │   │   ├── Login.jsx             # Redirects to Signup
 │   │   └── Signup.jsx            # Multi-step auth flow
 │   ├── config/
@@ -97,11 +107,39 @@ mimo-website/
 - [ ] Final CTA section
 
 ### Phase 4: Superpowers Page ✅
-- [ ] Hero section with page title
-- [ ] Feature cards grid (6 features)
-- [ ] Each card with icon, title, description, benefits
-- [ ] Scroll animations
-- [ ] Responsive layout (1 col mobile, 2 col desktop)
+- [x] Hero section with page title
+- [x] Ability cards grid (4 abilities)
+- [x] Each card with image, title, clickable navigation
+- [x] Scroll animations
+- [x] Responsive layout (1 col mobile, 2 col desktop)
+- [x] Dynamic ability detail pages with conversation galleries
+
+#### Phase 4.1: Dynamic Ability Pages System ✅
+- [x] Centralized abilities data structure (`src/data/abilities.js`)
+- [x] Conversation data files for each ability (`src/data/conversations/`)
+- [x] AbilityCard component for grid display
+- [x] ConversationGallery component (horizontal carousel with navigation)
+- [x] AbilityDetail page component with dynamic routing
+- [x] Dynamic routes: `/superpowers/:slug`
+- [x] Scalable architecture for adding new abilities
+
+**Ability Pages Architecture:**
+- **Grid View** (`/superpowers`): Displays all abilities as clickable cards in a 2-column grid
+- **Detail Pages** (`/superpowers/:slug`): Individual ability pages with:
+  - Header section with ability title
+  - Description section
+  - Conversation gallery showing use case examples
+- **Data Structure**: Centralized in `src/data/abilities.js` with conversation data in separate files
+- **Components**: 
+  - `AbilityCard`: Clickable card component for grid view
+  - `ConversationGallery`: Horizontal carousel showing WhatsApp-style conversation examples
+  - `AbilityDetail`: Dynamic page component that loads ability-specific data
+
+**Current Abilities:**
+1. ניהול יומן (Calendar Management) - `/superpowers/calendar-management`
+2. משימות ותזכורות (Tasks and Reminders) - `/superpowers/tasks-reminders`
+3. אימיילים (Emails) - `/superpowers/emails`
+4. Google Work Space - `/superpowers/google-workspace`
 
 ### Phase 5: Pricing Page ✅
 - [ ] Hero section with title/subtitle
@@ -152,7 +190,9 @@ mimo-website/
 - ✅ Base components created (Button, Cards, Logo, Menu)
 - ✅ Home page implemented (Hero, Chapter 3 Real Life Examples, Gallery, Stats, Testimonials, CTA)
 - ✅ Gallery component created (replaces CardSwap on Home page)
-- ✅ Superpowers page implemented (6 feature cards with scroll animations)
+- ✅ Superpowers page implemented (ability cards grid with scroll animations)
+- ✅ Dynamic ability pages system implemented (AbilityCard, ConversationGallery, AbilityDetail)
+- ✅ Abilities data structure created (centralized configuration with conversation data files)
 - ✅ Pricing page implemented (Toggle, Cards, FAQ, Feature comparison)
 - ✅ Login page structure created (prepared for Supabase auth)
 - ✅ Supabase configuration file created
