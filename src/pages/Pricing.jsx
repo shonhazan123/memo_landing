@@ -39,25 +39,30 @@ const Pricing = () => {
     monthly: [
       {
         name: 'בסיסי',
-        price: '₪25',
+        price: '₪21',
         period: 'חודש',
         features: [
           'תזכורות ללא הגבלה',
           'רשימות מרובות',
           'תמיכה ב-WhatsApp',
           'סנכרון עם Google Calendar',
+          'הקלטות קוליות',
+          'ניהול יומן',
+          'זכרון אישי',
+          'תדרוך בוקר',
         ],
       },
       {
         name: 'מקצועי',
-        price: '₪99',
-        originalPrice: '₪149',
+        price: '₪28',
         period: 'חודש',
-        savings: '33%',
         badge: 'הכי פופולרי',
         isPopular: true,
         features: [
           'כל מה שבבסיסי',
+          'סנכרון עם Gmail',
+          'ניתוח תמונות',
+          'תכנון מטרות והצבת יעדים',
           'תזכורות חכמות',
           'נודניקים',
           'זיכרון אישי',
@@ -66,41 +71,48 @@ const Pricing = () => {
       },
       {
         name: 'עסקי',
-        price: '₪199',
+        price: '₪42',
         period: 'חודש',
         features: [
           'כל מה שבמקצועי',
-          'משתמשים מרובים',
-          'ניהול צוות',
-          'דוחות מתקדמים',
-          'תמיכה ייעודית',
+          'חיפוש מידע ב-Google Docs / Google Sheets',
+          'סנכרון עם Google Drive',
+          'יצירת מסמכים ב-Google Docs',
+          'יצירת גיליונות ב-Google Sheets',
         ],
       },
     ],
     annual: [
       {
         name: 'בסיסי',
-        price: '₪390',
-        originalPrice: '₪588',
+        price: '₪15',
+        originalPrice: '₪21',
         period: 'חודש',
-        savings: '33%',
+        savings: '30%',
         features: [
           'תזכורות ללא הגבלה',
           'רשימות מרובות',
           'תמיכה ב-WhatsApp',
           'סנכרון עם Google Calendar',
+          'הקלטות קוליות',
+          'ניהול יומן',
+          'זכרון אישי',
+          'תדרוך בוקר',
         ],
       },
       {
         name: 'מקצועי',
-        price: '₪790',
-        originalPrice: '₪1,788',
+        price: '₪20',
+        originalPrice: '₪28',
         period: 'חודש',
-        savings: '40%',
+        savings: '30%',
         badge: 'הכי פופולרי',
         isPopular: true,
         features: [
           'כל מה שבבסיסי',
+          'סנכרון עם Gmail',
+          'ניתוח תמונות',
+          'תכנון מטרות והצבת יעדים',
           'תזכורות חכמות',
           'נודניקים',
           'זיכרון אישי',
@@ -109,36 +121,36 @@ const Pricing = () => {
       },
       {
         name: 'עסקי',
-        price: '₪1,590',
-        originalPrice: '₪2,388',
+        price: '₪30',
+        originalPrice: '₪42',
         period: 'חודש',
-        savings: '33%',
+        savings: '30%',
         features: [
           'כל מה שבמקצועי',
-          'משתמשים מרובים',
-          'ניהול צוות',
-          'דוחות מתקדמים',
-          'תמיכה ייעודית',
+          'חיפוש מידע ב-Google Docs / Google Sheets',
+          'סנכרון עם Google Drive',
+          'יצירת מסמכים ב-Google Docs',
+          'יצירת גיליונות ב-Google Sheets',
         ],
       },
     ],
   }
   
-  const features = [
-    { icon: '🔄', label: 'תזכורות ללא הגבלה' },
-    { icon: '📝', label: 'רשימות מרובות' },
-    { icon: '🔔', label: 'תזכורות חכמות' },
-    { icon: '⏰', label: 'נודניקים' },
-    { icon: '🧠', label: 'זיכרון אישי' },
-    { icon: '👥', label: 'משתמשים מרובים' },
+  /** Feature comparison table: each row has feature name + value for בסיסי, מקצועי, עסקי. Value: true = ✓, false = —, string = shown as-is. */
+  const comparisonRows = [
+    { feature: 'תזכורות ללא הגבלה', basic: true, pro: true, business: true },
+    { feature: 'זיכרון אישי', basic: true, pro: true, business: true },
+    { feature: 'סנכרון יומן (Google Calendar)', basic: true, pro: true, business: true },
+    { feature: 'יצירה וניהול רשימות', basic: true, pro: true, business: true },
+    { feature: 'תזכורות לחברים', basic: '100/חודש | 20 חברים', pro: '500/חודש | 100 חברים', business: '1000/חודש | 200 חברים' },
+    { feature: 'תדרוך בוקר', basic: true, pro: true, business: true },
+    { feature: 'סנכרון עם Gmail', basic: false, pro: true, business: true },
+    { feature: 'זיכרון ארוך טווח', basic: false, pro: true, business: true },
+    { feature: 'ניתוח תמונות (Image to Action)', basic: false, pro: true, business: true },
+    { feature: 'לוח בקרה מלא', basic: false, pro: true, business: true },
+    { feature: 'אינטגרציית Google Workspace', basic: false, pro: false, business: true },
   ]
   
-  const comingSoon = [
-    { name: '📧 Gmail', label: 'Gmail' },
-    { name: '📱 SMS', label: 'SMS' },
-    { name: '📞 טלפון', label: 'טלפון' },
-    { name: '🤖 AI מתקדם', label: 'AI מתקדם' },
-  ]
   
   const faqs = [
     {
@@ -167,7 +179,7 @@ const Pricing = () => {
       <section className="py-16 md:py-24 pricing-hero-section">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <BlurText
-            text="בנית חיים סביב לזכור הכל. זה למה אתה מותש."
+            text="מי אמר שמזכירה צריכה להיות רק לבעלי עסקים ?"
             delay={150}
             animateBy="words"
             direction="top"
@@ -184,7 +196,7 @@ const Pricing = () => {
       </section>
       
       {/* Pricing Cards + Billing Toggle */}
-      <section className="py-8" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(252, 207, 246, 1) 0%, rgba(255, 255, 255, 1) 73%)' }}>
+      <section className="py-8 pricing-cards-section">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Billing Toggle */}
           <div className="flex justify-center mb-12">
@@ -216,7 +228,7 @@ const Pricing = () => {
               >
                 שנתי
                 <span className="absolute -top-2 -right-2 bg-green-500 text-xs px-2 py-1 rounded-full text-black">
-                  -40%
+                  -30%
                 </span>
               </button>
             </div>
@@ -240,8 +252,8 @@ const Pricing = () => {
         </div>
       </section>
       
-      {/* Feature Comparison */}
-      <section className="py-16 bg-gray-50">
+      {/* Feature Comparison Table */}
+      <section className="py-16 pricing-comparison-section">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollReveal
             baseOpacity={0}
@@ -252,43 +264,47 @@ const Pricing = () => {
           >
             השווה יכולות
           </ScrollReveal>
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
-            {features.map((feature, index) => (
-              <div
-                key={index}
-                className="bg-gradient-to-br from-gray-800 to-gray-900 p-4 rounded-2xl shadow-lg text-center"
-              >
-                <div className="text-3xl mb-2">{feature.icon}</div>
-                <div className="text-white text-xs font-medium">{feature.label}</div>
-              </div>
-            ))}
+          <div className="pricing-comparison-table-wrapper">
+            <table className="pricing-comparison-table" dir="rtl">
+              <thead>
+                <tr>
+                  <th className="pricing-comparison-th pricing-comparison-th-feature">יכולות</th>
+                  <th className="pricing-comparison-th">בסיסי</th>
+                  <th className="pricing-comparison-th pricing-comparison-th-popular">
+                    <span className="pricing-comparison-badge">הכי פופולרי</span>
+                    מקצועי
+                  </th>
+                  <th className="pricing-comparison-th">עסקי</th>
+                </tr>
+              </thead>
+              <tbody>
+                {comparisonRows.map((row, index) => (
+                  <tr key={index} className={index % 2 === 1 ? 'pricing-comparison-row-alt' : ''}>
+                    <td className="pricing-comparison-td pricing-comparison-td-feature">{row.feature}</td>
+                    <td className="pricing-comparison-td pricing-comparison-cell">
+                      {row.basic === true && <span className="pricing-comparison-check">✓</span>}
+                      {row.basic === false && <span className="pricing-comparison-dash">—</span>}
+                      {typeof row.basic === 'string' && <span>{row.basic}</span>}
+                    </td>
+                    <td className="pricing-comparison-td pricing-comparison-cell pricing-comparison-cell-popular">
+                      {row.pro === true && <span className="pricing-comparison-check pricing-comparison-check-popular">✓</span>}
+                      {row.pro === false && <span className="pricing-comparison-dash">—</span>}
+                      {typeof row.pro === 'string' && <span className="pricing-comparison-value-popular">{row.pro}</span>}
+                    </td>
+                    <td className="pricing-comparison-td pricing-comparison-cell">
+                      {row.business === true && <span className="pricing-comparison-check">✓</span>}
+                      {row.business === false && <span className="pricing-comparison-dash">—</span>}
+                      {typeof row.business === 'string' && <span>{row.business}</span>}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </section>
       
-      {/* Coming Soon */}
-      <section className="py-12 bg-white border-t border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <BlurText
-            text="בקרוב"
-            delay={150}
-            animateBy="words"
-            direction="top"
-            className="text-xl font-semibold text-gray-900 mb-6 text-center"
-          />
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-            {comingSoon.map((item, index) => (
-              <div
-                key={index}
-                className="bg-gray-100 p-4 rounded-xl border-2 border-dashed border-gray-300 text-center"
-              >
-                <div className="text-gray-600">{item.name}</div>
-                <div className="text-gray-600 text-sm mt-2">בקרוב</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+
       
       {/* FAQ Section */}
       <section className="py-16 bg-white">
@@ -309,7 +325,7 @@ const Pricing = () => {
       </section>
       
       {/* Final CTA */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 pricing-cta-section">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <ScrollReveal
             baseOpacity={0}

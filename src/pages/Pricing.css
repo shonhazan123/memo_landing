@@ -1,5 +1,42 @@
 /* Custom styles for Pricing page */
 
+/* Section background transitions - fade into each other, no hard cuts */
+.pricing-cards-section {
+  background-image:
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      transparent 50%,
+      rgba(252, 207, 246, 0.25) 75%,
+      rgba(238, 242, 255, 0.45) 95%,
+      rgba(238, 242, 255, 0.5) 100%
+    ),
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(252, 207, 246, 1) 0%,
+      rgba(255, 255, 255, 1) 73%
+    );
+  background-color: #fff;
+}
+
+.pricing-comparison-section {
+  /* Start with same color as pricing-cards-section bottom for seamless fade */
+  background: linear-gradient(
+    180deg,
+    rgba(238, 242, 255, 0.5) 0%,
+    rgba(252, 207, 246, 0.25) 20%,
+    rgba(238, 242, 255, 0.2) 40%,
+    rgba(249, 250, 251, 0.6) 75%,
+    #f9fafb 100%
+  );
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+.pricing-cta-section {
+  background: #f9fafb;
+}
+
 /* Hero Section - Custom padding overrides */
 .pricing-hero-section {
   padding-top: 84px !important;
@@ -17,5 +54,114 @@
 @media (min-width: 768px) {
   .pricing-hero-blurtext {
     font-size: 4.5rem !important; /* md:text-7xl = 72px = 4.5rem */
+  }
+}
+
+/* Feature comparison table - table wrapper (section gradient in "Section background transitions" above) */
+
+.pricing-comparison-table-wrapper {
+  background: #f3f4f6;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+.pricing-comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.pricing-comparison-th {
+  padding: 1rem 1.25rem;
+  text-align: center;
+  font-weight: 600;
+  color: #111827;
+  background: #e0e8ff;
+  border-bottom: 1px solid #c7dffe;
+}
+
+.pricing-comparison-th-feature {
+  text-align: right;
+  padding-right: 1.25rem;
+}
+
+.pricing-comparison-th-popular {
+  color: #db2777;
+  position: relative;
+}
+
+.pricing-comparison-badge {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #db2777;
+  background: rgba(219, 39, 119, 0.15);
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  margin-bottom: 0.25rem;
+}
+
+.pricing-comparison-td {
+  padding: 0.875rem 1.25rem;
+  text-align: center;
+  color: #374151;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.pricing-comparison-row-alt .pricing-comparison-td {
+  background: #f9fafb;
+}
+
+.pricing-comparison-td-feature {
+  text-align: right;
+  font-weight: 500;
+  color: #111827;
+}
+
+.pricing-comparison-cell-popular {
+  background: rgba(253, 242, 248, 0.6);
+}
+
+.pricing-comparison-row-alt .pricing-comparison-cell-popular {
+  background: rgba(253, 242, 248, 0.4);
+}
+
+.pricing-comparison-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  border: 1.5px solid #111827;
+  color: #111827;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.pricing-comparison-check-popular {
+  border-color: #db2777;
+  color: #db2777;
+}
+
+.pricing-comparison-dash {
+  color: #9ca3af;
+  font-size: 1rem;
+}
+
+.pricing-comparison-value-popular {
+  color: #db2777;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .pricing-comparison-table {
+    font-size: 0.75rem;
+  }
+  .pricing-comparison-th,
+  .pricing-comparison-td {
+    padding: 0.5rem 0.5rem;
   }
 }

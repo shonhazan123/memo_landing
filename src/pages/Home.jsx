@@ -52,8 +52,8 @@ const Home = () => {
     return () => triggers.forEach((t) => t.kill())
   }, [])
   const stats = [
-    { number: '10,000+', label: 'משתמשים מרוצים' },
-    { number: '500K+', label: 'משימות הושלמו' },
+    { number: '1,000+', label: 'משתמשים מרוצים' },
+    { number: '50K+', label: 'משימות הושלמו' },
     { number: '99%', label: 'שיעור שביעות רצון' },
     { number: '24/7', label: 'זמינות' },
   ]
@@ -88,7 +88,7 @@ const Home = () => {
     src: ability.image,
     title: ability.title,
     slug: ability.slug
-  }))
+  })).sort((a, b) => b.id - a.id)
   
   return (
     <div dir="rtl" className="min-h-screen">
@@ -244,7 +244,6 @@ const Home = () => {
               <Link to="/superpowers">
                 <Button variant="primary" size="large" className="flex items-center ">
                   לכל היכולות של דונה
-
                 </Button>
               </Link>
             </div>
