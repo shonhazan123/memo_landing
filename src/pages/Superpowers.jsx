@@ -4,6 +4,7 @@ import AbilityCard from '../components/AbilityCard/AbilityCard'
 import StarBorder from '../components/StarBorder/StarBorder'
 import ScrollReveal from '../components/ScrollReveal/ScrollReveal'
 import BlurText from '../components/BlurText/BlurText'
+import './Superpowers.css'
 
 const Superpowers = () => {
   const cardRefs = useRef([])
@@ -42,8 +43,8 @@ const Superpowers = () => {
   
   return (
     <div dir="rtl" className="min-h-screen">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-20 md:py-32">
+      {/* Hero Section - gradient fades to white at bottom */}
+      <section className="superpowers-hero-section py-20 md:py-22">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-4xl mx-auto">
             <BlurText
@@ -54,18 +55,18 @@ const Superpowers = () => {
               className="text-5xl md:text-7xl font-bold mb-6 leading-tight theme-gradient-text"
             />
             <BlurText
-              text="כל מה שצריך כדי לנהל את החיים שלך בקלות. כל יכולת היא כמו כוח על שמקל עליך את החיים."
+              text="ועוד הרבה בדרך !"
               delay={100}
               animateBy="words"
               direction="bottom"
-              className="text-xl md:text-2xl text-gray-700 mb-8 leading-relaxed"
+              className="text-xl md:text-3xl text-black-900 mb-3 leading-relaxed"
             />
           </div>
         </div>
       </section>
       
-      {/* Abilities Grid */}
-      <section className="py-16 bg-white">
+      {/* Abilities Grid - fades in from hero at top */}
+      <section className="superpowers-abilities-section pt-16 pb-0">
         <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8">
           <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 lg:gap-8">
             {abilities.map((ability, index) => (

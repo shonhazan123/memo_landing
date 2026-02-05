@@ -21,7 +21,7 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center; /* center words (text-align has no effect in flex) */
-    font-size: 45px;
+    font-size: 35px;
   }
   
   .word {

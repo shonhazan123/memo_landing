@@ -121,10 +121,16 @@
     visibility: visible !important;
   }
   
-  /* Ensure gradient text words in ScrollReveal are visible */
+  /* BlurText and other components wrap text in spans – gradient must apply to each span so text is visible */
+  .theme-gradient-text span,
   .theme-gradient-text .word,
   .scroll-reveal-text.theme-gradient-text,
   .scroll-reveal-text.theme-gradient-text .word {
+    background: var(--theme-button-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
     opacity: 1 !important;
     visibility: visible !important;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
