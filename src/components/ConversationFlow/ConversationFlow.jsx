@@ -7,8 +7,8 @@ const ConversationFlow = () => {
   useEffect(() => {
     const sections = sectionRefs.current.filter(Boolean)
     const observerOptions = {
-      threshold: 0.3,
-      rootMargin: '0px 0px -100px 0px'
+      threshold: 0.2, /* Trigger earlier */
+      rootMargin: '0px 0px -50px 0px' /* Reduced margin for earlier trigger */
     }
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {

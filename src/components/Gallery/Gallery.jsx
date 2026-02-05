@@ -1,7 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import ComingSoonBadge from '../ComingSoonBadge/ComingSoonBadge'
 import './Gallery.css'
 
 const Gallery = ({ images = [], scrollStep = 400, className = '' }) => {
+  const navigate = useNavigate()
   const scrollContainerRef = useRef(null)
   const cardRefs = useRef([])
   const [canScrollLeft, setCanScrollLeft] = useState(false)
@@ -106,31 +109,51 @@ const Gallery = ({ images = [], scrollStep = 400, className = '' }) => {
     <div className={`gallery-container ${className}`}>
       <div className="gallery-scroll-container" ref={scrollContainerRef}>
         <div className="gallery-cards">
-          {images.map((image, index) => (
-            <div 
-              key={index} 
-              className="gallery-card"
-              ref={el => cardRefs.current[index] = el}
-            >
-              <div className="gallery-card-image-wrapper">
-                <img
-                  src={image.src}
-                  alt={image.title || `Gallery image ${index + 1}`}
-                  className="gallery-card-image"
-                  loading="lazy"
-                />
-                <div className="gallery-card-title-overlay">
-                  <input
-                    type="text"
-                    className="gallery-card-title-input"
-                    placeholder="כותרת"
-                    defaultValue={image.title || ''}
-                    onClick={(e) => e.stopPropagation()}
+          {images.map((image, index) => {
+            const handleClick = () => {
+              if (image.slug) {
+                navigate(`/superpowers/${image.slug}`)
+              }
+            }
+
+            return (
+              <div 
+                key={image.id || index} 
+                className={`gallery-card ${image.slug ? 'gallery-card-clickable' : ''}`}
+                ref={el => cardRefs.current[index] = el}
+                onClick={image.slug ? handleClick : undefined}
+                onKeyDown={image.slug ? (e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    handleClick()
+                  }
+                } : undefined}
+                role={image.slug ? 'button' : undefined}
+                tabIndex={image.slug ? 0 : undefined}
+                aria-label={image.slug ? `לחץ כדי לראות פרטים על ${image.title}` : undefined}
+              >
+                <div className="gallery-card-image-wrapper">
+                  <img
+                    src={image.src || image.image}
+                    alt={image.title || `Gallery image ${index + 1}`}
+                    className="gallery-card-image"
+                    loading="lazy"
                   />
+                  <div className="gallery-card-title-overlay">
+                    <h3 className="gallery-card-title">{image.title || ''}</h3>
+                  </div>
+                  {(image.slug === 'emails' || image.slug === 'google-workspace') && (
+                    <ComingSoonBadge 
+                      positionMobile={{ bottom: '0%', right: '0%', left: '28%', top: '62%' }}
+                      positionDesktop={{ bottom: '-25%', right: '-30%' }}
+                      sizeMobile={{ width: '100%', aspectRatio: '1.33' }}
+                      sizeDesktop={{ width: '100%', aspectRatio: '1.33' }}
+                    />
+                  )}
                 </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
       <div className="gallery-arrows-container">

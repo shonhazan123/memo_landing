@@ -1,0 +1,151 @@
+.ability-card {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.ability-card:hover {
+  transform: translateY(-4px);
+}
+
+.ability-card:focus {
+  outline: 2px solid var(--theme-accent, #4F46E5);
+  outline-offset: 4px;
+  border-radius: 1rem;
+}
+
+.ability-card-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 75%; /* 4:3 aspect ratio */
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.ability-card-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  border-radius: 1rem;
+}
+
+.ability-card-image-wrapper:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.ability-card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 1.5rem;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.6) 0%,
+    rgba(0, 0, 0, 0.4) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+  border-radius: 1rem 1rem 0 0;
+}
+
+.ability-card-title {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: right;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.ability-card-plus-icon {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.ability-card:hover .ability-card-plus-icon {
+  background-color: rgba(0, 0, 0, 0.9);
+  transform: scale(1.1);
+}
+
+/* RTL Support */
+[dir="rtl"] .ability-card-title {
+  text-align: right;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .ability-card-image-wrapper {
+    padding-bottom: 80%; /* Slightly taller on tablet */
+    border-radius: 0.5rem;
+  }
+
+  .ability-card-title {
+    font-size: 1rem;
+  }
+
+  .ability-card-overlay {
+    padding: 1rem;
+  }
+
+  .ability-card-plus-icon {
+    width: 32px;
+    height: 32px;
+    bottom: 0.75rem;
+    right: 0.75rem;
+  }
+
+  .ability-card-plus-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ability-card-image-wrapper {
+    padding-bottom: 85%; /* Taller on mobile to fit content */
+    border-radius: 0.5rem;
+  }
+
+  .ability-card-title {
+    font-size: 0.875rem;
+    line-height: 1.2;
+  }
+
+  .ability-card-overlay {
+    padding: 0.75rem;
+  }
+
+  .ability-card-plus-icon {
+    width: 28px;
+    height: 28px;
+    bottom: 0.5rem;
+    right: 0.5rem;
+  }
+
+  .ability-card-plus-icon svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+

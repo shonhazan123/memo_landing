@@ -1,14 +1,16 @@
 import React, { useEffect, useRef } from 'react'
-import FeatureCard from '../components/Card/FeatureCard'
+import { getAllAbilities } from '../data/abilities'
+import AbilityCard from '../components/AbilityCard/AbilityCard'
 import StarBorder from '../components/StarBorder/StarBorder'
 import ScrollReveal from '../components/ScrollReveal/ScrollReveal'
 import BlurText from '../components/BlurText/BlurText'
 
 const Superpowers = () => {
-  const featureRefs = useRef([])
+  const cardRefs = useRef([])
+  const abilities = getAllAbilities()
   
   useEffect(() => {
-    const observers = featureRefs.current.map((ref) => {
+    const observers = cardRefs.current.map((ref) => {
       if (!ref) return null
       
       const observer = new IntersectionObserver(
@@ -33,84 +35,10 @@ const Superpowers = () => {
   }, [])
   
   const addToRefs = (el) => {
-    if (el && !featureRefs.current.includes(el)) {
-      featureRefs.current.push(el)
+    if (el && !cardRefs.current.includes(el)) {
+      cardRefs.current.push(el)
     }
   }
-  const features = [
-    {
-      icon: '📅',
-      title: 'לדבר עם היומן',
-      description: 'פשוט תגיד לדונה מה אתה צריך, והוא ידאג לכל השאר. תזמין פגישות, תבטל, תשנה - הכל בשיחה טבעית.',
-      benefits: [
-        'תזמון פגישות בשפה טבעית',
-        'ביטול ושינוי פגישות בקלות',
-        'סנכרון אוטומטי עם Google Calendar',
-        'תזכורות לפני פגישות',
-      ],
-      color: 'indigo-600',
-    },
-    {
-      icon: '🔔',
-      title: 'תזכורות חכמות',
-      description: 'תזכורות שמגיעות בדיוק בזמן הנכון, מבוססות על ההקשר שלך והמיקום שלך.',
-      benefits: [
-        'תזכורות מבוססות מיקום',
-        'תזכורות מבוססות זמן',
-        'תזכורות מותאמות אישית',
-        'התראות חכמות',
-      ],
-      color: 'purple-600',
-    },
-    {
-      icon: '🔄',
-      title: 'תזכורות חוזרות',
-      description: 'הגדר תזכורת פעם אחת, ודונה יזכיר לך באופן אוטומטי בכל פעם שצריך.',
-      benefits: [
-        'תזכורות יומיות',
-        'תזכורות שבועיות',
-        'תזכורות חודשיות',
-        'תזכורות מותאמות אישית',
-      ],
-      color: 'pink-600',
-    },
-    {
-      icon: '⏰',
-      title: 'נודניקים',
-      description: 'תזכורות שממשיכות להגיע עד שתבצע את המשימה. מושלם למשימות חשובות שלא רוצים לשכוח.',
-      benefits: [
-        'תזכורות חוזרות עד ביצוע',
-        'התאמה אישית של תדירות',
-        'עדיפויות למשימות חשובות',
-        'ללא הגבלה',
-      ],
-      color: 'amber-500',
-    },
-    {
-      icon: '📝',
-      title: 'רשימות',
-      description: 'נהל את כל הרשימות שלך במקום אחד. רשימת קניות, משימות, רעיונות - הכל נגיש בקלות.',
-      benefits: [
-        'רשימות מרובות',
-        'עריכה ושיתוף קלים',
-        'סנכרון אוטומטי',
-        'גישה מכל מקום',
-      ],
-      color: 'green-600',
-    },
-    {
-      icon: '🧠',
-      title: 'זיכרון אישי',
-      description: 'דונה זוכר הכל - פרטים חשובים, העדפות, הרגלים, וכל מה שצריך לדעת עליך.',
-      benefits: [
-        'זיכרון של פרטים אישיים',
-        'התאמה אישית מלאה',
-        'למידה מההרגלים שלך',
-        'חיפוש מהיר במידע',
-      ],
-      color: 'gradient',
-    },
-  ]
   
   return (
     <div dir="rtl" className="min-h-screen">
@@ -136,23 +64,20 @@ const Superpowers = () => {
         </div>
       </section>
       
-      {/* Features Grid */}
+      {/* Abilities Grid */}
       <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {features.map((feature, index) => (
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8">
+          <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 lg:gap-8">
+            {abilities.map((ability, index) => (
               <div
-                key={index}
+                key={ability.id}
                 ref={addToRefs}
                 className="opacity-0 transform translate-y-8 transition-all duration-600 ease-out"
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
-                <FeatureCard
-                  icon={feature.icon}
-                  title={feature.title}
-                  description={feature.description}
-                  benefits={feature.benefits}
-                  className="h-full hover:scale-105 transition-transform duration-300"
+                <AbilityCard
+                  ability={ability}
+                  className="h-full w-full"
                 />
               </div>
             ))}

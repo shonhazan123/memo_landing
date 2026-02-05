@@ -11,7 +11,7 @@
 /* Conversation Section – fade-in on scroll (from reference UX) */
 .conversation-section.scenario {
   opacity: 0;
-  transform: translateY(60px);
+  transform: translateY(30px); /* Reduced translateY for smoother appearance */
   transition: opacity 1s ease-out, transform 1s ease-out;
 }
 
@@ -21,9 +21,9 @@
 }
 
 .conversation-section {
-  margin-bottom: 80px; /* mb-20 equivalent from reference */
-  padding: 80px 0; /* py-20 from reference (horizontal from container) */
-  min-height: 400px; /* breathing room per scenario */
+  margin-bottom: 40px; /* Reduced spacing between cards */
+  padding: 40px 0; /* Reduced padding for better centering */
+  min-height: 300px; /* Reduced min-height for tighter spacing */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -250,12 +250,12 @@
   line-height: 15px;
 }
 
-/* Conversation Divider – mt-8 (32px) from reference */
+/* Conversation Divider – reduced padding for tighter spacing */
 .conversation-divider {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 32px 0;
+  padding: 20px 0; /* Reduced padding */
 }
 
 .conversation-divider svg {

@@ -1,0 +1,57 @@
+.coming-soon-badge {
+  position: absolute;
+  z-index: 20;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+}
+
+/* Mobile/Phone styles (default) */
+.coming-soon-badge {
+  bottom: var(--badge-bottom-mobile, 2%);
+  right: var(--badge-right-mobile, 2%);
+  left: var(--badge-left-mobile, auto);
+  top: var(--badge-top-mobile, auto);
+  width: var(--badge-width-mobile, 26%);
+}
+
+.coming-soon-badge[data-has-height-mobile="false"] {
+  padding-bottom: var(--badge-padding-mobile, 30%);
+  height: 0;
+}
+
+.coming-soon-badge[data-has-height-mobile="true"] {
+  padding-bottom: 0;
+  height: var(--badge-height-mobile);
+}
+
+/* Desktop/PC styles (768px and above) */
+@media (min-width: 768px) {
+  .coming-soon-badge {
+    bottom: var(--badge-bottom-desktop, var(--badge-bottom-mobile, 2%));
+    right: var(--badge-right-desktop, var(--badge-right-mobile, 2%));
+    left: var(--badge-left-desktop, auto);
+    top: var(--badge-top-desktop, auto);
+    width: var(--badge-width-desktop, var(--badge-width-mobile, 26%));
+  }
+
+  .coming-soon-badge[data-has-height-desktop="false"] {
+    padding-bottom: var(--badge-padding-desktop, var(--badge-padding-mobile, 30%));
+    height: 0;
+  }
+
+  .coming-soon-badge[data-has-height-desktop="true"] {
+    padding-bottom: 0;
+    height: var(--badge-height-desktop);
+  }
+}
+
+/* Ensure SVG scales properly and maintains aspect ratio */
+.coming-soon-badge svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
