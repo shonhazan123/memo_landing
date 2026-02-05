@@ -7,8 +7,8 @@ const ConversationFlow = () => {
   useEffect(() => {
     const sections = sectionRefs.current.filter(Boolean)
     const observerOptions = {
-      threshold: 0.2, /* Trigger earlier */
-      rootMargin: '0px 0px -50px 0px' /* Reduced margin for earlier trigger */
+      threshold: 0.3,
+      rootMargin: '0px 0px -100px 0px'
     }
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -23,10 +23,10 @@ const ConversationFlow = () => {
   const conversations = [
     {
       id: 1,
-      heading: 'כותבים לו הודעה בוואטסאפ',
+      heading: 'כותבים לה הודעה בוואטסאפ',
       subheading: 'במילים שלכם, בלי פקודות מסובכות',
       userMessage: (
-        <>היי דונה , יש לי כמה דברים על הראש. אני צריל לשלם חשבון חשמל בערב , לתזכר את רום על הפגישה ברביעי בבוקר ולזרוק את הזבל בשמונה אחרי העבודה</>
+        <>היי דונה, יש לי כמה דברים על הראש. אני צריך לשלם חשבון חשמל בערב, לתזכר את רום על הפגישה ברביעי בבוקר ולזרוק את הזבל בשמונה אחרי העבודה</>
       ),
       donnaResponse: (
         <>
@@ -36,10 +36,13 @@ const ConversationFlow = () => {
 
           <strong>לשלם חשבון חשמל</strong> 🏦<br />
           זמן: היום ב-20:00<br />
+          <br />
           <strong>לתזכר את רום על הפגישה</strong> 📆<br />
           זמן: יום רביעי 4 בפבואר , 08:00<br />
+          <br />
           <strong>לזרוק את הזבל</strong> 🗑️<br />
           זמן: היום ב-20:00<br />
+          <br />
           צריך משהו נוסף ? אני כאן 😊
         </>
       ),
@@ -47,27 +50,35 @@ const ConversationFlow = () => {
     },
     {
       id: 2,
-      heading: 'תזכורות במילה אחת',
-      subheading: 'כותבים מה צריך — דונה יוצרת תזכורת',
-      userMessage: <>תזכיר לי לסיים את המצגת</>,
+      heading: 'דונה מבינה תמונות',
+      subheading: 'שולחים הזמנה — דונה קוראת ומוסיפה ליומן',
+      userImage: '/photos/Invatation.jpeg',
+      userMessage: null,
       donnaResponse: (
         <>
-          תזכורת נוצרה: <strong>לסיים את המצגת</strong> ⏰<br />
-          זמן: היום ב-18:00<br />
-          אעדכן אותך כשתסיים! 💪
+          מצאתי הזמנה לאירוע חלאקה של אימרי! 🎉<br />
+          <br />
+          תאריך: 30 בינואר 2026 🗓️<br />
+          שעה: 10:30 ⏰<br />
+          מיקום: אולם בית הכנסת "קול יעקב",<br />
+          הנביאים 22, מודיעין<br />
+          <br />
+          תרצה שאוסיף את האירוע הזה ליומן שלך או שאקבע תזכורת? 😊
         </>
       ),
-      timestamp: '14:20'
+      timestamp: '17:59'
     },
     {
       id: 3,
-      heading: 'מבין את היומן שלכם',
-      subheading: 'בודק זמינות ומשיב מיד',
+      heading: 'מבינה את היומן שלכם',
+      subheading: 'בודקת זמינות ומשיבה מיד',
       userMessage: <>יש לי זמן לפגישה מחר בצהריים?</>,
       donnaResponse: (
         <>
           בודקת את היומן שלך... ✅<br />
-          יש לך זמן מחר בצהריים!<br />
+          <br />
+          יש לך זמן מחר ב-15:00  בצהריים!<br />
+          <br />
           רוצה שאקבע את הפגישה?
         </>
       ),
@@ -75,22 +86,33 @@ const ConversationFlow = () => {
     },
     {
       id: 4,
-      heading: 'מתחיל את היום איתכם',
-      subheading: 'סיכום יומי חכם כל בוקר',
-      userMessage: <>בוקר טוב</>,
+      heading: 'מתחילה את היום איתכם',
+      subheading: 'אין סיכוי שלא תדעו מה מביא היום!',
+      donnaOnly: true,
       donnaResponse: (
         <>
           בוקר טוב! ☀️<br />
           <br />
-          הנה הסיכום היומי שלך:<br />
-          📅 3 פגישות היום<br />
-          ⏰ 2 תזכורות חשובות<br />
-          📝 1 משימה שצריך לסיים<br />
+          זה מה שמחכה לך היום, ינואר 23, 2026:<br />
           <br />
-          רוצה שאתחיל עם משהו ספציפי?
+          ביומן היום: 📅<br />
+          08:00 - אימון בחדר כושר 🕒<br />
+          10:00 – חלקה לאימרי 🕒<br />
+          13:00 - טיול שטח עם רואי 🕒<br />
+          <br />
+          משימות להיום: ✅<br />
+          • לקבוע תור לספר (13:00)<br />
+          <br />
+          משימות לא מתוזמנות: 📝<br />
+          • לחדש ביטוח לרכב<br />
+          • לחזור לאיציק על ההצעת מחיר<br />
+          <br />
+          אם תרצה, אוכל לעזור לך לתכנן את המשימות הלא מתוזמנות 🤔<br />
+          <br />
+          יום מוצלח ובהצלחה! 💪
         </>
       ),
-      timestamp: '08:00'
+      timestamp: '16:13'
     }
   ]
 
@@ -124,13 +146,24 @@ const ConversationFlow = () => {
 
           {/* Messages Container */}
           <div className="messages-container">
-            {/* User Message */}
-            <div className="user-message-bubble">
-              <div className="message-content">
-                <p className="message-text">{conversation.userMessage}</p>
-                <div className="message-timestamp">{conversation.timestamp}</div>
+            {/* User Message (hidden when donnaOnly) */}
+            {!conversation.donnaOnly && (
+              <div className="user-message-bubble">
+                <div className={`message-content ${conversation.userImage ? 'message-content--image' : ''}`}>
+                  {conversation.userImage ? (
+                    <>
+                      <img src={conversation.userImage} alt="הזמנה לאירוע" className="user-message-image" />
+                      <div className="message-timestamp">{conversation.timestamp}</div>
+                    </>
+                  ) : (
+                    <>
+                      <p className="message-text">{conversation.userMessage}</p>
+                      <div className="message-timestamp">{conversation.timestamp}</div>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Donna Response */}
             <div className="donna-message-bubble">

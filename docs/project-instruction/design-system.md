@@ -9,6 +9,9 @@ The Mimo website is designed with a mobile-first, calm, and human-centered appro
 - **Natural flow** - Smooth transitions that guide attention
 - **Israeli-friendly** - RTL support with Hebrew typography
 
+### Agent identity (דונה / Dona)
+- The assistant avatar **Dona** is **female**. All Hebrew copy that refers to Dona must use **feminine** forms: pronouns (היא), verbs (מנהלת, עוזרת, מבינה, מזכירה, זוכרת, שולחת, וכו'), and prepositions (איתה, לה). Headlines, testimonials, conversation subheadings, and feature descriptions should be consistent with this.
+
 ## 🌈 Color Palette
 
 ### Primary Colors
@@ -280,7 +283,7 @@ The Mimo website is designed with a mobile-first, calm, and human-centered appro
 - **Purpose**: Show how the WhatsApp assistant works in real life: "אתה מבקש. דונה מבצעת." (You ask. Dona does.)
 - **Location**: `src/pages/Home.jsx` (section after Hero, before Gallery)
 - **Component**: `src/components/ConversationFlow/ConversationFlow.jsx`
-- **Content**: Hebrew-only; section title + optional subtitle; each scenario has a header (heading + subheading) above the conversation, WhatsApp-style chat (Donna header + message bubbles), and a floating chevron-down arrow below (scroll cue). Displays multiple conversation examples with message bubbles, timestamps, and Donna's branded header.
+- **Content**: Hebrew-only; section title + optional subtitle; each scenario has a header (heading + subheading) above the conversation, WhatsApp-style chat (Donna header + message bubbles), and a floating chevron-down arrow below (scroll cue). Displays multiple conversation examples with message bubbles, timestamps, and Donna's branded header. One scenario demonstrates image understanding: user sends an invitation image (`userImage`), and Donna responds with extracted event details (date, time, location) and offers to add to calendar or set a reminder.
 - **Layout**: Full-width white section; centered title; conversation flow container (max-width 375px mobile, scales up on desktop); each conversation shows Donna header (WhatsApp-style dark teal #075E54, 335×60px, border-radius 16px, padding per Figma spec), user messages (light green #DCFFC6, left-aligned), Donna responses (white, right-aligned), with dividers between conversations.
 - **Animation**: Section title via ScrollReveal; subtitle via BlurText; each conversation section uses IntersectionObserver-triggered fade-in (opacity 0→1, translateY 60px→0, 1s ease-out) when scrolled into view (threshold 0.3, rootMargin -100px bottom).
 - **Styling**: `conversation-flow-container`, `scenario-header`, `donna-header`, `user-message-bubble`, `donna-message-bubble`, `scenario-arrow` in `ConversationFlow.css`; mobile-first padding and typography scale; RTL support for Hebrew text. Scenario header: centered, heading 1.5rem/600, subheading 1rem/gray-500, mb-8. Donna header: flex row, 12px gap, padding 12px 16px 12px 212px (content right-aligned), background #075E54, border-radius 16px; content: circular avatar (36px), name "Donna", status "מקוון". Arrow: chevron-down SVG, gray-300, flow-float animation (2s ease-in-out infinite). Spacing: section py-20 (80px), mb-20 (80px), messages gap 12px, pb-20 on messages, divider mt-8.

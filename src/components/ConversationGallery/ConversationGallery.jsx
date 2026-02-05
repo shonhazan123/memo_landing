@@ -1,6 +1,27 @@
 import React, { useRef, useState, useEffect } from 'react'
 import './ConversationGallery.css'
 
+/** Format Dona response string: newlines → <br />, **text** → <strong>text</strong> */
+function formatDonnaResponse(text) {
+  if (typeof text !== 'string') return text
+  const lines = text.split('\n')
+  return lines.map((line, i) => {
+    const parts = line.split(/(\*\*[^*]+\*\*)/g)
+    const content = parts.map((part, j) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={j}>{part.slice(2, -2)}</strong>
+      }
+      return part
+    })
+    return (
+      <React.Fragment key={i}>
+        {i > 0 && <br />}
+        {content}
+      </React.Fragment>
+    )
+  })
+}
+
 const ConversationGallery = ({ conversations = [], className = '' }) => {
   const scrollContainerRef = useRef(null)
   const cardRefs = useRef([])
@@ -164,7 +185,11 @@ const ConversationGallery = ({ conversations = [], className = '' }) => {
                     {/* Donna Response */}
                     <div className="conversation-card-donna-message-bubble">
                       <div className="conversation-card-message-content">
-                        <p className="conversation-card-message-text">{conversation.donnaResponse}</p>
+                        <p className="conversation-card-message-text">
+                          {typeof conversation.donnaResponse === 'string'
+                            ? formatDonnaResponse(conversation.donnaResponse)
+                            : conversation.donnaResponse}
+                        </p>
                         <div className="conversation-card-message-footer">
                           <svg width="8" height="9" viewBox="0 0 8 9" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M0.00118164 0.561182L7.87706 8.43882" stroke="#3B82F6" strokeWidth="1" strokeLinecap="round"/>

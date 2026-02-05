@@ -8,7 +8,7 @@ export const abilities = [
     id: 1,
     slug: 'calendar-management',
     title: 'ניהול יומן',
-    description: 'דונה מנהל את היומן שלך בצורה חכמה. תזמון פגישות, ביטול, שינוי - הכל בשיחה טבעית.',
+    description: 'דונה מנהלת את היומן שלך בצורה חכמה. תזמון פגישות, ביטול, שינוי - הכל בשיחה טבעית.',
     image: '/photos/Calendar.png',
     conversationsFile: 'calendar-management'
   },
@@ -16,7 +16,7 @@ export const abilities = [
     id: 2,
     slug: 'tasks-reminders',
     title: 'משימות ותזכורות',
-    description: 'תזכורות חכמות שמגיעות בדיוק בזמן הנכון. תזכורות מבוססות זמן, מיקום, והקשר.',
+    description: 'תזכורות חכמות שמגיעות בדיוק בזמן הנכון. משימות, תזכורות רגילות, חוזרות ונודניק — הכל בשיחה טבעית.',
     image: '/photos/Reminders.png',
     conversationsFile: 'tasks-reminders'
   },
@@ -24,7 +24,7 @@ export const abilities = [
     id: 3,
     slug: 'emails',
     title: 'אימיילים',
-    description: 'ניהול אימיילים בצורה חכמה. דונה עוזר לך לנהל, לסנן, ולענות על אימיילים חשובים.',
+    description: 'ניהול אימיילים בצורה חכמה. דונה עוזרת לך לנהל, לסנן, ולענות על אימיילים חשובים.',
     image: '/photos/Gmail.png',
     conversationsFile: 'emails'
   },

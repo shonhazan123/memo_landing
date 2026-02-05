@@ -141,6 +141,12 @@ mimo-website/
 3. אימיילים (Emails) - `/superpowers/emails`
 4. Google Work Space - `/superpowers/google-workspace`
 
+**Conversation content (per ability):**
+- **Tasks & Reminders:** Four types only — (1) Tasks/todos (unscheduled), (2) normal time-based reminders, (3) recurring reminders, (4) nudges (נודניק). No location-based reminders.
+- **Calendar:** Creating events, complex requests (e.g. free tomorrow + set meeting with X at 8am), updating work hours, and questions (e.g. doctor appointments in upcoming month).
+- **Google Workspace:** Search/locate files, answer questions about document content, return links to documents (e.g. wedding Excel, renovation contract).
+- **Emails:** Quick summary of today's emails, adding email-related items as todos, replying with draft text and asking for confirmation before sending.
+
 ### Phase 5: Pricing Page ✅
 - [ ] Hero section with title/subtitle
 - [ ] Billing toggle (Monthly/Annual)

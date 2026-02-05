@@ -89,7 +89,7 @@ const AbilityDetail = () => {
               דוגמאות שימוש
             </ScrollReveal>
             <BlurText
-              text={`ראה איך דונה עוזר לך עם ${ability.title}`}
+              text={`ראה איך דונה עוזרת לך עם ${ability.title}`}
               delay={80}
               animateBy="words"
               direction="top"

@@ -203,6 +203,25 @@
   text-align: right;
 }
 
+/* User message with image (e.g. invitation) */
+.user-message-bubble .message-content--image {
+  padding: 0;
+  overflow: hidden;
+}
+
+.user-message-bubble .user-message-image {
+  display: block;
+  max-width: 100%;
+  width: 220px;
+  height: auto;
+  border-radius: 12px 12px 0 0;
+  object-fit: cover;
+}
+
+.user-message-bubble .message-content--image .message-timestamp {
+  padding: 6px 12px 10px;
+}
+
 /* Donna Message Bubble */
 .donna-message-bubble {
   align-self: flex-end;

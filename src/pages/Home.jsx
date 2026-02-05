@@ -19,32 +19,6 @@ import './Home.css'
 gsap.registerPlugin(ScrollTrigger)
 
 // Chapter 3 – Real Life Examples: "You ask. Dona does."
-const chapter3Examples = [
-  {
-    userText: 'עוד 10 דקות תזכירי לי לצאת',
-    explanation: 'דונה יוצרת תזכורת חכמה — ואם צריך, גם תנודניק עד שזה קורה.',
-  },
-  {
-    userText: 'אני צריך לסיים את המצגת',
-    explanation: 'הודעה פשוטה הופכת למשימה, בלי למלא טפסים ובלי לבחור קטגוריות.',
-  },
-  {
-    userText: '(הודעה קולית)',
-    explanation: 'דונה מתמללת, מבינה כוונה, ויוצרת משימה או תזכורת במקום.',
-  },
-  {
-    userText: '(צילום מסך / תמונה)',
-    explanation: 'דונה מזהה תאריכים ובקשות והופכת אותן לפעולות.',
-  },
-  {
-    userText: 'יש לי זמן לפגישה מחר בצהריים?',
-    explanation: 'דונה בודקת את היומן ועונה לך מיד.',
-  },
-  {
-    userText: 'בוקר טוב',
-    explanation: 'דונה שולחת סיכום יומי עם משימות, פגישות ומה חשוב היום.',
-  },
-]
 
 const Home = () => {
   const chapter3SectionRef = useRef(null)
@@ -87,41 +61,25 @@ const Home = () => {
   const testimonials = [
     {
       rating: 5,
-      text: 'דונה שינה לי את החיים. אני כבר לא שוכח שום דבר, והוא עוזר לי להיות מאורגן יותר ממה שאי פעם הייתי.',
+      text: 'דונה שינתה לי את החיים. אני כבר לא שוכח שום דבר, והיא עוזרת לי להיות מאורגן יותר ממה שאי פעם הייתי.',
       author: 'דני כהן',
       title: 'יזם',
     },
     {
       rating: 5,
-      text: 'הדבר הכי טוב שקרה לי השנה. דונה מנהל לי את כל היומן, ואני פשוט מדבר איתו ב-WhatsApp.',
+      text: 'הדבר הכי טוב שקרה לי השנה. דונה מנהלת לי את כל היומן, ואני פשוט מדבר איתה ב-WhatsApp.',
       author: 'שרה לוי',
       title: 'מנהלת פרויקטים',
     },
     {
       rating: 5,
-      text: 'פשוט מדהים. אני שולח הודעה לדונה, והוא עושה הכל. תזכורות, פגישות, רשימות - הכל במקום אחד.',
+      text: 'פשוט מדהים. אני שולח הודעה לדונה, והיא עושה הכל. תזכורות, פגישות, רשימות - הכל במקום אחד.',
       author: 'מיכאל דוד',
       title: 'עורך דין',
     },
   ]
   
-  const features = [
-    {
-      icon: '📅',
-      title: 'לדבר עם היומן',
-      description: 'פשוט תגיד לדונה מה אתה צריך, והוא ידאג לכל השאר.',
-    },
-    {
-      icon: '🔔',
-      title: 'תזכורות חכמות',
-      description: 'תזכורות שמגיעות בדיוק בזמן הנכון, מבוססות על ההקשר שלך.',
-    },
-    {
-      icon: '🧠',
-      title: 'זיכרון אישי',
-      description: 'דונה זוכר הכל - פרטים חשובים, העדפות, והרגלים שלך.',
-    },
-  ]
+
 
   // Gallery images from abilities data
   const abilities = getAllAbilities()
@@ -137,10 +95,6 @@ const Home = () => {
       {/* Hero Section - Viewport-based positioning */}
       {/* Both video and text use viewport units (vw) for consistent coordinate system */}
       <section className="home-section bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 relative overflow-hidden hero-section-root">
-        {/* Video Container: Viewport-anchored, horizontally centered */}
-        {/* Using 50vw (not 50%) ensures positioning relative to viewport, not parent */}
-        {/* This allows text to calculate position using the same viewport coordinate system */}
-        {/* Video does NOT participate in flex/grid and does NOT affect text positioning */}
         <div className="hero-video-container">
           {/* Desktop hero video – visible at viewport > 900px */}
           <div className="hero-video-source hero-video-desktop">
@@ -222,10 +176,17 @@ const Home = () => {
               containerClassName="text-3xl md:text-4xl font-bold text-gray-900 mb-3"
               textClassName="text-gray-900"
             >
-              אתה מבקש. דונה מבצעת.
+              אתה מבקש דונה מבצעת.
             </ScrollReveal>
             <BlurText
-              text="מה שאתה כותב או אומר — הופך לפעולה אמיתית"
+              text="בהודעת טקסט בהקלטה קולית ואפילו בתמונה ! "
+              delay={80}
+              animateBy="words"
+              direction="top"
+              className="text-base md:text-lg text-gray-600"
+            />
+              <BlurText
+              text="דונה מבינה"
               delay={80}
               animateBy="words"
               direction="top"
@@ -243,7 +204,7 @@ const Home = () => {
               blurStrength={10}
               containerClassName="text-2xl md:text-3xl font-bold mb-4 text-gray-900"
             >
-              פשוט כותבים והכל קורה
+               כותבים או מקליטים והכל קורה
             </ScrollReveal>
             <BlurText
               text="בלי אפליקציה חדשה, בלי מאמץ. פשוט מבקשים בשפה טבעית והיא דואגת לכל השאר."
@@ -255,10 +216,7 @@ const Home = () => {
             <Link to="/login">
               <StarBorder color="var(--theme-accent)" speed="5s" className="inline-block">
                 <Button variant="primary" size="large" className="flex items-center gap-2 mx-auto">
-                  התחל עכשיו
-                  <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M0 1L14 8L0 15" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
+                 מחכה לכם !
                 </Button>
               </StarBorder>
             </Link>

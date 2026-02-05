@@ -33,7 +33,7 @@ const GoogleAuthStep = ({ onSignIn, isLoading, error, whatsappNumber }) => {
       
       {/* Explanation */}
       <p className="text-lg text-gray-600 mb-8 text-center">
-        עכשיו נחבר את היומן שלך בגוגל כדי שדונה יוכל לנהל את הפגישות שלך.
+        עכשיו נחבר את היומן שלך בגוגל כדי שדונה תוכל לנהל את הפגישות שלך.
       </p>
       
       {/* Show phone number that was entered */}
@@ -182,7 +182,7 @@ const PhoneNumberStep = ({ onSubmit, isLoading, error }) => {
         </div>
         
         <p className="text-sm text-gray-500 mb-6 text-right">
-          דונה ישלח לך הודעות והתראות לוואטסאפ הזה
+          דונה תשלח לך הודעות והתראות לוואטסאפ הזה
         </p>
         
         {/* Error Message */}
