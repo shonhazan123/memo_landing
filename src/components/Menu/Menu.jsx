@@ -29,6 +29,13 @@ const Menu = () => {
     if (path !== '/' && location.pathname.startsWith(path)) return true
     return false
   }
+
+  const handleNavClick = (path, e) => {
+    if (path === '/' && location.pathname === '/') {
+      e.preventDefault()
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }
   
   return (
     <nav 
@@ -51,6 +58,7 @@ const Menu = () => {
               <Link
                 key={link.path}
                 to={link.path}
+                onClick={(e) => handleNavClick(link.path, e)}
                 className={`text-base transition-colors duration-200 hover:text-[#DB4BEA] ${
                   isActive(link.path)
                     ? 'text-[#DB4BEA] font-semibold border-b-2 border-[#DB4BEA] pb-1'
@@ -101,7 +109,10 @@ const Menu = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={(e) => {
+                  handleNavClick(link.path, e)
+                  setIsMobileMenuOpen(false)
+                }}
                 className={`text-base text-right transition-colors duration-200 hover:text-[var(--theme-accent)] ${
                   isActive(link.path)
                     ? 'text-[var(--theme-accent)] font-semibold'

@@ -1,8 +1,19 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import logoSrc from './logo.png'
+import logo2Src from './logo2.png'
 
-const Logo = ({ className = '', size = 'xl', clickable = true }) => {
+const Logo = ({ className = '', size = 'xl', clickable = true, variant = 'default' }) => {
+  const imgSrc = variant === 'footer' ? logo2Src : logoSrc
+  const location = useLocation()
+  const isHome = location.pathname === '/'
+
+  const handleLogoClick = (e) => {
+    if (isHome) {
+      e.preventDefault()
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }
   // Size options: 'small' (h-8), 'default' (h-12), 'large' (h-16), 'xl' (h-[60px] w-[90px])
   const sizeClasses = {
     small: 'h-8',
@@ -17,7 +28,7 @@ const Logo = ({ className = '', size = 'xl', clickable = true }) => {
   const logoElement = (
     <div className={`flex items-center ${className}`}>
       <img 
-        src={logoSrc} 
+        src={imgSrc} 
         alt="דונה" 
         className={`${logoSize} ${useAutoWidth ? 'w-auto' : ''} cursor-pointer transition-opacity hover:opacity-80`}
         style={{ marginLeft: '10px', marginRight: '10px' }}
@@ -43,7 +54,7 @@ const Logo = ({ className = '', size = 'xl', clickable = true }) => {
   
   if (clickable) {
     return (
-      <Link to="/" className="inline-block">
+      <Link to="/" className="inline-block" onClick={handleLogoClick}>
         {logoElement}
       </Link>
     )

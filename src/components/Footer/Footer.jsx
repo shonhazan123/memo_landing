@@ -12,7 +12,7 @@ const Footer = () => {
         <div className="footer-grid">
           <div className="footer-brand">
             <Link to="/" className="footer-logo-link" aria-label="דף הבית">
-              <Logo size="default" clickable={false} />
+              <Logo size="default" variant="footer" clickable={false} />
             </Link>
             <p className="footer-tagline">המזכירה האישית שלך ב-WhatsApp</p>
           </div>
