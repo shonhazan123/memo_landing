@@ -3,12 +3,14 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { AuthProvider } from './context/AuthContext'
 
 import CardNav from './components/CardNav/CardNav'
+import Footer from './components/Footer/Footer'
 import Home from './pages/Home'
 import Superpowers from './pages/Superpowers'
 import AbilityDetail from './pages/AbilityDetail'
 import Pricing from './pages/Pricing'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
+import Privacy from './pages/Privacy'
 import './styles/index.css'
 
 function ScrollToTop() {
@@ -51,7 +53,7 @@ function App() {
     <Router>
       <ScrollToTop />
       <AuthProvider>
-        <div className="min-h-screen">
+        <div className="min-h-screen flex flex-col">
           <CardNav
             items={navItems}
             baseColor="rgba(255, 255, 255, 0.9)"
@@ -60,7 +62,7 @@ function App() {
             buttonTextColor="#fff"
             ease="power3.out"
           />
-          <main className="pt-0" style={{ borderRadius: '0px' }}> {/* Padding for CardNav */}
+          <main className="pt-0 flex-1" style={{ borderRadius: '0px' }}> {/* Padding for CardNav */}
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/superpowers" element={<Superpowers />} />
@@ -68,8 +70,10 @@ function App() {
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
+              <Route path="/privacy" element={<Privacy />} />
             </Routes>
           </main>
+          <Footer />
         </div>
       </AuthProvider>
     </Router>

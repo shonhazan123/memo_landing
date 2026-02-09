@@ -511,6 +511,21 @@ Remove friction from onboarding. Make the user feel confident about connecting t
 - **CTA Button ("נסה עכשיו")**: min-width 50px, font-size 13px at max-width 400px breakpoint, base font-size 0.875rem
 - **Styling**: CardNav.css; Logo uses Tailwind utilities
 
+### Footer Component
+- **Location**: `src/components/Footer/` (Footer.jsx, Footer.css)
+- **Usage**: Rendered in App.jsx below main content; appears on all pages
+- **Layout**: Dark footer (bg-zinc-900), RTL, max-w-7xl container; top row: brand (logo + tagline) and links; bottom row: copyright
+- **Links**: דף הבית, יכולות, תמחור, מדיניות פרטיות (Privacy Policy → `/privacy`)
+- **Styling**: text-gray-300/400, hover accent (--theme-accent), border-t border-white/10 above copyright
+- **Accessibility**: role="contentinfo", aria-label on logo link
+
+### Privacy Policy Page
+- **Location**: `src/pages/Privacy.jsx`, `src/pages/Privacy.css`
+- **Route**: `/privacy`
+- **Purpose**: Displays site privacy policy; content is placeholder until provided
+- **Layout**: RTL, max-w-4xl, white background; back link to home; title "מדיניות פרטיות"; content area with section/heading/paragraph styles for policy text
+- **Content**: Replace placeholder in Privacy.jsx with full policy text when ready (support h2, h3, p, ul, ol via .privacy-content classes)
+
 ### Smooth Scroll Navigation
 - **Anchor Links**: href="#home", href="#superpowers", href="#pricing"
 - **Scroll Behavior**: scroll-behavior: smooth, scroll-padding-top: 64px

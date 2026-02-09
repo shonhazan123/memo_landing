@@ -1,9 +1,16 @@
 /**
  * API Client
  * Makes HTTP requests to the backend server
+ * - If running on localhost (dev or preview), always use backend at :3001.
+ * - Else if VITE_API_URL is set, use it.
+ * - Otherwise (deployed) use same-origin /api.
  */
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+function getApiBaseUrl() {
+  if (typeof window !== 'undefined' && window.location?.hostname === 'localhost') return 'http://localhost:3001/api'
+  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL
+  return '/api'
+}
+const API_BASE_URL = getApiBaseUrl()
 
 /**
  * Get stored auth token
@@ -35,7 +42,8 @@ export const clearToken = () => {
  * @returns {Promise<Object>}
  */
 const request = async (endpoint, options = {}) => {
-  const url = `${API_BASE_URL}${endpoint}`
+  const base = getApiBaseUrl()
+  const url = `${base}${endpoint}`
   const token = getToken()
   
   const headers = {

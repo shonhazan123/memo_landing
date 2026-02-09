@@ -29,6 +29,7 @@ mimo-website/
 │   │   ├── Button/
 │   │   ├── Card/
 │   │   ├── CardNav/              # @react-bits/CardNav-JS-CSS
+│   │   ├── Footer/               # Site footer with Privacy link
 │   │   ├── CardSwap/             # @react-bits/CardSwap-JS-CSS (kept for potential future use)
 │   │   ├── Gallery/              # Horizontal scrolling image gallery component
 │   │   ├── LogoLoop/             # @react-bits/LogoLoop-JS-CSS
@@ -50,7 +51,8 @@ mimo-website/
 │   │   ├── Superpowers.jsx        # Grid view of all abilities
 │   │   ├── AbilityDetail.jsx      # Dynamic ability detail page
 │   │   ├── Login.jsx             # Redirects to Signup
-│   │   └── Signup.jsx            # Multi-step auth flow
+│   │   ├── Signup.jsx            # Multi-step auth flow
+│   │   └── Privacy.jsx            # Privacy policy page (/privacy)
 │   ├── config/
 │   │   └── supabase.js
 │   ├── styles/
@@ -205,6 +207,8 @@ mimo-website/
 - ✅ RTL support implemented
 - ✅ Responsive design implemented
 - ✅ Project structure scalable and organized
+- ✅ Footer component (site-wide, with links to Home, Superpowers, Pricing, Privacy)
+- ✅ Privacy policy page (/privacy) with placeholder content for policy text
 
 ### In Progress
 - 🔄 Testing and QA for authentication flow
@@ -213,7 +217,7 @@ mimo-website/
 - ⏳ Configure Supabase project with credentials
 - ⏳ Set up Google OAuth in Google Cloud Console
 - ⏳ Logo image addition (placeholder component ready)
-- ⏳ Production deployment
+- ⏳ Production deployment (Vercel setup ready; see Deployment section)
 
 ### Completed in Phase 6
 - ✅ Multi-step signup flow (Google Auth → Phone Number → WhatsApp)
@@ -224,6 +228,23 @@ mimo-website/
 - ✅ WhatsApp integration with pre-filled messages
 - ✅ State persistence in localStorage
 - ✅ Automatic redirect for returning users
+
+## Deployment (Vercel)
+
+### One command for frontend + backend
+- **Development (both frontend and backend):** `npm run dev:all` — runs Vite dev server and Express server together.
+- **Production-like local (build + run both):** `npm run build` then `npm run start` — builds frontend, then runs Vite preview and Express together.
+
+### Deploying to Vercel
+- **Build command:** `npm run build` (builds frontend only; backend runs as serverless via `api/`).
+- **Output directory:** `dist`
+- **Install:** Root and server dependencies are installed via `installCommand` in `vercel.json`.
+- **Backend on Vercel:** The Express app is exposed as a serverless function via `api/[[...path]].js`, so `/api/*` routes (e.g. `/api/auth`, `/api/users`) are handled by the same app. The server skips `app.listen()` when `VERCEL` is set.
+- **Environment variables:** Set in Vercel dashboard (e.g. `SESSION_SECRET`, `FRONTEND_URL`, DB and OAuth vars). The frontend uses `/api` as the API base in production when `VITE_API_URL` is not set.
+
+### Project layout for deploy
+- `vercel.json` — build command, output directory, install command.
+- `api/[[...path]].js` — Vercel serverless entry that forwards all `/api/*` to the Express app in `server/src/index.js`.
 
 ## Notes & Decisions
 - Logo placeholder will be added - component ready to accept logo image
