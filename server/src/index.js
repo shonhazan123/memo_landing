@@ -38,9 +38,17 @@ const PORT = process.env.SERVER_PORT || 3001
 // Security headers
 app.use(helmet())
 
-// CORS - Allow frontend to make requests
+// CORS - Allow frontend to make requests (dev :5173, preview :4173, or FRONTEND_URL)
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:4173',
+  process.env.FRONTEND_URL
+].filter(Boolean)
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: (origin, cb) => {
+    if (!origin || allowedOrigins.includes(origin)) return cb(null, true)
+    cb(null, false)
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -96,13 +104,15 @@ app.use((err, req, res, next) => {
 })
 
 // ===========================================
-// START SERVER
+// START SERVER (skip when running as Vercel serverless)
 // ===========================================
 
-app.listen(PORT, () => {
-  console.log(`🚀 Mimo Server running on http://localhost:${PORT}`)
-  console.log(`📡 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`)
-})
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`🚀 Mimo Server running on http://localhost:${PORT}`)
+    console.log(`📡 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`)
+  })
+}
 
 export default app
 
