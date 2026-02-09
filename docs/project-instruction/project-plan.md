@@ -239,12 +239,12 @@ mimo-website/
 - **Build command:** `npm run build` (builds frontend only; backend runs as serverless via `api/`).
 - **Output directory:** `dist`
 - **Install:** Root and server dependencies are installed via `installCommand` in `vercel.json`.
-- **Backend on Vercel:** The Express app is exposed as a serverless function via `api/[[...path]].js`, so `/api/*` routes (e.g. `/api/auth`, `/api/users`) are handled by the same app. The server skips `app.listen()` when `VERCEL` is set.
+- **Backend on Vercel:** The Express app is exposed as a serverless function via `api/backend.js`. Rewrites in `vercel.json` send all `/api/*` requests to `/api/backend`; the handler restores the original path so Express routing works. The server skips `app.listen()` when `VERCEL` is set.
 - **Environment variables:** Set in Vercel dashboard (e.g. `SESSION_SECRET`, `FRONTEND_URL`, DB and OAuth vars). The frontend uses `/api` as the API base in production when `VITE_API_URL` is not set.
 
 ### Project layout for deploy
 - `vercel.json` — build command, output directory, install command.
-- `api/[[...path]].js` — Vercel serverless entry that forwards all `/api/*` to the Express app in `server/src/index.js`.
+- `api/backend.js` — Vercel serverless handler; `vercel.json` rewrites `/api/(.*)` to `/api/backend?path=$1`, and the handler restores `req.url` so the Express app in `server/src/index.js` receives the correct path.
 
 ## Notes & Decisions
 - Logo placeholder will be added - component ready to accept logo image
