@@ -13,7 +13,7 @@ const Terms = () => {
 
         <header className="terms-header">
           <h1 className="terms-title">תנאי שימוש</h1>
-          <p className="terms-subtitle">Donna AI</p>
+          <p className="terms-subtitle">Donna</p>
           <span className="terms-updated">עדכון אחרון: 9 בפברואר 2026</span>
         </header>
 

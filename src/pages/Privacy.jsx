@@ -13,7 +13,7 @@ const Privacy = () => {
 
         <header className="privacy-header">
           <h1 className="privacy-title">מדיניות פרטיות</h1>
-          <p className="privacy-subtitle">Donna AI</p>
+          <p className="privacy-subtitle">Donna</p>
           <span className="privacy-updated">עדכון אחרון: 9 בפברואר 2026</span>
         </header>
 
