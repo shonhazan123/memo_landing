@@ -21,6 +21,7 @@ const Footer = () => {
             <Link to="/superpowers" className="footer-link">יכולות</Link>
             <Link to="/pricing" className="footer-link">תמחור</Link>
             <Link to="/privacy" className="footer-link">מדיניות פרטיות</Link>
+            <Link to="/terms" className="footer-link">תנאי שימוש</Link>
           </div>
         </div>
         <div className="footer-bottom">

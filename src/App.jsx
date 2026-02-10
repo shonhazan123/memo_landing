@@ -11,6 +11,7 @@ import Pricing from './pages/Pricing'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Privacy from './pages/Privacy'
+import Terms from './pages/Terms'
 import './styles/index.css'
 
 function ScrollToTop() {
@@ -71,6 +72,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
             </Routes>
           </main>
           <Footer />
