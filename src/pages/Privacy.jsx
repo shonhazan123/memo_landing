@@ -199,7 +199,7 @@ const Privacy = () => {
             <p>For privacy-related questions or requests, contact us at:</p>
             <div className="privacy-contact-box">
               <p><strong>Email:</strong> <a href="mailto:privacy@donnaai.app">privacy@donnaai.app</a></p>
-              <p><strong>Website:</strong> <a href="https://donnaai.app" target="_blank" rel="noopener noreferrer">https://donnaai.app</a></p>
+              <p><strong>Website:</strong> <a href="https://donnai.io" target="_blank" rel="noopener noreferrer">https://donnai.io</a></p>
             </div>
           </section>
         </article>
