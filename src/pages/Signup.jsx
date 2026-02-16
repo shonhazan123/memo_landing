@@ -15,8 +15,24 @@ import './Signup.css'
 
 /**
  * Google Sign-in Step Component
+ *
+ * Three visual states:
+ *   1. Idle       → Google button + change-phone link
+ *   2. Redirecting → spinner + cancel button (recoverable)
+ *   3. Loading     → short API spinner (getGoogleAuthUrl call)
  */
-const GoogleAuthStep = ({ onSignIn, onGoBackToPhone, isLoading, error, whatsappNumber }) => {
+const GoogleAuthStep = ({
+  onSignIn,
+  onGoBackToPhone,
+  onCancelRedirect,
+  isLoading,
+  isRedirecting,
+  error,
+  whatsappNumber
+}) => {
+  // Show the idle / interactive view when NOT loading and NOT redirecting
+  const showIdleView = !isLoading && !isRedirecting
+
   return (
     <div className="signup-step fade-in">
       {/* Success checkmark */}
@@ -25,17 +41,17 @@ const GoogleAuthStep = ({ onSignIn, onGoBackToPhone, isLoading, error, whatsappN
           <span className="text-white text-4xl">✓</span>
         </div>
       </div>
-      
+
       {/* Title */}
       <h1 className="text-3xl font-bold text-gray-900 mb-2 text-center">
         מספר הטלפון אומת בהצלחה! ✓
       </h1>
-      
+
       {/* Explanation */}
       <p className="text-lg text-gray-600 mb-8 text-center">
         עכשיו נחבר את היומן שלך בגוגל כדי שדונה תוכל לנהל את הפגישות שלך.
       </p>
-      
+
       {/* Show phone number that was entered */}
       {whatsappNumber && (
         <div className="mb-8 p-4 bg-indigo-50 rounded-xl">
@@ -45,7 +61,7 @@ const GoogleAuthStep = ({ onSignIn, onGoBackToPhone, isLoading, error, whatsappN
           </div>
         </div>
       )}
-      
+
       {/* Benefits List */}
       <ul className="space-y-3 mb-8">
         <li className="flex items-center text-gray-700 bg-indigo-50/50 px-4 py-3 rounded-xl">
@@ -61,7 +77,7 @@ const GoogleAuthStep = ({ onSignIn, onGoBackToPhone, isLoading, error, whatsappN
           <span>שליטה מלאה בהרשאות</span>
         </li>
       </ul>
-      
+
       {/* Error Message */}
       {error && (
         <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
@@ -71,14 +87,44 @@ const GoogleAuthStep = ({ onSignIn, onGoBackToPhone, isLoading, error, whatsappN
           </div>
         </div>
       )}
-      
-      {/* Loading State */}
-      {isLoading ? (
+
+      {/* ── Redirecting to Google (recoverable spinner) ── */}
+      {isRedirecting && (
+        <div className="flex flex-col items-center justify-center py-8">
+          <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p className="text-gray-600 mb-6">ממתין לחיבור גוגל...</p>
+
+          {/* Cancel → returns to idle so user can retry or go back */}
+          <button
+            type="button"
+            onClick={onCancelRedirect}
+            className="py-2 px-6 text-gray-500 hover:text-indigo-600 border border-gray-300 rounded-full transition-colors text-sm"
+          >
+            ביטול
+          </button>
+
+          {onGoBackToPhone && (
+            <button
+              type="button"
+              onClick={onGoBackToPhone}
+              className="mt-3 py-2 text-gray-400 hover:text-indigo-500 transition-colors text-xs"
+            >
+              שינוי מספר טלפון
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* ── Short API loading (fetching auth URL) ── */}
+      {isLoading && !isRedirecting && (
         <div className="flex flex-col items-center justify-center py-8">
           <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mb-4"></div>
           <p className="text-gray-600">מתחבר לגוגל...</p>
         </div>
-      ) : (
+      )}
+
+      {/* ── Idle view: button + links ── */}
+      {showIdleView && (
         <>
           {/* Google Sign-In Button */}
           <button
@@ -105,13 +151,13 @@ const GoogleAuthStep = ({ onSignIn, onGoBackToPhone, isLoading, error, whatsappN
             </svg>
             <span>התחבר עם Google</span>
           </button>
-          
+
           {/* Security Badge */}
           <div className="flex items-center justify-center gap-2 mt-6">
             <span className="text-lg">🔒</span>
             <span className="text-sm text-gray-500">מאובטח ופרטי</span>
           </div>
-          
+
           {/* Change phone number */}
           {onGoBackToPhone && (
             <button
@@ -426,6 +472,7 @@ const ProgressIndicator = ({ currentStep, SIGNUP_STEPS }) => {
 const Signup = () => {
   const {
     isLoading,
+    isRedirectingToOAuth,
     user,
     error,
     currentStep,
@@ -434,6 +481,7 @@ const Signup = () => {
     submitPhoneNumber,
     completeOnboarding,
     goBackToPhoneStep,
+    cancelOAuthRedirect,
     getWhatsAppUrl,
     SIGNUP_STEPS
   } = useAuth()
@@ -446,7 +494,9 @@ const Signup = () => {
           <GoogleAuthStep 
             onSignIn={signInWithGoogle}
             onGoBackToPhone={goBackToPhoneStep}
+            onCancelRedirect={cancelOAuthRedirect}
             isLoading={isLoading}
+            isRedirecting={isRedirectingToOAuth}
             error={error}
             whatsappNumber={signupState.whatsappNumber}
           />

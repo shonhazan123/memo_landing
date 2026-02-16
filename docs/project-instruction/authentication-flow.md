@@ -2,27 +2,29 @@
 
 ## Architecture Overview
 
-The Mimo website uses a **separated frontend/backend architecture**:
+The Donna website uses a **separated frontend/backend architecture**:
 
 - **Frontend** (`src/`): React app that makes HTTP requests to the backend
 - **Backend** (`server/`): Express.js server with MVC architecture
 
 ```
-mimo-website/
+donna-website/
 ├── src/                    # Frontend (React + Vite)
 │   ├── api/
 │   │   └── client.js       # API client for HTTP requests
+│   ├── lib/
+│   │   └── auth-helpers.js  # Auth utilities (state, recovery, errors)
 │   ├── context/
-│   │   └── AuthContext.jsx # Auth state management
+│   │   └── AuthContext.jsx  # Auth state management (uses auth-helpers)
 │   ├── pages/
-│   │   └── Signup.jsx      # Multi-step signup flow
+│   │   └── Signup.jsx       # Multi-step signup flow
 │   └── ...
 │
 └── server/                 # Backend (Express.js)
     ├── src/
     │   ├── config/         # Database & Google OAuth config
     │   ├── controllers/    # Request handlers
-    │   ├── middleware/     # Auth middleware
+    │   ├── middleware/      # Auth middleware
     │   ├── models/         # Database models
     │   ├── routes/         # API routes
     │   ├── services/       # Business logic
@@ -45,7 +47,7 @@ server/src/
 │   ├── auth.controller.js  # Auth request handlers
 │   └── user.controller.js  # User request handlers
 ├── middleware/
-│   └── auth.middleware.js  # JWT verification
+│   └── auth.middleware.js   # JWT verification
 ├── models/
 │   ├── User.model.js       # User database operations
 │   └── GoogleToken.model.js # Token database operations
@@ -86,12 +88,25 @@ server/src/
 
 ## Authentication Flow
 
-### Step 1: Google Sign-in
+### Step 1: Phone Number (first)
+
+```
+Frontend                    Backend
+   │                           │
+   ├─── POST /api/users/check-phone ──►│
+   │    { phoneNumber }         │
+   │                           │
+   │◄── { user, jwtToken,     │
+   │      hasGoogleConnection }─┤
+```
+
+### Step 2: Google Sign-in
 
 ```
 Frontend                    Backend                     Google
    │                           │                           │
    ├─── GET /api/auth/google ──►│                           │
+   │    ?userId=...             │                           │
    │                           │                           │
    │◄── { authUrl } ───────────┤                           │
    │                           │                           │
@@ -104,17 +119,6 @@ Frontend                    Backend                     Google
    │                           │◄── Access + Refresh tokens─┤
    │                           │                           │
    │◄── Redirect with JWT ─────┤                           │
-```
-
-### Step 2: Phone Number
-
-```
-Frontend                    Backend
-   │                           │
-   ├─── PUT /api/users/me/phone ─►│
-   │    { phoneNumber }         │
-   │                           │
-   │◄── { user } ──────────────┤
 ```
 
 ### Step 3: Complete Onboarding
@@ -133,45 +137,101 @@ Frontend                    Backend
 
 ## Frontend Implementation
 
-### API Client (`src/api/client.js`)
+### Auth Helpers (`src/lib/auth-helpers.js`)
 
-```javascript
-import api from '../api/client'
+Dedicated utility file containing all persistence, recovery, and validation logic:
 
-// Get Google OAuth URL
-const { authUrl } = await api.auth.getGoogleAuthUrl('standard')
-window.location.href = authUrl
-
-// Get current user
-const { user } = await api.auth.getCurrentUser()
-
-// Update phone
-const { user } = await api.users.updatePhone('+972501234567')
-
-// Complete onboarding
-const { user, whatsapp } = await api.users.completeOnboarding()
-```
+- **Signup state** persistence (`localStorage`): `loadSignupState`, `saveSignupState`, `clearSignupState`
+- **OAuth redirect marker** (`sessionStorage`): `setOAuthRedirectPending`, `isOAuthRedirectPending`, `clearOAuthRedirectPending`
+- **State validation**: `isSignupStateStale`, `determineStepFromUser`
+- **Error messages** (Hebrew): `getErrorMessage`, `isUserNotFoundError`, `getGoogleSignInErrorMessage`
+- **Constants**: `SIGNUP_STEPS`, `getInitialSignupState`
 
 ### Auth Context (`src/context/AuthContext.jsx`)
+
+Manages React state and user-facing actions. Uses `auth-helpers.js` for all persistence logic.
 
 ```javascript
 import { useAuth, SIGNUP_STEPS } from '../context/AuthContext'
 
 function MyComponent() {
   const {
-    isLoading,
+    // State
+    isLoading,              // true during short API calls
+    isRedirectingToOAuth,   // true after clicking Google (separate from isLoading)
     isAuthenticated,
     user,
+    error,
     currentStep,
+
+    // Auth actions
     signInWithGoogle,
+    signOut,
+
+    // Signup flow actions
     submitPhoneNumber,
     completeOnboarding,
-    goBackToPhoneStep  // Return to phone step to re-enter or change number
+    goBackToPhoneStep,      // Return to phone step (clears auth)
+    cancelOAuthRedirect,    // Manual escape from redirect spinner
+    resetSignupFlow,        // Full reset
+
+    getWhatsAppUrl
   } = useAuth()
-  
-  // ...
 }
 ```
+
+### API Client (`src/api/client.js`)
+
+```javascript
+import api from '../api/client'
+
+// Check phone / create user
+const { user, jwtToken, hasGoogleConnection } = await api.users.checkPhone('+972501234567')
+
+// Get Google OAuth URL (requires userId from phone step)
+const { authUrl } = await api.auth.getGoogleAuthUrl(userId, 'standard')
+
+// Get current user
+const { user } = await api.auth.getCurrentUser()
+
+// Complete onboarding
+const { user, whatsapp } = await api.users.completeOnboarding()
+```
+
+---
+
+## State Management & Recovery
+
+### Two State Stores
+
+The signup flow uses two separate stores that must stay in sync:
+
+| Store | Where | What |
+|-------|-------|------|
+| **signupState** | `localStorage` | `step`, `userId`, `whatsappNumber`, `hasGoogleConnection` |
+| **Auth/JWT** | `localStorage` | JWT token for API calls |
+| **OAuth redirect marker** | `sessionStorage` | Flag set before navigating to Google |
+
+### State Sync Rules (in `initAuth`)
+
+1. If JWT is valid AND user profile loads → sync signupState step from user data
+2. If JWT is valid BUT user profile fails (user deleted) → reset BOTH auth AND signupState
+3. If JWT is invalid/missing AND signupState is past phone step → reset signupState to phone
+4. Exception: if OAuth redirect is pending (sessionStorage flag), don't reset — user is mid-flow
+
+### OAuth Redirect Recovery
+
+When the user clicks "Connect with Google" and navigates to the Google consent screen:
+
+| Scenario | Detection | Recovery |
+|----------|-----------|----------|
+| User presses browser back (bfcache) | `pageshow` event with `persisted=true` | Reset `isRedirectingToOAuth` |
+| User switches back to tab | `visibilitychange` to `visible` | Reset `isRedirectingToOAuth` |
+| User refreshes after abandoning OAuth | `sessionStorage` flag + no callback params | Clear flag, show normal step |
+| User clicks Cancel button | Manual action | `cancelOAuthRedirect()` |
+| User deleted from DB | 404 from `getGoogleAuthUrl` | `goBackToPhoneStep()` |
+| Google returns error (deny) | `?error=` in URL | Show error + retry button |
+| Session expired between steps | Backend returns `session_expired` | Show error + back to phone |
 
 ---
 
@@ -209,7 +269,7 @@ GOOGLE_REDIRECT_URI=http://localhost:3001/api/auth/google/callback
 JWT_SECRET=your-jwt-secret-change-in-production
 SESSION_SECRET=your-session-secret-change-in-production
 
-# Mimo WhatsApp
+# Donna WhatsApp
 MIMO_WHATSAPP_NUMBER=972501234567
 ```
 
@@ -218,26 +278,18 @@ MIMO_WHATSAPP_NUMBER=972501234567
 **Required so Google redirects to your domain instead of localhost.** Set these on the **production server** (and in Google Cloud Console):
 
 ```env
-# Production frontend – where users land after OAuth
 FRONTEND_URL=https://www.donnai.io
-
-# Production OAuth callback – must match the URL where your backend receives the callback
-# If API is on same domain: https://www.donnai.io/api/auth/google/callback
-# If API is on api.donnai.io: https://api.donnai.io/api/auth/google/callback
 GOOGLE_REDIRECT_URI=https://www.donnai.io/api/auth/google/callback
-
 NODE_ENV=production
 ```
 
 **Google Cloud Console (OAuth client):**
 
-1. Open [APIs & Services → Credentials](https://console.cloud.google.com/apis/credentials).
+1. Open [APIs & Services -> Credentials](https://console.cloud.google.com/apis/credentials).
 2. Edit your OAuth 2.0 Client ID.
 3. Under **Authorized redirect URIs**, add:
    - `https://www.donnai.io/api/auth/google/callback` (or your actual backend callback URL).
 4. Save.
-
-If `GOOGLE_REDIRECT_URI` or `FRONTEND_URL` are not set in production, the app will still use localhost and users will be sent to `localhost:3001/api/auth/google/callback` after signing in with Google.
 
 ---
 
@@ -268,7 +320,7 @@ Frontend runs on `http://localhost:5173`
 
 ### Run Schema in Supabase
 
-1. Go to Supabase Dashboard → SQL Editor
+1. Go to Supabase Dashboard -> SQL Editor
 2. Copy contents of `server/src/database/schema.sql`
 3. Run the SQL
 
@@ -301,9 +353,10 @@ Frontend runs on `http://localhost:5173`
 
 - **JWT Authentication**: Stateless token-based auth
 - **CSRF Protection**: State parameter in OAuth flow
-- **CORS**: Configured for frontend origin only
+- **CORS**: Configured for frontend origin + donnai.io
 - **Helmet**: Security headers
-- **Session**: Secure cookies for OAuth state
+- **Session**: Secure cookies with `sameSite: 'lax'` for OAuth compatibility
+- **State sync**: signupState always resets when auth is invalid (prevents stale step)
 
 ---
 
@@ -311,11 +364,12 @@ Frontend runs on `http://localhost:5173`
 
 ### Frontend Errors
 
-Errors are displayed in Hebrew:
+Errors are displayed in Hebrew (defined in `src/lib/auth-helpers.js`):
 - `ההתחברות נכשלה` - Auth failed
 - `מספר טלפון לא תקין` - Invalid phone
-- `שגיאת אבטחה` - Security error
-- `המשתמש לא נמצא` - User not found (e.g. user deleted from DB); user can use "שינוי מספר טלפון" to go back and re-enter phone
+- `שגיאת אבטחה` - Security error (invalid_state)
+- `המשתמש לא נמצא` - User not found (user deleted); auto-redirects to phone step
+- `ההתחברות פגה` - Session expired; user must re-enter phone
 
 ### Backend Errors
 

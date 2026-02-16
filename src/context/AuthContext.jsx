@@ -1,237 +1,261 @@
 /**
  * Auth Context
- * Provides authentication state and methods across the application
- * Uses HTTP requests to backend server
+ * Provides authentication state and methods across the application.
+ *
+ * All persistence helpers, error messages, and validation logic
+ * live in lib/auth-helpers.js to keep this file focused on
+ * React state management and user-facing actions.
  */
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import api, { setToken, clearToken } from '../api/client'
+import {
+  SIGNUP_STEPS,
+  getInitialSignupState,
+  loadSignupState,
+  saveSignupState,
+  clearSignupState,
+  setOAuthRedirectPending,
+  clearOAuthRedirectPending,
+  isOAuthRedirectPending,
+  isSignupStateStale,
+  determineStepFromUser,
+  getErrorMessage,
+  isUserNotFoundError,
+  getGoogleSignInErrorMessage
+} from '../lib/auth-helpers'
 
-// Signup flow steps (new order: phone first, then Google if needed)
-export const SIGNUP_STEPS = {
-  PHONE_NUMBER: 'phone_number',
-  GOOGLE_AUTH: 'google_auth',
-  WHATSAPP_REDIRECT: 'whatsapp_redirect',
-  COMPLETED: 'completed'
-}
+// Re-export for components that import from here
+export { SIGNUP_STEPS }
 
-// Local storage key for signup state
-const SIGNUP_STATE_KEY = 'mimo_signup_state'
-
-// Create context
+// ─── Context ─────────────────────────────────────────────
 const AuthContext = createContext(null)
 
-/**
- * Get initial signup state
- */
-const getInitialState = () => ({
-  step: SIGNUP_STEPS.PHONE_NUMBER,
-  userId: null,
-  whatsappNumber: null,
-  hasGoogleConnection: false,
-  googleEmail: null,
-  googleName: null,
-  googlePicture: null,
-  startedAt: Date.now(),
-  updatedAt: Date.now()
-})
+// ═══════════════════════════════════════════════════════════
+//  Provider
+// ═══════════════════════════════════════════════════════════
 
-/**
- * Load signup state from localStorage
- */
-const loadSignupState = () => {
-  try {
-    const saved = localStorage.getItem(SIGNUP_STATE_KEY)
-    if (!saved) return null
-    
-    const state = JSON.parse(saved)
-    
-    // Check if state is expired (24 hours)
-    const expiryTime = 24 * 60 * 60 * 1000
-    if (Date.now() - state.startedAt > expiryTime) {
-      localStorage.removeItem(SIGNUP_STATE_KEY)
-      return null
-    }
-    
-    return state
-  } catch {
-    return null
-  }
-}
-
-/**
- * Save signup state to localStorage
- */
-const saveSignupState = (state) => {
-  try {
-    localStorage.setItem(SIGNUP_STATE_KEY, JSON.stringify({
-      ...state,
-      updatedAt: Date.now()
-    }))
-  } catch (e) {
-    console.error('Error saving signup state:', e)
-  }
-}
-
-/**
- * Auth Provider Component
- */
 export const AuthProvider = ({ children }) => {
+  // ── Core auth state ──────────────────────────────────
   const [isLoading, setIsLoading] = useState(true)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [user, setUser] = useState(null)
   const [error, setError] = useState(null)
-  const [signupState, setSignupState] = useState(() => loadSignupState() || getInitialState())
 
-  /**
-   * Initialize auth state on mount
-   */
+  // ── Signup wizard state (persisted in localStorage) ──
+  const [signupState, setSignupState] = useState(
+    () => loadSignupState() || getInitialSignupState()
+  )
+
+  // ── OAuth redirect state (NOT persisted — lives only in React) ──
+  // Separate from isLoading so an external redirect never locks the UI.
+  const [isRedirectingToOAuth, setIsRedirectingToOAuth] = useState(false)
+
+  // ─────────────────────────────────────────────────────
+  //  Helper: update + persist signup state in one call
+  // ─────────────────────────────────────────────────────
+  const updateSignupState = useCallback((patch) => {
+    setSignupState((prev) => {
+      const next = { ...prev, ...patch }
+      saveSignupState(next)
+      return next
+    })
+  }, [])
+
+  const resetToPhoneStep = useCallback((keepPhone = null) => {
+    const fresh = {
+      ...getInitialSignupState(),
+      whatsappNumber: keepPhone
+    }
+    setSignupState(fresh)
+    saveSignupState(fresh)
+  }, [])
+
+  // ═══════════════════════════════════════════════════════
+  //  1. Initialize auth on mount
+  // ═══════════════════════════════════════════════════════
+
   useEffect(() => {
     const initAuth = async () => {
       try {
         setIsLoading(true)
-        
-        // Check URL for token from OAuth callback
+
+        // ── Read URL params from OAuth callback ──────────
         const urlParams = new URLSearchParams(window.location.search)
         const tokenFromUrl = urlParams.get('token')
         const stepFromUrl = urlParams.get('step')
         const errorFromUrl = urlParams.get('error')
-        
-        // Handle OAuth error
+
+        // Always clear the OAuth redirect marker on a fresh page load
+        // (either the callback brought us here, or the user abandoned)
+        clearOAuthRedirectPending()
+
+        // ── Handle OAuth error redirect ──────────────────
         if (errorFromUrl) {
           setError(getErrorMessage(errorFromUrl))
-          // Clean URL
           window.history.replaceState({}, '', window.location.pathname)
           setIsLoading(false)
           return
         }
-        
-        // Handle token from OAuth callback
+
+        // ── Handle successful OAuth callback token ───────
         if (tokenFromUrl) {
           setToken(tokenFromUrl)
-          // Clean URL
           window.history.replaceState({}, '', window.location.pathname)
         }
-        
-        // Verify existing token (gracefully handle server unavailable)
-        let valid = false
-        try {
-          const result = await api.auth.verifyToken()
-          valid = result?.valid || false
-        } catch (err) {
-          // If server is not available, just continue without auth
-          console.warn('Backend server not available:', err.message)
-          valid = false
-        }
-        
-        if (valid) {
-          // Get user profile
-          try {
-            const { user: userData } = await api.auth.getCurrentUser()
-            setUser(userData)
-            setIsAuthenticated(true)
-          
-          // Determine current step based on user state
-          let currentStep = SIGNUP_STEPS.PHONE_NUMBER
-          
-          if (userData.onboardingComplete) {
-            currentStep = SIGNUP_STEPS.COMPLETED
-          } else if (userData.whatsappNumber && userData.email) {
-            // Has phone and Google connected
-            currentStep = SIGNUP_STEPS.WHATSAPP_REDIRECT
-          } else if (userData.whatsappNumber) {
-            // Has phone but no Google
-            currentStep = SIGNUP_STEPS.GOOGLE_AUTH
-          }
-          
-          // Override with URL step if provided
-          if (stepFromUrl && Object.values(SIGNUP_STEPS).includes(stepFromUrl)) {
-            currentStep = stepFromUrl
-          }
-          
-          const newState = {
-            ...signupState,
-            step: currentStep,
-            userId: userData.id,
-            whatsappNumber: userData.whatsappNumber,
-            hasGoogleConnection: !!userData.email,
-            googleEmail: userData.email || null
-          }
-            
-            setSignupState(newState)
-            saveSignupState(newState)
-          } catch (err) {
-            // If getting user fails, just reset auth state
-            console.warn('Failed to get user profile:', err.message)
-            clearToken()
-            setIsAuthenticated(false)
-            setUser(null)
+
+        // ── Verify existing JWT ──────────────────────────
+        const hasValidToken = await verifyExistingToken()
+
+        if (hasValidToken) {
+          const ok = await loadUserProfile(stepFromUrl)
+          if (!ok) {
+            // User was deleted or profile fetch failed → full reset
+            handleAuthInvalid()
           }
         } else {
-          // No valid token - reset to initial state
-          clearToken()
-          setIsAuthenticated(false)
-          setUser(null)
+          handleAuthInvalid()
         }
       } catch (err) {
         console.error('Auth init error:', err)
-        clearToken()
-        setIsAuthenticated(false)
+        handleAuthInvalid()
       } finally {
         setIsLoading(false)
       }
     }
-    
+
     initAuth()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  /**
-   * Get error message from error code
-   */
-  const getErrorMessage = (errorCode) => {
-    const errorMessages = {
-      'auth_failed': 'ההתחברות נכשלה. אנא נסה שוב.',
-      'invalid_state': 'שגיאת אבטחה. אנא נסה שוב.',
-      'access_denied': 'הגישה נדחתה. אנא אשר את ההרשאות.',
-      'session_expired': 'ההתחברות פגה. אנא הזן שוב את מספר הטלפון.',
-      'user_not_found': 'המשתמש לא נמצא. אנא הזן שוב את מספר הטלפון.',
-      'default': 'משהו השתבש. אנא נסה שוב.'
+  // ═══════════════════════════════════════════════════════
+  //  2. bfcache & tab-switch recovery
+  //
+  //  If the user navigated to Google and pressed back,
+  //  the browser may restore the page from bfcache with
+  //  isRedirectingToOAuth still true. These listeners
+  //  detect that and reset the redirect flag.
+  // ═══════════════════════════════════════════════════════
+
+  useEffect(() => {
+    const handlePageShow = (e) => {
+      if (e.persisted) {
+        // Page restored from bfcache → stop showing redirect spinner
+        setIsRedirectingToOAuth(false)
+        clearOAuthRedirectPending()
+      }
     }
-    return errorMessages[errorCode] || errorMessages.default
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && isRedirectingToOAuth) {
+        // User switched back to this tab while redirect spinner was showing
+        setIsRedirectingToOAuth(false)
+        clearOAuthRedirectPending()
+      }
+    }
+
+    window.addEventListener('pageshow', handlePageShow)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      window.removeEventListener('pageshow', handlePageShow)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [isRedirectingToOAuth])
+
+  // ═══════════════════════════════════════════════════════
+  //  Private helpers (used by initAuth)
+  // ═══════════════════════════════════════════════════════
+
+  /** Returns true if the stored JWT is structurally valid. */
+  async function verifyExistingToken() {
+    try {
+      const result = await api.auth.verifyToken()
+      return result?.valid || false
+    } catch (err) {
+      console.warn('Backend not available for token verify:', err.message)
+      return false
+    }
   }
 
   /**
-   * Submit phone number - check if user exists and Google connection status
+   * Fetch user profile from backend and sync signupState.
+   * Returns true on success, false if user no longer exists.
    */
+  async function loadUserProfile(stepOverride) {
+    try {
+      const { user: userData } = await api.auth.getCurrentUser()
+      setUser(userData)
+      setIsAuthenticated(true)
+
+      let step = determineStepFromUser(userData)
+
+      // Allow the URL to override step (e.g. from OAuth callback)
+      if (stepOverride && Object.values(SIGNUP_STEPS).includes(stepOverride)) {
+        step = stepOverride
+      }
+
+      updateSignupState({
+        step,
+        userId: userData.id,
+        whatsappNumber: userData.whatsappNumber,
+        hasGoogleConnection: !!userData.email,
+        googleEmail: userData.email || null
+      })
+
+      return true
+    } catch (err) {
+      console.warn('Failed to load user profile:', err.message)
+      return false
+    }
+  }
+
+  /**
+   * Called whenever we determine auth is invalid (token expired,
+   * user deleted, etc.). Resets BOTH auth state AND signupState
+   * so the two never get out of sync.
+   */
+  function handleAuthInvalid() {
+    clearToken()
+    setIsAuthenticated(false)
+    setUser(null)
+
+    // If signupState points to a step that requires auth, reset it.
+    // This prevents the "stuck on Google step with stale userId" bug.
+    if (isSignupStateStale(signupState, false)) {
+      resetToPhoneStep()
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  //  Public actions
+  // ═══════════════════════════════════════════════════════
+
+  // ── Submit phone number ────────────────────────────────
   const submitPhoneNumber = useCallback(async (phoneNumber) => {
     setError(null)
     setIsLoading(true)
-    
+
     try {
       const result = await api.users.checkPhone(phoneNumber)
-      
-      // Store token
+
       if (result.jwtToken) {
         setToken(result.jwtToken)
       }
-      
-      // Update state
-      const newState = {
-        ...signupState,
-        step: result.hasGoogleConnection 
-          ? SIGNUP_STEPS.WHATSAPP_REDIRECT 
+
+      setUser(result.user)
+      setIsAuthenticated(true)
+
+      updateSignupState({
+        step: result.hasGoogleConnection
+          ? SIGNUP_STEPS.WHATSAPP_REDIRECT
           : SIGNUP_STEPS.GOOGLE_AUTH,
         userId: result.user.id,
         whatsappNumber: result.user.whatsappNumber,
         hasGoogleConnection: result.hasGoogleConnection,
         googleEmail: result.user.email || null
-      }
-      
-      setUser(result.user)
-      setIsAuthenticated(true)
-      setSignupState(newState)
-      saveSignupState(newState)
-      
+      })
+
       return { success: true, shouldConnectGoogle: result.shouldConnectGoogle }
     } catch (err) {
       console.error('Submit phone error:', err)
@@ -240,165 +264,143 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setIsLoading(false)
     }
-  }, [signupState])
+  }, [updateSignupState])
 
-  /**
-   * Go back to phone number step to re-enter or change number.
-   * Clears token and user so a fresh check can be done.
-   */
+  // ── Go back to phone step ─────────────────────────────
   const goBackToPhoneStep = useCallback(() => {
     clearToken()
+    clearOAuthRedirectPending()
     setUser(null)
     setIsAuthenticated(false)
     setError(null)
-    const newState = {
-      ...getInitialState(),
-      step: SIGNUP_STEPS.PHONE_NUMBER,
-      // Keep last phone so user can edit instead of re-typing
-      whatsappNumber: signupState.whatsappNumber || null
-    }
-    setSignupState(newState)
-    saveSignupState(newState)
-  }, [signupState.whatsappNumber])
+    setIsRedirectingToOAuth(false)
+    resetToPhoneStep(signupState.whatsappNumber || null)
+  }, [signupState.whatsappNumber, resetToPhoneStep])
 
-  /**
-   * Sign in with Google - redirects to backend OAuth URL
-   * Requires userId from phone number step
-   */
+  // ── Cancel OAuth redirect (manual escape hatch) ───────
+  const cancelOAuthRedirect = useCallback(() => {
+    setIsRedirectingToOAuth(false)
+    clearOAuthRedirectPending()
+  }, [])
+
+  // ── Sign in with Google ────────────────────────────────
   const signInWithGoogle = useCallback(async () => {
     if (!signupState.userId) {
       setError('אנא הזן מספר טלפון תחילה')
       return
     }
-    
+
     setError(null)
-    setIsLoading(true)
-    
+
     try {
-      const { authUrl } = await api.auth.getGoogleAuthUrl(signupState.userId, 'standard')
-      
-      // Redirect to Google OAuth
+      // Fetch the Google auth URL from backend
+      const { authUrl } = await api.auth.getGoogleAuthUrl(
+        signupState.userId,
+        'standard'
+      )
+
+      // Mark redirect BEFORE navigating away
+      setIsRedirectingToOAuth(true)
+      setOAuthRedirectPending()
+
+      // Navigate to Google (leaves the SPA)
       window.location.href = authUrl
     } catch (err) {
-      console.error('Sign in error:', err)
-      setIsLoading(false)
-      
-      // User was deleted or session stale – send them back to phone step
-      const isUserNotFound = err.status === 404 || (err.message && err.message.includes('User not found'))
-      if (isUserNotFound) {
+      console.error('Sign in with Google error:', err)
+      setIsRedirectingToOAuth(false)
+      clearOAuthRedirectPending()
+
+      // User was deleted → go back to phone
+      if (isUserNotFoundError(err)) {
         goBackToPhoneStep()
         setError('המשתמש לא נמצא. אנא הזן שוב את מספר הטלפון.')
         return
       }
-      
-      // Other errors
-      let errorMessage = 'שגיאה בהתחברות'
-      if (err.message) {
-        if (err.message.includes('Google OAuth is not configured')) {
-          errorMessage = 'הגדרות Google לא הוגדרו. אנא הוסף GOOGLE_CLIENT_ID ו-GOOGLE_CLIENT_SECRET לקובץ .env'
-        } else if (err.message.includes('SERVER_CONNECTION_ERROR')) {
-          errorMessage = 'לא ניתן להתחבר לשרת. אנא ודא שהשרת רץ על פורט 3001'
-        } else {
-          errorMessage = err.message
-        }
-      }
-      setError(errorMessage)
+
+      setError(getGoogleSignInErrorMessage(err))
     }
   }, [signupState.userId, goBackToPhoneStep])
 
-  /**
-   * Sign out
-   */
+  // ── Sign out ───────────────────────────────────────────
   const signOut = useCallback(async () => {
     setIsLoading(true)
-    
+
     try {
       await api.auth.logout()
     } catch (err) {
       console.error('Sign out error:', err)
     } finally {
+      clearToken()
+      clearOAuthRedirectPending()
+      clearSignupState()
       setIsAuthenticated(false)
       setUser(null)
-      localStorage.removeItem(SIGNUP_STATE_KEY)
-      setSignupState(getInitialState())
+      setSignupState(getInitialSignupState())
       setIsLoading(false)
     }
   }, [])
 
-
-  /**
-   * Complete onboarding
-   */
+  // ── Complete onboarding ────────────────────────────────
   const completeOnboarding = useCallback(async () => {
     setError(null)
-    
+
     try {
       const { user: updatedUser, whatsapp } = await api.users.completeOnboarding()
-      
       setUser(updatedUser)
-      
-      const newState = {
-        ...signupState,
-        step: SIGNUP_STEPS.COMPLETED
-      }
-      
-      setSignupState(newState)
-      saveSignupState(newState)
-      
+      updateSignupState({ step: SIGNUP_STEPS.COMPLETED })
       return { success: true, whatsapp }
     } catch (err) {
       console.error('Complete onboarding error:', err)
       setError(err.message)
       return { success: false, error: err.message }
     }
-  }, [signupState])
+  }, [updateSignupState])
 
-  /**
-   * Get WhatsApp URL
-   */
+  // ── Get WhatsApp URL ───────────────────────────────────
   const getWhatsAppUrl = useCallback(async (customMessage) => {
     try {
       const info = await api.users.getWhatsAppInfo(customMessage)
       return info.url
     } catch (err) {
       console.error('Get WhatsApp URL error:', err)
-      // Fallback URL
       return 'https://wa.me/972501234567'
     }
   }, [])
 
-  /**
-   * Reset signup flow
-   */
+  // ── Full reset (clears everything) ─────────────────────
   const resetSignupFlow = useCallback(() => {
-    localStorage.removeItem(SIGNUP_STATE_KEY)
-    setSignupState(getInitialState())
+    clearSignupState()
+    clearOAuthRedirectPending()
+    setSignupState(getInitialSignupState())
     setError(null)
   }, [])
 
-  // Context value
+  // ═══════════════════════════════════════════════════════
+  //  Context value
+  // ═══════════════════════════════════════════════════════
+
   const value = {
-    // Auth state
+    // State
     isLoading,
     isAuthenticated,
+    isRedirectingToOAuth,
     user,
     error,
-    
-    // Signup flow state
     signupState,
     currentStep: signupState.step,
-    
-    // Auth methods
+
+    // Auth actions
     signInWithGoogle,
     signOut,
-    
-    // Signup flow methods
+
+    // Signup flow actions
     submitPhoneNumber,
     completeOnboarding,
-    resetSignupFlow,
     goBackToPhoneStep,
+    cancelOAuthRedirect,
+    resetSignupFlow,
     getWhatsAppUrl,
-    
+
     // Constants
     SIGNUP_STEPS
   }
@@ -410,16 +412,15 @@ export const AuthProvider = ({ children }) => {
   )
 }
 
-/**
- * Hook to use auth context
- */
+// ═══════════════════════════════════════════════════════════
+//  Hook
+// ═══════════════════════════════════════════════════════════
+
 export const useAuth = () => {
   const context = useContext(AuthContext)
-  
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider')
   }
-  
   return context
 }
 
