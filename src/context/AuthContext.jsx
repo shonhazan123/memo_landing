@@ -232,6 +232,8 @@ export const AuthProvider = ({ children }) => {
   // ═══════════════════════════════════════════════════════
 
   // ── Submit phone number ────────────────────────────────
+  // Validates the phone and checks if the user is already registered.
+  // Does NOT create a user in the database.
   const submitPhoneNumber = useCallback(async (phoneNumber) => {
     setError(null)
     setIsLoading(true)
@@ -239,24 +241,36 @@ export const AuthProvider = ({ children }) => {
     try {
       const result = await api.users.checkPhone(phoneNumber)
 
-      if (result.jwtToken) {
+      // Case 1: Returning user — already fully registered with Google
+      if (result.registered && result.jwtToken) {
         setToken(result.jwtToken)
+        setUser(result.user)
+        setIsAuthenticated(true)
+
+        updateSignupState({
+          step: result.user.onboardingComplete
+            ? SIGNUP_STEPS.COMPLETED
+            : SIGNUP_STEPS.WHATSAPP_REDIRECT,
+          userId: result.user.id,
+          whatsappNumber: result.user.whatsappNumber,
+          formattedNumber: result.formattedNumber || result.user.whatsappNumber,
+          hasGoogleConnection: true,
+          googleEmail: result.user.email || null
+        })
+
+        return { success: true, shouldConnectGoogle: false }
       }
 
-      setUser(result.user)
-      setIsAuthenticated(true)
-
+      // Case 2: New or partial user — proceed to Google step
+      // No user created in DB yet; just store the phone locally.
       updateSignupState({
-        step: result.hasGoogleConnection
-          ? SIGNUP_STEPS.WHATSAPP_REDIRECT
-          : SIGNUP_STEPS.GOOGLE_AUTH,
-        userId: result.user.id,
-        whatsappNumber: result.user.whatsappNumber,
-        hasGoogleConnection: result.hasGoogleConnection,
-        googleEmail: result.user.email || null
+        step: SIGNUP_STEPS.GOOGLE_AUTH,
+        whatsappNumber: phoneNumber,
+        formattedNumber: result.formattedNumber,
+        hasGoogleConnection: false
       })
 
-      return { success: true, shouldConnectGoogle: result.shouldConnectGoogle }
+      return { success: true, shouldConnectGoogle: true }
     } catch (err) {
       console.error('Submit phone error:', err)
       setError(err.message)
@@ -284,8 +298,10 @@ export const AuthProvider = ({ children }) => {
   }, [])
 
   // ── Sign in with Google ────────────────────────────────
+  // Uses the formatted phone number (not userId) — user is not in DB yet.
   const signInWithGoogle = useCallback(async () => {
-    if (!signupState.userId) {
+    const phoneNumber = signupState.formattedNumber || signupState.whatsappNumber
+    if (!phoneNumber) {
       setError('אנא הזן מספר טלפון תחילה')
       return
     }
@@ -293,11 +309,8 @@ export const AuthProvider = ({ children }) => {
     setError(null)
 
     try {
-      // Fetch the Google auth URL from backend
-      const { authUrl } = await api.auth.getGoogleAuthUrl(
-        signupState.userId,
-        'standard'
-      )
+      // Fetch the Google auth URL — phone is encoded in the signed state token
+      const { authUrl } = await api.auth.getGoogleAuthUrl(phoneNumber, 'standard')
 
       // Mark redirect BEFORE navigating away
       setIsRedirectingToOAuth(true)
@@ -310,16 +323,9 @@ export const AuthProvider = ({ children }) => {
       setIsRedirectingToOAuth(false)
       clearOAuthRedirectPending()
 
-      // User was deleted → go back to phone
-      if (isUserNotFoundError(err)) {
-        goBackToPhoneStep()
-        setError('המשתמש לא נמצא. אנא הזן שוב את מספר הטלפון.')
-        return
-      }
-
       setError(getGoogleSignInErrorMessage(err))
     }
-  }, [signupState.userId, goBackToPhoneStep])
+  }, [signupState.formattedNumber, signupState.whatsappNumber])
 
   // ── Sign out ───────────────────────────────────────────
   const signOut = useCallback(async () => {

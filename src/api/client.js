@@ -112,12 +112,12 @@ const api = {
   auth: {
     /**
      * Get Google OAuth URL
-     * @param {string} userId - User UUID (from phone number step)
+     * @param {string} phoneNumber - Formatted phone number from phone step
      * @param {string} planType - User plan type
      * @returns {Promise<{authUrl: string}>}
      */
-    getGoogleAuthUrl: async (userId, planType = 'standard') => {
-      return request(`/auth/google?userId=${userId}&planType=${planType}`)
+    getGoogleAuthUrl: async (phoneNumber, planType = 'standard') => {
+      return request(`/auth/google?phoneNumber=${encodeURIComponent(phoneNumber)}&planType=${planType}`)
     },
     
     /**
@@ -166,9 +166,10 @@ const api = {
   // User endpoints
   users: {
     /**
-     * Check phone number and Google connection status
+     * Validate phone number and check if user is already registered.
+     * Does NOT create a user in the database.
      * @param {string} phoneNumber - User's phone number
-     * @returns {Promise<{user: Object, hasGoogleConnection: boolean, jwtToken: string, shouldConnectGoogle: boolean}>}
+     * @returns {Promise<{isNewUser: boolean, registered: boolean, formattedNumber?: string, user?: Object, jwtToken?: string, hasGoogleConnection: boolean}>}
      */
     checkPhone: async (phoneNumber) => {
       return request('/users/check-phone', {

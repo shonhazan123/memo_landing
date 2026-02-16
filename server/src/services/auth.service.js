@@ -11,20 +11,75 @@ import GoogleTokenModel from '../models/GoogleToken.model.js'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'mimo-jwt-secret-change-in-production'
 const JWT_EXPIRES_IN = '7d'
+const OAUTH_STATE_EXPIRES_IN = '10m' // State token is short-lived
 
 class AuthService {
+  // ═══════════════════════════════════════════════════════
+  //  OAuth State — stateless, signed tokens
+  //
+  //  Instead of storing state in express-session (which can
+  //  be lost on server restarts or cross-domain cookie issues),
+  //  we encode userId + planType into a signed JWT that is
+  //  passed to Google as the `state` parameter. On callback
+  //  we verify the signature — no session lookup needed.
+  // ═══════════════════════════════════════════════════════
+
   /**
-   * Generate Google OAuth authorization URL
+   * Create a signed OAuth state token.
+   * Encodes phoneNumber and planType so the callback can
+   * register the user without needing a server-side session.
+   * Extensible — add more fields here as the flow grows
+   * (e.g. name, payment reference).
+   *
+   * @param {string} phoneNumber - Formatted phone (+972...)
+   * @param {string} planType
+   * @returns {string} Signed state token (JWT)
+   */
+  createOAuthState(phoneNumber, planType = 'standard') {
+    return jwt.sign(
+      { phoneNumber, planType, purpose: 'oauth_state' },
+      JWT_SECRET,
+      { expiresIn: OAUTH_STATE_EXPIRES_IN }
+    )
+  }
+
+  /**
+   * Verify and decode an OAuth state token.
+   * Returns the payload if valid, null if tampered or expired.
+   *
+   * @param {string} stateToken
+   * @returns {{ phoneNumber: string, planType: string } | null}
+   */
+  verifyOAuthState(stateToken) {
+    try {
+      const decoded = jwt.verify(stateToken, JWT_SECRET)
+      if (decoded.purpose !== 'oauth_state') return null
+      return { phoneNumber: decoded.phoneNumber, planType: decoded.planType }
+    } catch {
+      return null
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  //  Google OAuth URL
+  // ═══════════════════════════════════════════════════════
+
+  /**
+   * Generate Google OAuth authorization URL.
+   *
    * @param {Object} options
-   * @param {string} options.planType - User plan type
-   * @param {string} options.state - State token for CSRF protection
+   * @param {string} options.phoneNumber - Formatted phone (encoded into state)
+   * @param {string} options.planType    - User plan type
    * @returns {string} Authorization URL
    */
   getGoogleAuthUrl(options = {}) {
-    const { planType = 'standard', state } = options
+    const { phoneNumber, planType = 'standard' } = options
+
+    const state = this.createOAuthState(phoneNumber, planType)
+
     const oauth2Client = createOAuth2Client()
     const scopes = getScopesForPlan(planType)
-    
+
     const authUrl = oauth2Client.generateAuthUrl({
       access_type: 'offline',
       scope: scopes,
@@ -32,45 +87,63 @@ class AuthService {
       include_granted_scopes: true,
       state
     })
-    
+
     return authUrl
   }
 
+  // ═══════════════════════════════════════════════════════
+  //  Google OAuth Callback — registers user on completion
+  //
+  //  This is the ONLY place a new user is created in the DB.
+  //  Phone number comes from the signed state token,
+  //  Google profile + tokens come from the OAuth exchange.
+  // ═══════════════════════════════════════════════════════
+
   /**
-   * Handle Google OAuth callback
-   * @param {string} code - Authorization code from Google
-   * @param {string} userId - User UUID (user must exist from phone number step)
-   * @returns {Promise<{user: Object, tokens: Object, jwtToken: string}>}
+   * Handle Google OAuth callback.
+   * Finds or creates the user by phone number, links Google
+   * profile and tokens, and returns a JWT.
+   *
+   * @param {string} code        - Authorization code from Google
+   * @param {string} phoneNumber - From the signed state token
+   * @param {string} planType    - From the signed state token
+   * @returns {Promise<{user: Object, jwtToken: string}>}
    */
-  async handleGoogleCallback(code, userId) {
-    if (!userId) {
-      throw new Error('User ID is required. Please provide phone number first.')
+  async handleGoogleCallback(code, phoneNumber, planType = 'standard') {
+    if (!phoneNumber) {
+      throw new Error('Phone number is required.')
     }
-    
-    // Verify user exists
-    const user = await UserModel.findById(userId)
-    if (!user) {
-      throw new Error('User not found')
-    }
+
     const oauth2Client = createOAuth2Client()
-    
+
     // Exchange code for tokens
     const { tokens } = await oauth2Client.getToken(code)
     oauth2Client.setCredentials(tokens)
-    
+
     // Get user profile from Google
     const oauth2 = google.oauth2({ version: 'v2', auth: oauth2Client })
     const { data: profile } = await oauth2.userinfo.get()
-    
-    // Update user's Google email if not set or different
+
+    // Find or create the user by phone number (single DB write for new users)
+    const user = await UserModel.findOrCreateByWhatsappNumber(phoneNumber)
+
+    // Link Google email
     if (!user.google_email || user.google_email !== profile.email) {
       await UserModel.update(user.id, { google_email: profile.email })
       user.google_email = profile.email
     }
-    
+
+    // Update plan type if provided
+    if (planType && planType !== user.plan_type) {
+      await UserModel.update(user.id, { plan_type: planType })
+      user.plan_type = planType
+    }
+
     // Store/update Google tokens
-    const normalizedScopes = tokens.scope ? tokens.scope.split(' ') : getScopesForPlan('standard')
-    
+    const normalizedScopes = tokens.scope
+      ? tokens.scope.split(' ')
+      : getScopesForPlan(planType)
+
     await GoogleTokenModel.upsert(user.id, {
       accessToken: tokens.access_token,
       refreshToken: tokens.refresh_token,
@@ -78,10 +151,10 @@ class AuthService {
       scope: normalizedScopes,
       tokenType: tokens.token_type
     })
-    
+
     // Generate JWT for frontend
     const jwtToken = this.generateJWT(user)
-    
+
     return {
       user: {
         id: user.id,
@@ -91,10 +164,6 @@ class AuthService {
         whatsappNumber: user.whatsapp_number,
         planType: user.plan_type,
         onboardingComplete: user.onboarding_complete
-      },
-      tokens: {
-        accessToken: tokens.access_token,
-        expiresAt: tokens.expiry_date
       },
       jwtToken
     }

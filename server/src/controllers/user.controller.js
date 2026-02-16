@@ -29,38 +29,59 @@ class UserController {
 
   /**
    * POST /api/users/check-phone
-   * Check if user exists by phone number and Google connection status
+   * Validate phone number and check if user is already registered.
+   * Does NOT create a user — registration happens after Google OAuth.
    */
   async checkPhone(req, res, next) {
     try {
       const { phoneNumber } = req.body
-      
+
       if (!phoneNumber) {
         return res.status(400).json({ error: 'Phone number is required' })
       }
-      
-      // Format and validate phone number
+
+      // Format and validate
       const formattedNumber = UserService.formatPhoneNumber(phoneNumber)
-      
+
       if (!UserService.validateIsraeliPhone(formattedNumber)) {
         return res.status(400).json({ error: 'מספר טלפון לא תקין' })
       }
-      
-      // Find or create user by WhatsApp number
-      const user = await UserModel.findOrCreateByWhatsappNumber(formattedNumber)
-      
-      // Check if user has Google tokens
-      const googleTokens = await GoogleTokenModel.findByUserId(user.id)
-      const hasGoogleConnection = !!(googleTokens && googleTokens.refresh_token)
-      
-      // Generate JWT for the user
-      const jwtToken = AuthService.generateJWT(user)
-      
+
+      // Look up (don't create) existing user by phone
+      const existingUser = await UserModel.findByWhatsappNumber(formattedNumber)
+
+      if (existingUser) {
+        // Check if fully registered (has Google connection)
+        const googleTokens = await GoogleTokenModel.findByUserId(existingUser.id)
+        const hasGoogleConnection = !!(googleTokens && googleTokens.refresh_token)
+
+        if (hasGoogleConnection) {
+          // Returning user — issue JWT so they can skip to completed/whatsapp
+          const jwtToken = AuthService.generateJWT(existingUser)
+          return res.json({
+            isNewUser: false,
+            registered: true,
+            user: UserService.formatUser(existingUser),
+            hasGoogleConnection: true,
+            jwtToken
+          })
+        }
+
+        // Partial user (phone exists, no Google yet) — continue to Google step
+        return res.json({
+          isNewUser: false,
+          registered: false,
+          formattedNumber,
+          hasGoogleConnection: false
+        })
+      }
+
+      // Brand-new phone — not in DB yet. Frontend proceeds to Google step.
       res.json({
-        user: UserService.formatUser(user),
-        hasGoogleConnection,
-        jwtToken,
-        shouldConnectGoogle: !hasGoogleConnection
+        isNewUser: true,
+        registered: false,
+        formattedNumber,
+        hasGoogleConnection: false
       })
     } catch (error) {
       next(error)

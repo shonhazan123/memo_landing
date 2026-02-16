@@ -1,54 +1,49 @@
 /**
  * Auth Controller
- * Handles authentication HTTP requests
+ * Handles authentication HTTP requests.
+ *
+ * OAuth state is STATELESS — the state parameter sent to Google
+ * is a signed JWT containing userId + planType. On callback we
+ * verify the signature instead of looking up a server-side session.
+ * This eliminates all session-cookie / in-memory-store issues.
  */
 
 import AuthService from '../services/auth.service.js'
-import crypto from 'crypto'
+
+/** Helper: read FRONTEND_URL once, with fallback. */
+const getFrontendUrl = () =>
+  process.env.FRONTEND_URL || 'http://localhost:5173'
 
 class AuthController {
+  // ═══════════════════════════════════════════════════════
+  //  Google OAuth
+  // ═══════════════════════════════════════════════════════
+
   /**
    * GET /api/auth/google
-   * Initiate Google OAuth flow
+   * Initiate Google OAuth flow.
+   *
+   * Accepts phoneNumber (not userId) — the user is NOT in the DB yet.
+   * The phone number is encoded into a signed state token so the
+   * callback can create the user after Google auth completes.
    */
   async initiateGoogleAuth(req, res, next) {
     try {
-      const { planType = 'standard', userId } = req.query
-      
-      if (!userId) {
-        return res.status(400).json({ 
-          error: 'User ID is required',
+      const { planType = 'standard', phoneNumber } = req.query
+
+      if (!phoneNumber) {
+        return res.status(400).json({
+          error: 'Phone number is required',
           message: 'Please provide phone number first'
         })
       }
-      
-      // Verify user exists
-      const UserModel = (await import('../models/User.model.js')).default
-      const user = await UserModel.findById(userId)
-      
-      if (!user) {
-        return res.status(404).json({ error: 'User not found' })
-      }
-      
-      // Generate state token for CSRF protection
-      const state = crypto.randomBytes(32).toString('hex')
-      
-      // Store state and user ID in session
-      req.session.oauthState = state
-      req.session.userId = userId
-      req.session.planType = planType
-      
-      // Get authorization URL
-      const authUrl = AuthService.getGoogleAuthUrl({
-        planType,
-        state
-      })
-      
-      // Return URL for frontend to redirect
+
+      // Build auth URL — state is a signed JWT with phoneNumber + planType
+      const authUrl = AuthService.getGoogleAuthUrl({ phoneNumber, planType })
+
       res.json({ authUrl })
     } catch (error) {
-      // Provide helpful error message for missing credentials
-      if (error.message.includes('Google OAuth credentials')) {
+      if (error.message?.includes('Google OAuth credentials')) {
         return res.status(500).json({
           error: 'Google OAuth is not configured',
           message: error.message,
@@ -61,88 +56,92 @@ class AuthController {
 
   /**
    * GET /api/auth/google/callback
-   * Handle Google OAuth callback
+   * Handle Google OAuth callback.
+   *
+   * 1. Checks for Google-reported errors
+   * 2. Verifies + decodes the signed state token (no session lookup)
+   * 3. Exchanges the code for tokens
+   * 4. Redirects to the frontend with a JWT
    */
   async handleGoogleCallback(req, res, next) {
     try {
       const { code, state, error: oauthError } = req.query
-      
-      // Handle OAuth errors
+      const frontendUrl = getFrontendUrl()
+
+      // ── Google-reported error (user denied, etc.) ──
       if (oauthError) {
-        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173'
-        return res.redirect(`${frontendUrl}/signup?error=${encodeURIComponent(oauthError)}`)
+        return res.redirect(
+          `${frontendUrl}/signup?error=${encodeURIComponent(oauthError)}`
+        )
       }
-      
-      // Verify state token (CSRF)
-      if (!state || state !== req.session.oauthState) {
-        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173'
+
+      // ── Verify signed state token (stateless CSRF check) ──
+      if (!state) {
         return res.redirect(`${frontendUrl}/signup?error=invalid_state`)
       }
-      
-      // Clear state from session (use once)
-      delete req.session.oauthState
-      
-      // Get user ID from session (set when they started OAuth from signup)
-      const userId = req.session.userId
-      
-      if (!userId) {
-        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173'
-        return res.redirect(`${frontendUrl}/signup?error=session_expired`)
+
+      const statePayload = AuthService.verifyOAuthState(state)
+
+      if (!statePayload) {
+        // Signature invalid or token expired (>10 min)
+        return res.redirect(`${frontendUrl}/signup?error=invalid_state`)
       }
-      
-      // Handle callback and link tokens to existing user
-      const result = await AuthService.handleGoogleCallback(code, userId)
-      
-      // Store JWT in session
-      req.session.jwt = result.jwtToken
-      
-      // Redirect to frontend with token
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173'
+
+      const { phoneNumber, planType } = statePayload
+
+      // ── Exchange code, create/find user, link tokens ──
+      const result = await AuthService.handleGoogleCallback(code, phoneNumber, planType)
+
+      // ── Redirect to frontend with JWT ──
       const redirectUrl = new URL(`${frontendUrl}/signup`)
       redirectUrl.searchParams.set('token', result.jwtToken)
-      redirectUrl.searchParams.set('step', result.user.onboardingComplete ? 'completed' : 'whatsapp_redirect')
-      
+      redirectUrl.searchParams.set(
+        'step',
+        result.user.onboardingComplete ? 'completed' : 'whatsapp_redirect'
+      )
+
       res.redirect(redirectUrl.toString())
     } catch (error) {
       console.error('Google callback error:', error)
-      
-      // Provide helpful error messages
+
       let errorCode = 'auth_failed'
-      if (error.message && error.message.includes('Invalid API key')) {
-        console.error('❌ Supabase API key is invalid!')
-        console.error('   Make sure you are using the SERVICE_ROLE key, not the anon key')
-        console.error('   Get it from: Supabase Dashboard → Settings → API → service_role key')
+      if (error.message?.includes('Invalid API key')) {
+        console.error('Supabase API key is invalid — use the SERVICE_ROLE key')
         errorCode = 'database_error'
-      } else if (error.message && error.message.includes('Supabase client not initialized')) {
-        console.error('❌ Supabase is not configured!')
-        console.error('   Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in your .env file')
+      } else if (error.message?.includes('Supabase client not initialized')) {
+        console.error('Supabase not configured — set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY')
         errorCode = 'database_error'
+      } else if (error.message?.includes('User not found')) {
+        errorCode = 'user_not_found'
       }
-      
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173'
+
+      const frontendUrl = getFrontendUrl()
       res.redirect(`${frontendUrl}/signup?error=${errorCode}`)
     }
   }
 
+  // ═══════════════════════════════════════════════════════
+  //  JWT-based endpoints
+  // ═══════════════════════════════════════════════════════
+
   /**
-   * GET /api/auth/me
-   * Get current authenticated user
+   * GET /api/auth/me — Get current authenticated user
    */
   async getCurrentUser(req, res, next) {
     try {
       const authHeader = req.headers.authorization
-      
+
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ error: 'No token provided' })
       }
-      
+
       const token = authHeader.split(' ')[1]
       const user = await AuthService.getUserFromToken(token)
-      
+
       if (!user) {
         return res.status(401).json({ error: 'Invalid or expired token' })
       }
-      
+
       res.json({
         user: {
           id: user.id,
@@ -159,26 +158,24 @@ class AuthController {
   }
 
   /**
-   * POST /api/auth/refresh
-   * Refresh Google access token
+   * POST /api/auth/refresh — Refresh Google access token
    */
   async refreshToken(req, res, next) {
     try {
       const authHeader = req.headers.authorization
-      
+
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ error: 'No token provided' })
       }
-      
+
       const token = authHeader.split(' ')[1]
       const decoded = AuthService.verifyJWT(token)
-      
+
       if (!decoded) {
         return res.status(401).json({ error: 'Invalid token' })
       }
-      
+
       const newTokens = await AuthService.refreshGoogleToken(decoded.userId)
-      
       res.json({ tokens: newTokens })
     } catch (error) {
       next(error)
@@ -186,25 +183,26 @@ class AuthController {
   }
 
   /**
-   * POST /api/auth/logout
-   * Sign out user
+   * POST /api/auth/logout — Sign out user
    */
   async logout(req, res, next) {
     try {
       const authHeader = req.headers.authorization
-      
+
       if (authHeader && authHeader.startsWith('Bearer ')) {
         const token = authHeader.split(' ')[1]
         const decoded = AuthService.verifyJWT(token)
-        
+
         if (decoded) {
           await AuthService.signOut(decoded.userId)
         }
       }
-      
-      // Clear session
-      req.session.destroy()
-      
+
+      // Destroy session if it exists (belt-and-suspenders)
+      if (req.session) {
+        req.session.destroy()
+      }
+
       res.json({ success: true })
     } catch (error) {
       next(error)
@@ -212,20 +210,19 @@ class AuthController {
   }
 
   /**
-   * GET /api/auth/verify
-   * Verify if token is valid
+   * GET /api/auth/verify — Verify if token is valid
    */
   async verifyToken(req, res, next) {
     try {
       const authHeader = req.headers.authorization
-      
+
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.json({ valid: false })
       }
-      
+
       const token = authHeader.split(' ')[1]
       const decoded = AuthService.verifyJWT(token)
-      
+
       res.json({
         valid: !!decoded,
         ...(decoded && { userId: decoded.userId, email: decoded.email })
@@ -237,4 +234,3 @@ class AuthController {
 }
 
 export default new AuthController()
-

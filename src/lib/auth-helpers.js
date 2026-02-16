@@ -21,10 +21,14 @@ export const SIGNUP_STEPS = {
 }
 
 // ─── Initial State ──────────────────────────────────────────
+// Note: userId is only set AFTER Google OAuth completes and the
+// user is actually created in the database. Before that we only
+// have whatsappNumber (from the phone step).
 export const getInitialSignupState = () => ({
   step: SIGNUP_STEPS.PHONE_NUMBER,
   userId: null,
-  whatsappNumber: null,
+  whatsappNumber: null,          // Set after phone step (frontend-only until Google completes)
+  formattedNumber: null,         // Backend-formatted phone (+972...)
   hasGoogleConnection: false,
   googleEmail: null,
   googleName: null,
@@ -118,10 +122,11 @@ export function clearOAuthRedirectPending() {
 // ═══════════════════════════════════════════════════════════
 
 /**
- * Check if signupState is stale (pointing to a step that
- * requires auth, but no auth is available).
+ * Check if signupState is stale and should be reset to the phone step.
  *
- * Returns true when signupState should be reset to phone step.
+ * Steps after Google OAuth (whatsapp_redirect, completed) require a
+ * valid JWT because the user is now in the DB. The Google step itself
+ * only requires a phone number (no JWT needed — user isn't in DB yet).
  *
  * @param {Object} signupState - Current signup state from localStorage
  * @param {boolean} hasValidAuth - Whether we have a verified JWT + user
@@ -129,12 +134,21 @@ export function clearOAuthRedirectPending() {
 export function isSignupStateStale(signupState, hasValidAuth) {
   if (!signupState) return false
 
-  const stepRequiresAuth = signupState.step !== SIGNUP_STEPS.PHONE_NUMBER
   const oauthInProgress = isOAuthRedirectPending()
 
-  // If the step requires auth but we don't have it,
-  // AND there's no OAuth redirect in progress, the state is stale.
-  return stepRequiresAuth && !hasValidAuth && !oauthInProgress
+  // Post-Google steps require auth
+  const stepRequiresAuth =
+    signupState.step === SIGNUP_STEPS.WHATSAPP_REDIRECT ||
+    signupState.step === SIGNUP_STEPS.COMPLETED
+
+  if (stepRequiresAuth && !hasValidAuth && !oauthInProgress) return true
+
+  // Google step requires a phone number (not auth)
+  if (signupState.step === SIGNUP_STEPS.GOOGLE_AUTH && !signupState.formattedNumber && !oauthInProgress) {
+    return true
+  }
+
+  return false
 }
 
 /**

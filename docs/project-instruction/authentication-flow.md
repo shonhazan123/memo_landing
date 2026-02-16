@@ -88,35 +88,59 @@ server/src/
 
 ## Authentication Flow
 
-### Step 1: Phone Number (first)
+**Key principle:** Users are NOT created in the database when they enter their phone number.
+Registration (DB insert) only happens when Google OAuth completes successfully.
+This ensures we never have orphaned users or partial registrations.
+
+### Step 1: Phone Number (validate only — no DB write)
 
 ```
 Frontend                    Backend
    │                           │
    ├─── POST /api/users/check-phone ──►│
    │    { phoneNumber }         │
+   │                           │─ Validate format
+   │                           │─ Check if phone exists in DB
    │                           │
-   │◄── { user, jwtToken,     │
-   │      hasGoogleConnection }─┤
+   │◄── { isNewUser, registered,│
+   │      formattedNumber,      │
+   │      jwtToken? }  ─────────┤
 ```
 
-### Step 2: Google Sign-in
+Three outcomes:
+- **New user** (`isNewUser: true`): Phone stored in frontend only. Proceed to Google.
+- **Partial user** (`registered: false`): Phone exists but no Google. Proceed to Google.
+- **Returning user** (`registered: true`): Fully registered. JWT issued, skip to WhatsApp/completed.
+
+### Step 2: Google Sign-in (Stateless — creates user on completion)
+
+The `state` parameter sent to Google is a **signed JWT** containing `phoneNumber` and `planType`
+(not userId, since the user doesn't exist in the DB yet). On callback, the backend decodes the
+phone from the state, exchanges the Google code for tokens, and creates the user with all
+information at once.
 
 ```
 Frontend                    Backend                     Google
    │                           │                           │
    ├─── GET /api/auth/google ──►│                           │
-   │    ?userId=...             │                           │
-   │                           │                           │
+   │    ?phoneNumber=...        │                           │
+   │                           │─ createOAuthState(phone)   │
+   │                           │  (signed JWT as state)     │
    │◄── { authUrl } ───────────┤                           │
    │                           │                           │
    ├─── Redirect to authUrl ───────────────────────────────►│
    │                           │                           │
-   │                           │◄── Callback with code ────┤
+   │                           │◄── Callback: ?state=...&code=...
+   │                           │                           │
+   │                           │─ verifyOAuthState(state)   │
+   │                           │  → { phoneNumber, planType}│
    │                           │                           │
    │                           ├─── Exchange code ─────────►│
+   │                           │◄── Tokens + profile ───────┤
    │                           │                           │
-   │                           │◄── Access + Refresh tokens─┤
+   │                           │─ findOrCreate user by phone│
+   │                           │─ Link Google email + tokens│
+   │                           │─ Generate JWT              │
    │                           │                           │
    │◄── Redirect with JWT ─────┤                           │
 ```
@@ -185,11 +209,11 @@ function MyComponent() {
 ```javascript
 import api from '../api/client'
 
-// Check phone / create user
-const { user, jwtToken, hasGoogleConnection } = await api.users.checkPhone('+972501234567')
+// Validate phone (no user created)
+const { isNewUser, registered, formattedNumber } = await api.users.checkPhone('+972501234567')
 
-// Get Google OAuth URL (requires userId from phone step)
-const { authUrl } = await api.auth.getGoogleAuthUrl(userId, 'standard')
+// Get Google OAuth URL (uses phone number, not userId — user not in DB yet)
+const { authUrl } = await api.auth.getGoogleAuthUrl('+972501234567', 'standard')
 
 // Get current user
 const { user } = await api.auth.getCurrentUser()
@@ -208,7 +232,7 @@ The signup flow uses two separate stores that must stay in sync:
 
 | Store | Where | What |
 |-------|-------|------|
-| **signupState** | `localStorage` | `step`, `userId`, `whatsappNumber`, `hasGoogleConnection` |
+| **signupState** | `localStorage` | `step`, `whatsappNumber`, `formattedNumber`, `userId` (set after Google), `hasGoogleConnection` |
 | **Auth/JWT** | `localStorage` | JWT token for API calls |
 | **OAuth redirect marker** | `sessionStorage` | Flag set before navigating to Google |
 
@@ -229,49 +253,13 @@ When the user clicks "Connect with Google" and navigates to the Google consent s
 | User switches back to tab | `visibilitychange` to `visible` | Reset `isRedirectingToOAuth` |
 | User refreshes after abandoning OAuth | `sessionStorage` flag + no callback params | Clear flag, show normal step |
 | User clicks Cancel button | Manual action | `cancelOAuthRedirect()` |
-| User deleted from DB | 404 from `getGoogleAuthUrl` | `goBackToPhoneStep()` |
+| Phone number missing | No `formattedNumber` in state | Show error + back to phone |
 | Google returns error (deny) | `?error=` in URL | Show error + retry button |
 | Session expired between steps | Backend returns `session_expired` | Show error + back to phone |
 
 ---
 
-## Environment Variables
 
-### Frontend (`.env`)
-
-```env
-# Backend API URL
-VITE_API_URL=http://localhost:3001/api
-
-# Supabase (optional, for real-time features)
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key
-```
-
-### Backend (`.env` in root or `server/.env`)
-
-```env
-# Server
-SERVER_PORT=3001
-FRONTEND_URL=http://localhost:5173
-NODE_ENV=development
-
-# Supabase
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-
-# Google OAuth
-GOOGLE_CLIENT_ID=your-client-id
-GOOGLE_CLIENT_SECRET=your-client-secret
-GOOGLE_REDIRECT_URI=http://localhost:3001/api/auth/google/callback
-
-# JWT
-JWT_SECRET=your-jwt-secret-change-in-production
-SESSION_SECRET=your-session-secret-change-in-production
-
-# Donna WhatsApp
-MIMO_WHATSAPP_NUMBER=972501234567
-```
 
 ### Production (www.donnai.io)
 
@@ -352,10 +340,10 @@ Frontend runs on `http://localhost:5173`
 ## Security Features
 
 - **JWT Authentication**: Stateless token-based auth
-- **CSRF Protection**: State parameter in OAuth flow
+- **CSRF Protection**: Stateless signed state token in OAuth flow (no session dependency)
 - **CORS**: Configured for frontend origin + donnai.io
 - **Helmet**: Security headers
-- **Session**: Secure cookies with `sameSite: 'lax'` for OAuth compatibility
+- **Session**: Secure cookies with `sameSite: 'lax'` (session used for logout only; OAuth state is stateless)
 - **State sync**: signupState always resets when auth is invalid (prevents stale step)
 
 ---
