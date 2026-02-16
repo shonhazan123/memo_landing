@@ -38,11 +38,13 @@ const PORT = process.env.SERVER_PORT || 3001
 // Security headers
 app.use(helmet())
 
-// CORS - Allow frontend to make requests (dev :5173, preview :4173, or FRONTEND_URL)
+// CORS - Allow frontend (dev, preview, FRONTEND_URL, and production donnai.io)
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:4173',
-  process.env.FRONTEND_URL
+  process.env.FRONTEND_URL,
+  'https://www.donnai.io',
+  'https://donnai.io'
 ].filter(Boolean)
 app.use(cors({
   origin: (origin, cb) => {

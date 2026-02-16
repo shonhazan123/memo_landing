@@ -212,6 +212,32 @@ SESSION_SECRET=your-session-secret-change-in-production
 MIMO_WHATSAPP_NUMBER=972501234567
 ```
 
+### Production (www.donnai.io)
+
+**Required so Google redirects to your domain instead of localhost.** Set these on the **production server** (and in Google Cloud Console):
+
+```env
+# Production frontend – where users land after OAuth
+FRONTEND_URL=https://www.donnai.io
+
+# Production OAuth callback – must match the URL where your backend receives the callback
+# If API is on same domain: https://www.donnai.io/api/auth/google/callback
+# If API is on api.donnai.io: https://api.donnai.io/api/auth/google/callback
+GOOGLE_REDIRECT_URI=https://www.donnai.io/api/auth/google/callback
+
+NODE_ENV=production
+```
+
+**Google Cloud Console (OAuth client):**
+
+1. Open [APIs & Services → Credentials](https://console.cloud.google.com/apis/credentials).
+2. Edit your OAuth 2.0 Client ID.
+3. Under **Authorized redirect URIs**, add:
+   - `https://www.donnai.io/api/auth/google/callback` (or your actual backend callback URL).
+4. Save.
+
+If `GOOGLE_REDIRECT_URI` or `FRONTEND_URL` are not set in production, the app will still use localhost and users will be sent to `localhost:3001/api/auth/google/callback` after signing in with Google.
+
 ---
 
 ## Running the Application
@@ -258,7 +284,9 @@ Frontend runs on `http://localhost:5173`
    - Create project
    - Enable Google Calendar API
    - Create OAuth credentials
-   - Add redirect URI: `http://localhost:3001/api/auth/google/callback`
+   - **Authorized redirect URIs** (add both for dev and production):
+     - `http://localhost:3001/api/auth/google/callback` (development)
+     - `https://www.donnai.io/api/auth/google/callback` (production; or your API host if different)
 
 2. **Add to `.env`**
    ```
