@@ -193,6 +193,8 @@ export const AuthProvider = ({ children }) => {
       'auth_failed': 'ההתחברות נכשלה. אנא נסה שוב.',
       'invalid_state': 'שגיאת אבטחה. אנא נסה שוב.',
       'access_denied': 'הגישה נדחתה. אנא אשר את ההרשאות.',
+      'session_expired': 'ההתחברות פגה. אנא הזן שוב את מספר הטלפון.',
+      'user_not_found': 'המשתמש לא נמצא. אנא הזן שוב את מספר הטלפון.',
       'default': 'משהו השתבש. אנא נסה שוב.'
     }
     return errorMessages[errorCode] || errorMessages.default
@@ -241,6 +243,25 @@ export const AuthProvider = ({ children }) => {
   }, [signupState])
 
   /**
+   * Go back to phone number step to re-enter or change number.
+   * Clears token and user so a fresh check can be done.
+   */
+  const goBackToPhoneStep = useCallback(() => {
+    clearToken()
+    setUser(null)
+    setIsAuthenticated(false)
+    setError(null)
+    const newState = {
+      ...getInitialState(),
+      step: SIGNUP_STEPS.PHONE_NUMBER,
+      // Keep last phone so user can edit instead of re-typing
+      whatsappNumber: signupState.whatsappNumber || null
+    }
+    setSignupState(newState)
+    saveSignupState(newState)
+  }, [signupState.whatsappNumber])
+
+  /**
    * Sign in with Google - redirects to backend OAuth URL
    * Requires userId from phone number step
    */
@@ -260,10 +281,18 @@ export const AuthProvider = ({ children }) => {
       window.location.href = authUrl
     } catch (err) {
       console.error('Sign in error:', err)
+      setIsLoading(false)
       
-      // Provide helpful error messages in Hebrew
+      // User was deleted or session stale – send them back to phone step
+      const isUserNotFound = err.status === 404 || (err.message && err.message.includes('User not found'))
+      if (isUserNotFound) {
+        goBackToPhoneStep()
+        setError('המשתמש לא נמצא. אנא הזן שוב את מספר הטלפון.')
+        return
+      }
+      
+      // Other errors
       let errorMessage = 'שגיאה בהתחברות'
-      
       if (err.message) {
         if (err.message.includes('Google OAuth is not configured')) {
           errorMessage = 'הגדרות Google לא הוגדרו. אנא הוסף GOOGLE_CLIENT_ID ו-GOOGLE_CLIENT_SECRET לקובץ .env'
@@ -273,11 +302,9 @@ export const AuthProvider = ({ children }) => {
           errorMessage = err.message
         }
       }
-      
       setError(errorMessage)
-      setIsLoading(false)
     }
-  }, [signupState.userId])
+  }, [signupState.userId, goBackToPhoneStep])
 
   /**
    * Sign out
@@ -369,6 +396,7 @@ export const AuthProvider = ({ children }) => {
     submitPhoneNumber,
     completeOnboarding,
     resetSignupFlow,
+    goBackToPhoneStep,
     getWhatsAppUrl,
     
     // Constants

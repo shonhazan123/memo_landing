@@ -16,7 +16,7 @@ import './Signup.css'
 /**
  * Google Sign-in Step Component
  */
-const GoogleAuthStep = ({ onSignIn, isLoading, error, whatsappNumber }) => {
+const GoogleAuthStep = ({ onSignIn, onGoBackToPhone, isLoading, error, whatsappNumber }) => {
   return (
     <div className="signup-step fade-in">
       {/* Success checkmark */}
@@ -111,6 +111,17 @@ const GoogleAuthStep = ({ onSignIn, isLoading, error, whatsappNumber }) => {
             <span className="text-lg">🔒</span>
             <span className="text-sm text-gray-500">מאובטח ופרטי</span>
           </div>
+          
+          {/* Change phone number */}
+          {onGoBackToPhone && (
+            <button
+              type="button"
+              onClick={onGoBackToPhone}
+              className="w-full mt-6 py-3 text-gray-500 hover:text-indigo-600 transition-colors text-sm"
+            >
+              שינוי מספר טלפון
+            </button>
+          )}
         </>
       )}
     </div>
@@ -120,8 +131,8 @@ const GoogleAuthStep = ({ onSignIn, isLoading, error, whatsappNumber }) => {
 /**
  * Phone Number Step Component (First Step)
  */
-const PhoneNumberStep = ({ onSubmit, isLoading, error }) => {
-  const [phoneNumber, setPhoneNumber] = useState('')
+const PhoneNumberStep = ({ onSubmit, isLoading, error, initialPhoneNumber }) => {
+  const [phoneNumber, setPhoneNumber] = useState(initialPhoneNumber || '')
   const [localError, setLocalError] = useState(null)
 
   const handleSubmit = async (e) => {
@@ -422,6 +433,7 @@ const Signup = () => {
     signInWithGoogle,
     submitPhoneNumber,
     completeOnboarding,
+    goBackToPhoneStep,
     getWhatsAppUrl,
     SIGNUP_STEPS
   } = useAuth()
@@ -433,6 +445,7 @@ const Signup = () => {
         return (
           <GoogleAuthStep 
             onSignIn={signInWithGoogle}
+            onGoBackToPhone={goBackToPhoneStep}
             isLoading={isLoading}
             error={error}
             whatsappNumber={signupState.whatsappNumber}
@@ -445,6 +458,7 @@ const Signup = () => {
             onSubmit={submitPhoneNumber}
             isLoading={isLoading}
             error={error}
+            initialPhoneNumber={signupState.whatsappNumber}
           />
         )
       

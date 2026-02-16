@@ -165,7 +165,8 @@ function MyComponent() {
     currentStep,
     signInWithGoogle,
     submitPhoneNumber,
-    completeOnboarding
+    completeOnboarding,
+    goBackToPhoneStep  // Return to phone step to re-enter or change number
   } = useAuth()
   
   // ...
@@ -314,6 +315,7 @@ Errors are displayed in Hebrew:
 - `ההתחברות נכשלה` - Auth failed
 - `מספר טלפון לא תקין` - Invalid phone
 - `שגיאת אבטחה` - Security error
+- `המשתמש לא נמצא` - User not found (e.g. user deleted from DB); user can use "שינוי מספר טלפון" to go back and re-enter phone
 
 ### Backend Errors
 

@@ -73,31 +73,22 @@ class AuthController {
         return res.redirect(`${frontendUrl}/signup?error=${encodeURIComponent(oauthError)}`)
       }
       
-      // Verify state token
-      if (state !== req.session.oauthState) {
+      // Verify state token (CSRF)
+      if (!state || state !== req.session.oauthState) {
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173'
         return res.redirect(`${frontendUrl}/signup?error=invalid_state`)
       }
       
-      // Clear state from session
+      // Clear state from session (use once)
       delete req.session.oauthState
       
-      // Verify state token
-      if (state !== req.session.oauthState) {
-        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173'
-        return res.redirect(`${frontendUrl}/signup?error=invalid_state`)
-      }
-      
-      // Get user ID from session (should be set when they provided phone number)
+      // Get user ID from session (set when they started OAuth from signup)
       const userId = req.session.userId
       
       if (!userId) {
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173'
         return res.redirect(`${frontendUrl}/signup?error=session_expired`)
       }
-      
-      // Clear state from session
-      delete req.session.oauthState
       
       // Handle callback and link tokens to existing user
       const result = await AuthService.handleGoogleCallback(code, userId)
