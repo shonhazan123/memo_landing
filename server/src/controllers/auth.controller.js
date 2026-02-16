@@ -29,7 +29,7 @@ class AuthController {
    */
   async initiateGoogleAuth(req, res, next) {
     try {
-      const { planType = 'standard', phoneNumber } = req.query
+      const { planType = 'standard', phoneNumber, redirectTo } = req.query
 
       if (!phoneNumber) {
         return res.status(400).json({
@@ -38,8 +38,8 @@ class AuthController {
         })
       }
 
-      // Build auth URL — state is a signed JWT with phoneNumber + planType
-      const authUrl = AuthService.getGoogleAuthUrl({ phoneNumber, planType })
+      // Build auth URL — state is a signed JWT with phoneNumber + planType + optional redirectTo
+      const authUrl = AuthService.getGoogleAuthUrl({ phoneNumber, planType, redirectTo: redirectTo || null })
 
       res.json({ authUrl })
     } catch (error) {
@@ -87,18 +87,24 @@ class AuthController {
         return res.redirect(`${frontendUrl}/signup?error=invalid_state`)
       }
 
-      const { phoneNumber, planType } = statePayload
+      const { phoneNumber, planType, redirectTo } = statePayload
 
       // ── Exchange code, create/find user, link tokens ──
       const result = await AuthService.handleGoogleCallback(code, phoneNumber, planType)
 
       // ── Redirect to frontend with JWT ──
-      const redirectUrl = new URL(`${frontendUrl}/signup`)
+      // If redirectTo is set (e.g. '/settings'), use that instead of /signup
+      const redirectPath = redirectTo || '/signup'
+      const redirectUrl = new URL(`${frontendUrl}${redirectPath}`)
       redirectUrl.searchParams.set('token', result.jwtToken)
-      redirectUrl.searchParams.set(
-        'step',
-        result.user.onboardingComplete ? 'completed' : 'whatsapp_redirect'
-      )
+
+      // Only set step param for the signup flow
+      if (!redirectTo) {
+        redirectUrl.searchParams.set(
+          'step',
+          result.user.onboardingComplete ? 'completed' : 'whatsapp_redirect'
+        )
+      }
 
       res.redirect(redirectUrl.toString())
     } catch (error) {

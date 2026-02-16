@@ -118,6 +118,38 @@
   object-fit: contain;
 }
 
+/* User icon button (authenticated state) */
+.card-nav-user-button {
+  border: none;
+  padding: 2px;
+  height: 40px;
+  width: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+  margin-right: 10px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.card-nav-user-button-inner {
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #374151;
+  transition: color 0.2s;
+}
+
+.card-nav-user-button:hover .card-nav-user-button-inner {
+  color: #4f46e5;
+}
+
 /* CTA button: uses shared .gradient-border-pill + .gradient-border-pill-inner (see index.css) */
 .card-nav-cta-button {
   border: none;
@@ -283,6 +315,14 @@
     font-size: 0.75rem;
   }
 
+  .card-nav-user-button {
+    order: 3;
+    margin-left: 5px;
+    margin-right: 5px;
+    height: 36px;
+    width: 36px;
+  }
+
   .card-nav-content {
     flex-direction: column;
     align-items: stretch;
@@ -343,6 +383,13 @@
   .card-nav-cta-button-inner {
     padding: 0 8px;
     font-size: 13px;
+  }
+
+  .card-nav-user-button {
+    margin-left: 2px;
+    margin-right: 2px;
+    height: 34px;
+    width: 34px;
   }
 
   .card-nav-content {

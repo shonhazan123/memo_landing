@@ -366,3 +366,34 @@ HTTP status codes:
 - `401` - Unauthorized (auth required)
 - `404` - Not found
 - `500` - Server error
+
+---
+
+## Settings Page & Account Management
+
+### Route
+- `/settings` -- protected by `ProtectedRoute` component, requires `isAuthenticated === true`
+- Uses `UserDashboardLayout` wrapper (shared by future dashboard pages)
+
+### Disconnect (Frontend-Only)
+- Clears JWT from localStorage, resets AuthContext state
+- Does NOT call any backend endpoint -- DB untouched
+- User returns to default visitor state; WhatsApp agent keeps working
+- Method: `disconnect()` in AuthContext
+
+### Reconnect Google (Switch Account)
+- Calls `GET /api/auth/google` with `redirectTo=/settings` query param
+- `redirectTo` is encoded into the signed OAuth state JWT
+- On callback, backend redirects to `/settings?token=...` instead of `/signup`
+- `initAuth` detects token on `/settings` path and skips signup state updates
+
+### Account Deletion (Cancel Subscription)
+- `DELETE /api/users/me` -- deletes user row from DB
+- `ON DELETE CASCADE` on `user_google_tokens` cleans up tokens automatically
+- Frontend clears auth state and redirects to home
+- Method: `deleteAccount()` in AuthContext
+
+### Enhanced Profile Endpoint
+- `GET /api/users/me` now returns `name` and `googleScopes` fields
+- `googleScopes` is the `scope TEXT[]` from `user_google_tokens` table
+- Used by Settings page to show Gmail/Calendar connection status

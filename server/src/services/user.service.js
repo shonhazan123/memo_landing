@@ -4,6 +4,7 @@
  */
 
 import UserModel from '../models/User.model.js'
+import GoogleTokenModel from '../models/GoogleToken.model.js'
 
 // Mimo WhatsApp number - update this with actual number
 const MIMO_WHATSAPP_NUMBER = process.env.MIMO_WHATSAPP_NUMBER || '972501234567'
@@ -18,8 +19,9 @@ class UserService {
   async getUserById(userId) {
     const user = await UserModel.findById(userId)
     if (!user) return null
-    
-    return this.formatUser(user)
+
+    const googleTokens = await GoogleTokenModel.findByUserId(userId)
+    return this.formatUser(user, googleTokens)
   }
 
   /**
@@ -73,6 +75,16 @@ class UserService {
   async completeOnboarding(userId) {
     const user = await UserModel.setOnboardingComplete(userId)
     return this.formatUser(user)
+  }
+
+  /**
+   * Delete user account and all associated data
+   * @param {string} userId - User UUID
+   * @returns {Promise<string>} Deleted user ID
+   */
+  async deleteUser(userId) {
+    const deletedId = await UserModel.delete(userId)
+    return deletedId
   }
 
   /**
@@ -135,17 +147,20 @@ class UserService {
   /**
    * Format user for API response
    * @param {Object} user - Database user record
+   * @param {Object|null} googleTokens - Google token record (optional)
    * @returns {Object} Formatted user
    */
-  formatUser(user) {
+  formatUser(user, googleTokens = null) {
     return {
       id: user.id,
       email: user.google_email || null,
+      name: user.name || null,
       whatsappNumber: user.whatsapp_number,
       planType: user.plan_type,
       timezone: user.timezone,
       onboardingComplete: user.onboarding_complete,
-      createdAt: user.created_at
+      createdAt: user.created_at,
+      googleScopes: googleTokens?.scope || []
     }
   }
 }

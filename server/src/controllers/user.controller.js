@@ -158,6 +158,22 @@ class UserController {
   }
 
   /**
+   * DELETE /api/users/me
+   * Delete user account and all associated data
+   */
+  async deleteAccount(req, res, next) {
+    try {
+      const deletedUserId = await UserService.deleteUser(req.userId)
+      res.json({ success: true, deletedUserId })
+    } catch (error) {
+      if (error.message === 'User not found') {
+        return res.status(404).json({ error: 'User not found' })
+      }
+      next(error)
+    }
+  }
+
+  /**
    * GET /api/users/whatsapp-info
    * Get WhatsApp info for starting conversation
    */

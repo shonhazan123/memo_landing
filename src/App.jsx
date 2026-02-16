@@ -4,12 +4,15 @@ import { AuthProvider } from './context/AuthContext'
 
 import CardNav from './components/CardNav/CardNav'
 import Footer from './components/Footer/Footer'
+import ProtectedRoute from './components/ProtectedRoute'
+import UserDashboardLayout from './components/UserDashboardLayout/UserDashboardLayout'
 import Home from './pages/Home'
 import Superpowers from './pages/Superpowers'
 import AbilityDetail from './pages/AbilityDetail'
 import Pricing from './pages/Pricing'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
+import Settings from './pages/Settings'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
 import './styles/index.css'
@@ -20,6 +23,35 @@ function ScrollToTop() {
     window.scrollTo(0, 0)
   }, [pathname])
   return null
+}
+
+/** Pages that use the dashboard layout (no CardNav / Footer) */
+const DASHBOARD_PATHS = ['/settings']
+
+function MainLayout({ navItems, children }) {
+  const { pathname } = useLocation()
+  const isDashboard = DASHBOARD_PATHS.some(p => pathname.startsWith(p))
+
+  if (isDashboard) {
+    return <>{children}</>
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      <CardNav
+        items={navItems}
+        baseColor="rgba(255, 255, 255, 0.9)"
+        menuColor="#000"
+        buttonBgColor="#111"
+        buttonTextColor="#fff"
+        ease="power3.out"
+      />
+      <main className="pt-0 flex-1" style={{ borderRadius: '0px' }}>
+        {children}
+      </main>
+      <Footer />
+    </div>
+  )
 }
 
 function App() {
@@ -54,29 +86,25 @@ function App() {
     <Router>
       <ScrollToTop />
       <AuthProvider>
-        <div className="min-h-screen flex flex-col">
-          <CardNav
-            items={navItems}
-            baseColor="rgba(255, 255, 255, 0.9)"
-            menuColor="#000"
-            buttonBgColor="#111"
-            buttonTextColor="#fff"
-            ease="power3.out"
-          />
-          <main className="pt-0 flex-1" style={{ borderRadius: '0px' }}> {/* Padding for CardNav */}
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/superpowers" element={<Superpowers />} />
-              <Route path="/superpowers/:slug" element={<AbilityDetail />} />
-              <Route path="/pricing" element={<Pricing />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/terms" element={<Terms />} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
+        <MainLayout navItems={navItems}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/superpowers" element={<Superpowers />} />
+            <Route path="/superpowers/:slug" element={<AbilityDetail />} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+
+            {/* Protected dashboard routes (own layout, no CardNav/Footer) */}
+            <Route element={<ProtectedRoute />}>
+              <Route element={<UserDashboardLayout />}>
+                <Route path="/settings" element={<Settings />} />
+              </Route>
+            </Route>
+          </Routes>
+        </MainLayout>
       </AuthProvider>
     </Router>
   )

@@ -26,21 +26,18 @@ class AuthService {
 
   /**
    * Create a signed OAuth state token.
-   * Encodes phoneNumber and planType so the callback can
-   * register the user without needing a server-side session.
-   * Extensible — add more fields here as the flow grows
-   * (e.g. name, payment reference).
+   * Encodes phoneNumber, planType, and optional redirectTo so the
+   * callback can register the user and redirect appropriately.
    *
    * @param {string} phoneNumber - Formatted phone (+972...)
    * @param {string} planType
+   * @param {string|null} redirectTo - Frontend path to redirect after OAuth (e.g. '/settings')
    * @returns {string} Signed state token (JWT)
    */
-  createOAuthState(phoneNumber, planType = 'standard') {
-    return jwt.sign(
-      { phoneNumber, planType, purpose: 'oauth_state' },
-      JWT_SECRET,
-      { expiresIn: OAUTH_STATE_EXPIRES_IN }
-    )
+  createOAuthState(phoneNumber, planType = 'standard', redirectTo = null) {
+    const payload = { phoneNumber, planType, purpose: 'oauth_state' }
+    if (redirectTo) payload.redirectTo = redirectTo
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: OAUTH_STATE_EXPIRES_IN })
   }
 
   /**
@@ -48,13 +45,17 @@ class AuthService {
    * Returns the payload if valid, null if tampered or expired.
    *
    * @param {string} stateToken
-   * @returns {{ phoneNumber: string, planType: string } | null}
+   * @returns {{ phoneNumber: string, planType: string, redirectTo?: string } | null}
    */
   verifyOAuthState(stateToken) {
     try {
       const decoded = jwt.verify(stateToken, JWT_SECRET)
       if (decoded.purpose !== 'oauth_state') return null
-      return { phoneNumber: decoded.phoneNumber, planType: decoded.planType }
+      return {
+        phoneNumber: decoded.phoneNumber,
+        planType: decoded.planType,
+        redirectTo: decoded.redirectTo || null
+      }
     } catch {
       return null
     }
@@ -70,12 +71,13 @@ class AuthService {
    * @param {Object} options
    * @param {string} options.phoneNumber - Formatted phone (encoded into state)
    * @param {string} options.planType    - User plan type
+   * @param {string|null} options.redirectTo - Frontend path to redirect after OAuth
    * @returns {string} Authorization URL
    */
   getGoogleAuthUrl(options = {}) {
-    const { phoneNumber, planType = 'standard' } = options
+    const { phoneNumber, planType = 'standard', redirectTo = null } = options
 
-    const state = this.createOAuthState(phoneNumber, planType)
+    const state = this.createOAuthState(phoneNumber, planType, redirectTo)
 
     const oauth2Client = createOAuth2Client()
     const scopes = getScopesForPlan(planType)

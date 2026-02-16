@@ -104,13 +104,15 @@ export const AuthProvider = ({ children }) => {
           window.history.replaceState({}, '', window.location.pathname)
         }
 
+        // ── Detect if this is a settings OAuth redirect ──
+        const isSettingsRedirect = window.location.pathname === '/settings' && !!tokenFromUrl
+
         // ── Verify existing JWT ──────────────────────────
         const hasValidToken = await verifyExistingToken()
 
         if (hasValidToken) {
-          const ok = await loadUserProfile(stepFromUrl)
+          const ok = await loadUserProfile(stepFromUrl, isSettingsRedirect)
           if (!ok) {
-            // User was deleted or profile fetch failed → full reset
             handleAuthInvalid()
           }
         } else {
@@ -181,27 +183,30 @@ export const AuthProvider = ({ children }) => {
   /**
    * Fetch user profile from backend and sync signupState.
    * Returns true on success, false if user no longer exists.
+   * When isSettingsRedirect is true, skip signup state updates.
    */
-  async function loadUserProfile(stepOverride) {
+  async function loadUserProfile(stepOverride, isSettingsRedirect = false) {
     try {
       const { user: userData } = await api.auth.getCurrentUser()
       setUser(userData)
       setIsAuthenticated(true)
 
-      let step = determineStepFromUser(userData)
+      // Skip signup state updates when returning from settings OAuth reconnect
+      if (!isSettingsRedirect) {
+        let step = determineStepFromUser(userData)
 
-      // Allow the URL to override step (e.g. from OAuth callback)
-      if (stepOverride && Object.values(SIGNUP_STEPS).includes(stepOverride)) {
-        step = stepOverride
+        if (stepOverride && Object.values(SIGNUP_STEPS).includes(stepOverride)) {
+          step = stepOverride
+        }
+
+        updateSignupState({
+          step,
+          userId: userData.id,
+          whatsappNumber: userData.whatsappNumber,
+          hasGoogleConnection: !!userData.email,
+          googleEmail: userData.email || null
+        })
       }
-
-      updateSignupState({
-        step,
-        userId: userData.id,
-        whatsappNumber: userData.whatsappNumber,
-        hasGoogleConnection: !!userData.email,
-        googleEmail: userData.email || null
-      })
 
       return true
     } catch (err) {
@@ -381,6 +386,58 @@ export const AuthProvider = ({ children }) => {
     setError(null)
   }, [])
 
+  // ── Disconnect (frontend-only, DB untouched) ──────────
+  const disconnect = useCallback(() => {
+    clearToken()
+    clearOAuthRedirectPending()
+    clearSignupState()
+    setIsAuthenticated(false)
+    setUser(null)
+    setError(null)
+    setSignupState(getInitialSignupState())
+  }, [])
+
+  // ── Reconnect Google (switch account from settings) ───
+  const reconnectGoogle = useCallback(async () => {
+    const phoneNumber = user?.whatsappNumber
+    if (!phoneNumber) return
+
+    setError(null)
+    try {
+      const { authUrl } = await api.auth.getGoogleAuthUrl(
+        phoneNumber,
+        user.planType || 'standard',
+        '/settings'
+      )
+      setIsRedirectingToOAuth(true)
+      setOAuthRedirectPending()
+      window.location.href = authUrl
+    } catch (err) {
+      console.error('Reconnect Google error:', err)
+      setIsRedirectingToOAuth(false)
+      clearOAuthRedirectPending()
+      setError(getGoogleSignInErrorMessage(err))
+    }
+  }, [user])
+
+  // ── Delete account (removes user from DB) ─────────────
+  const deleteAccount = useCallback(async () => {
+    try {
+      await api.users.deleteAccount()
+      clearToken()
+      clearOAuthRedirectPending()
+      clearSignupState()
+      setIsAuthenticated(false)
+      setUser(null)
+      setSignupState(getInitialSignupState())
+      return { success: true }
+    } catch (err) {
+      console.error('Delete account error:', err)
+      setError(err.message)
+      return { success: false, error: err.message }
+    }
+  }, [])
+
   // ═══════════════════════════════════════════════════════
   //  Context value
   // ═══════════════════════════════════════════════════════
@@ -398,6 +455,9 @@ export const AuthProvider = ({ children }) => {
     // Auth actions
     signInWithGoogle,
     signOut,
+    disconnect,
+    reconnectGoogle,
+    deleteAccount,
 
     // Signup flow actions
     submitPhoneNumber,

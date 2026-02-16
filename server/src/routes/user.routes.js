@@ -12,6 +12,9 @@ const router = Router()
 // GET /api/users/me - Get current user profile (requires auth)
 router.get('/me', requireAuth, UserController.getProfile.bind(UserController))
 
+// DELETE /api/users/me - Delete user account (requires auth)
+router.delete('/me', requireAuth, UserController.deleteAccount.bind(UserController))
+
 // POST /api/users/check-phone - Check if user exists and Google status (public)
 router.post('/check-phone', UserController.checkPhone.bind(UserController))
 

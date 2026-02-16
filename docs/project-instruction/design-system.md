@@ -619,6 +619,26 @@ When creating new components, ensure:
 - ✅ Smooth transitions
 - ✅ Consistent with design system
 
+## ⚙️ Settings Page Design
+
+### Layout
+- Route: `/settings`, protected, uses `UserDashboardLayout`
+- Background: `bg-gray-50`, white cards stacked vertically
+- Desktop: centered `max-w-2xl`, cards `p-8 rounded-3xl shadow-md`, 2-column profile fields
+- Mobile: full-width cards `mx-4 p-5 rounded-2xl`, stacked fields, full-width 48px buttons
+
+### Connection Status Indicators
+- Connected: green dot (`bg-green-500 w-2.5 h-2.5 rounded-full`) + "מחובר" in `text-green-600`
+- Disconnected: red dot (`bg-red-400`) + "לא מחובר" in `text-red-500`
+
+### Danger Button (Delete Account)
+- `bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 rounded-full`
+- Confirmation modal: `bg-white rounded-3xl p-8 max-w-md shadow-2xl` with red confirm button
+
+### Navigation -- Authenticated State
+- When `isAuthenticated === true`: CTA button replaced with circular user icon (40x40px, gradient-border-pill, `lucide-react` User icon)
+- Navigates to `/settings`, tooltip "הגדרות" on hover
+
 ## 🎓 Design Principles Summary
 - **Mobile-First** - Design for small screens, enhance for large
 - **Clarity** - Every element has a clear purpose

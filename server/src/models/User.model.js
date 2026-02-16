@@ -178,6 +178,22 @@ class UserModel {
   async setOnboardingComplete(id) {
     return this.update(id, { onboarding_complete: true })
   }
+
+  /**
+   * Delete user by ID (cascade deletes user_google_tokens)
+   * @param {string} id - User UUID
+   * @returns {Promise<string>} Deleted user ID
+   */
+  async delete(id) {
+    const result = await query(
+      'DELETE FROM users WHERE id = $1 RETURNING id',
+      [id]
+    )
+    if (!result.rows[0]) {
+      throw new Error('User not found')
+    }
+    return result.rows[0].id
+  }
 }
 
 export default new UserModel()

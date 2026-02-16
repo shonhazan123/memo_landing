@@ -116,8 +116,10 @@ const api = {
      * @param {string} planType - User plan type
      * @returns {Promise<{authUrl: string}>}
      */
-    getGoogleAuthUrl: async (phoneNumber, planType = 'standard') => {
-      return request(`/auth/google?phoneNumber=${encodeURIComponent(phoneNumber)}&planType=${planType}`)
+    getGoogleAuthUrl: async (phoneNumber, planType = 'standard', redirectTo = null) => {
+      let url = `/auth/google?phoneNumber=${encodeURIComponent(phoneNumber)}&planType=${planType}`
+      if (redirectTo) url += `&redirectTo=${encodeURIComponent(redirectTo)}`
+      return request(url)
     },
     
     /**
@@ -214,6 +216,14 @@ const api = {
     getWhatsAppInfo: async (message) => {
       const params = message ? `?message=${encodeURIComponent(message)}` : ''
       return request(`/users/whatsapp-info${params}`)
+    },
+
+    /**
+     * Delete user account and all associated data
+     * @returns {Promise<{success: boolean, deletedUserId: string}>}
+     */
+    deleteAccount: async () => {
+      return request('/users/me', { method: 'DELETE' })
     }
   }
 }

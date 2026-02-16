@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { User } from 'lucide-react'
+import { useAuth } from '../../context/AuthContext'
 import Logo from '../Logo/Logo'
 import './CardNav.css'
 
@@ -15,6 +17,7 @@ const CardNav = ({
   const navRef = useRef(null)
   const navigate = useNavigate()
   const location = useLocation()
+  const { isAuthenticated } = useAuth()
 
   useEffect(() => {
     if (isOpen && navRef.current) {
@@ -61,12 +64,25 @@ const CardNav = ({
             <span className="hamburger-line"></span>
             <span className="hamburger-line"></span>
           </button>
-          <button
-            className="card-nav-cta-button gradient-border-pill"
-            onClick={() => handleItemClick('/login')}
-          >
-            <span className="card-nav-cta-button-inner gradient-border-pill-inner">נסה עכשיו</span>
-          </button>
+          {isAuthenticated ? (
+            <button
+              className="card-nav-user-button gradient-border-pill"
+              onClick={() => handleItemClick('/settings')}
+              aria-label="הגדרות"
+              title="הגדרות"
+            >
+              <span className="card-nav-user-button-inner gradient-border-pill-inner">
+                <User className="w-5 h-5" />
+              </span>
+            </button>
+          ) : (
+            <button
+              className="card-nav-cta-button gradient-border-pill"
+              onClick={() => handleItemClick('/login')}
+            >
+              <span className="card-nav-cta-button-inner gradient-border-pill-inner">נסה עכשיו</span>
+            </button>
+          )}
         </div>
         <div className="card-nav-content">
           {items.map((item, index) => (
