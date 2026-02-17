@@ -31,7 +31,7 @@ if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
   console.warn('   Get credentials from: https://console.cloud.google.com/apis/credentials')
 }
 
-// OAuth scopes based on plan type
+// OAuth scopes - only requesting calendar access
 export const SCOPES = {
   base: [
     'openid',
@@ -40,35 +40,18 @@ export const SCOPES = {
   ],
   calendar: [
     'https://www.googleapis.com/auth/calendar'
-  ],
-  gmail: [
-    'https://www.googleapis.com/auth/gmail.modify',
-    'https://www.googleapis.com/auth/gmail.send'
   ]
 }
 
 /**
  * Get scopes based on user plan type
- * @param {string} planType - 'free' | 'standard' | 'pro'
+ * All users get calendar access regardless of plan
+ * @param {string} planType - 'free' | 'standard' | 'pro' (not used, kept for compatibility)
  * @returns {string[]} Array of OAuth scopes
  */
 export const getScopesForPlan = (planType = 'standard') => {
-  const scopes = [...SCOPES.base]
-  
-  switch (planType) {
-    case 'pro':
-      scopes.push(...SCOPES.calendar, ...SCOPES.gmail)
-      break
-    case 'standard':
-      scopes.push(...SCOPES.calendar)
-      break
-    case 'free':
-    default:
-      // Only base scopes
-      break
-  }
-  
-  return scopes
+  // All users get base scopes + calendar access
+  return [...SCOPES.base, ...SCOPES.calendar]
 }
 
 /**

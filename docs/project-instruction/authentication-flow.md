@@ -323,7 +323,7 @@ Frontend runs on `http://localhost:5173`
 
 1. **Google Cloud Console**
    - Create project
-   - Enable Google Calendar API
+   - Enable Google Calendar API (only calendar access is requested)
    - Create OAuth credentials
    - **Authorized redirect URIs** (add both for dev and production):
      - `http://localhost:3001/api/auth/google/callback` (development)
