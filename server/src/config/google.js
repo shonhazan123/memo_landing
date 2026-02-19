@@ -39,7 +39,7 @@ export const SCOPES = {
     'profile'
   ],
   calendar: [
-    'https://www.googleapis.com/auth/calendar.events'
+    'https://www.googleapis.com/auth/calendar'
   ]
 }
 
