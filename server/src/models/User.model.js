@@ -120,8 +120,15 @@ class UserModel {
 
     Object.keys(updates).forEach(key => {
       if (updates[key] !== undefined) {
-        fields.push(`${key} = $${paramIndex}`)
-        values.push(updates[key])
+        // JSONB column: pass string and cast so PostgreSQL accepts it
+        if (key === 'settings' && (typeof updates[key] === 'string' || typeof updates[key] === 'object')) {
+          const val = typeof updates[key] === 'string' ? updates[key] : JSON.stringify(updates[key])
+          fields.push(`settings = $${paramIndex}::jsonb`)
+          values.push(val)
+        } else {
+          fields.push(`${key} = $${paramIndex}`)
+          values.push(updates[key])
+        }
         paramIndex++
       }
     })

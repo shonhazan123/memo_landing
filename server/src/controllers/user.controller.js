@@ -34,7 +34,7 @@ class UserController {
    */
   async checkPhone(req, res, next) {
     try {
-      const { phoneNumber } = req.body
+      const { phoneNumber, userName } = req.body
 
       if (!phoneNumber) {
         return res.status(400).json({ error: 'Phone number is required' })
@@ -56,12 +56,21 @@ class UserController {
         const hasGoogleConnection = !!(googleTokens && googleTokens.refresh_token)
 
         if (hasGoogleConnection) {
-          // Returning user — issue JWT so they can skip to completed/whatsapp
+          // Returning user — persist display name into settings if provided (they skip OAuth, so callback never runs)
+          const nameToSave = typeof userName === 'string' && userName.trim() ? userName.trim() : null
+          if (nameToSave) {
+            const current = existingUser.settings && typeof existingUser.settings === 'object'
+              ? existingUser.settings
+              : (typeof existingUser.settings === 'string' ? (() => { try { return JSON.parse(existingUser.settings) } catch { return {} } })() : {})
+            const newSettings = { ...(current || {}), user_name: nameToSave }
+            await UserModel.update(existingUser.id, { settings: newSettings })
+          }
           const jwtToken = AuthService.generateJWT(existingUser)
           return res.json({
             isNewUser: false,
             registered: true,
             user: UserService.formatUser(existingUser),
+            formattedNumber,
             hasGoogleConnection: true,
             jwtToken
           })

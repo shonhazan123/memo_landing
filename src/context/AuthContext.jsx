@@ -43,9 +43,12 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null)
 
   // ── Signup wizard state (persisted in localStorage) ──
-  const [signupState, setSignupState] = useState(
-    () => loadSignupState() || getInitialSignupState()
-  )
+  // Merge loaded state with defaults so new keys (e.g. userName) always exist
+  const [signupState, setSignupState] = useState(() => {
+    const defaults = getInitialSignupState()
+    const loaded = loadSignupState()
+    return loaded ? { ...defaults, ...loaded } : defaults
+  })
 
   // ── OAuth redirect state (NOT persisted — lives only in React) ──
   // Separate from isLoading so an external redirect never locks the UI.
@@ -239,12 +242,12 @@ export const AuthProvider = ({ children }) => {
   // ── Submit phone number ────────────────────────────────
   // Validates the phone and checks if the user is already registered.
   // Does NOT create a user in the database.
-  const submitPhoneNumber = useCallback(async (phoneNumber) => {
+  const submitPhoneNumber = useCallback(async (phoneNumber, userName = null) => {
     setError(null)
     setIsLoading(true)
 
     try {
-      const result = await api.users.checkPhone(phoneNumber)
+      const result = await api.users.checkPhone(phoneNumber, userName)
 
       // Case 1: Returning user — already fully registered with Google
       if (result.registered && result.jwtToken) {
@@ -259,6 +262,7 @@ export const AuthProvider = ({ children }) => {
           userId: result.user.id,
           whatsappNumber: result.user.whatsappNumber,
           formattedNumber: result.formattedNumber || result.user.whatsappNumber,
+          userName: userName ?? null,
           hasGoogleConnection: true,
           googleEmail: result.user.email || null
         })
@@ -267,11 +271,12 @@ export const AuthProvider = ({ children }) => {
       }
 
       // Case 2: New or partial user — proceed to Google step
-      // No user created in DB yet; just store the phone locally.
+      // No user created in DB yet; just store the phone and name locally.
       updateSignupState({
         step: SIGNUP_STEPS.GOOGLE_AUTH,
         whatsappNumber: phoneNumber,
         formattedNumber: result.formattedNumber,
+        userName: userName ?? null,
         hasGoogleConnection: false
       })
 
@@ -314,8 +319,13 @@ export const AuthProvider = ({ children }) => {
     setError(null)
 
     try {
-      // Fetch the Google auth URL — phone is encoded in the signed state token
-      const { authUrl } = await api.auth.getGoogleAuthUrl(phoneNumber, 'standard')
+      // Fetch the Google auth URL — phone and optional userName encoded in the signed state token
+      const { authUrl } = await api.auth.getGoogleAuthUrl(
+        phoneNumber,
+        'standard',
+        null,
+        signupState.userName
+      )
 
       // Mark redirect BEFORE navigating away
       setIsRedirectingToOAuth(true)
@@ -330,7 +340,7 @@ export const AuthProvider = ({ children }) => {
 
       setError(getGoogleSignInErrorMessage(err))
     }
-  }, [signupState.formattedNumber, signupState.whatsappNumber])
+  }, [signupState.formattedNumber, signupState.whatsappNumber, signupState.userName])
 
   // ── Sign out ───────────────────────────────────────────
   const signOut = useCallback(async () => {

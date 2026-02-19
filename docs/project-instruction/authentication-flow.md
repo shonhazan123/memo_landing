@@ -92,7 +92,9 @@ server/src/
 Registration (DB insert) only happens when Google OAuth completes successfully.
 This ensures we never have orphaned users or partial registrations.
 
-### Step 1: Phone Number (validate only — no DB write)
+### Step 1: Phone Number and Display Name (validate only — no DB write)
+
+The frontend collects the WhatsApp number and a display name in response to **"איך תרצה שדונה תקראה לך?"** (What would you like Dona to call you?). Both are kept in signup state (e.g. localStorage); no user row is created yet.
 
 ```
 Frontend                    Backend
@@ -108,24 +110,22 @@ Frontend                    Backend
 ```
 
 Three outcomes:
-- **New user** (`isNewUser: true`): Phone stored in frontend only. Proceed to Google.
+- **New user** (`isNewUser: true`): Phone (and display name) stored in frontend only. Proceed to Google.
 - **Partial user** (`registered: false`): Phone exists but no Google. Proceed to Google.
 - **Returning user** (`registered: true`): Fully registered. JWT issued, skip to WhatsApp/completed.
 
 ### Step 2: Google Sign-in (Stateless — creates user on completion)
 
-The `state` parameter sent to Google is a **signed JWT** containing `phoneNumber` and `planType`
-(not userId, since the user doesn't exist in the DB yet). On callback, the backend decodes the
-phone from the state, exchanges the Google code for tokens, and creates the user with all
-information at once.
+The `state` parameter sent to Google is a **signed JWT** containing `phoneNumber`, `planType`, and optionally `userName` (the display name from Step 1). On callback, the backend decodes the state, exchanges the Google code for tokens, creates or finds the user by phone, links Google profile and tokens, and **writes the display name into `users.settings` as `user_name`** if it was provided. This is the only place `settings.user_name` is set during signup.
 
 ```
 Frontend                    Backend                     Google
    │                           │                           │
    ├─── GET /api/auth/google ──►│                           │
    │    ?phoneNumber=...        │                           │
-   │                           │─ createOAuthState(phone)   │
-   │                           │  (signed JWT as state)     │
+   │    &userName=... (opt)     │─ createOAuthState(phone,  │
+   │                           │   planType, redirectTo,    │
+   │                           │   userName) — signed JWT   │
    │◄── { authUrl } ───────────┤                           │
    │                           │                           │
    ├─── Redirect to authUrl ───────────────────────────────►│
@@ -133,17 +133,20 @@ Frontend                    Backend                     Google
    │                           │◄── Callback: ?state=...&code=...
    │                           │                           │
    │                           │─ verifyOAuthState(state)   │
-   │                           │  → { phoneNumber, planType}│
+   │                           │  → { phoneNumber, planType, userName? }
    │                           │                           │
    │                           ├─── Exchange code ─────────►│
    │                           │◄── Tokens + profile ───────┤
    │                           │                           │
    │                           │─ findOrCreate user by phone│
    │                           │─ Link Google email + tokens│
+   │                           │─ If userName: settings.user_name = userName
    │                           │─ Generate JWT              │
    │                           │                           │
    │◄── Redirect with JWT ─────┤                           │
 ```
+
+After successful sign-in, the `users.settings` JSONB column is updated with `user_name = <value>` when the user provided a display name in Step 1. This value can be exposed via `GET /api/users/me` (e.g. in `formatUser`) for welcome messages or the settings page.
 
 ### Step 3: Complete Onboarding
 

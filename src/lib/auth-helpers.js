@@ -29,6 +29,7 @@ export const getInitialSignupState = () => ({
   userId: null,
   whatsappNumber: null,          // Set after phone step (frontend-only until Google completes)
   formattedNumber: null,         // Backend-formatted phone (+972...)
+  userName: null,                // "What should Dona call you?" — persisted until OAuth callback
   hasGoogleConnection: false,
   googleEmail: null,
   googleName: null,

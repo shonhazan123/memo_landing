@@ -29,7 +29,7 @@ class AuthController {
    */
   async initiateGoogleAuth(req, res, next) {
     try {
-      const { planType = 'standard', phoneNumber, redirectTo } = req.query
+      const { planType = 'standard', phoneNumber, redirectTo, userName } = req.query
 
       if (!phoneNumber) {
         return res.status(400).json({
@@ -38,8 +38,13 @@ class AuthController {
         })
       }
 
-      // Build auth URL — state is a signed JWT with phoneNumber + planType + optional redirectTo
-      const authUrl = AuthService.getGoogleAuthUrl({ phoneNumber, planType, redirectTo: redirectTo || null })
+      // Build auth URL — state is a signed JWT with phoneNumber, planType, optional redirectTo, optional userName
+      const authUrl = AuthService.getGoogleAuthUrl({
+        phoneNumber,
+        planType,
+        redirectTo: redirectTo || null,
+        userName: userName || null
+      })
 
       res.json({ authUrl })
     } catch (error) {
@@ -87,10 +92,10 @@ class AuthController {
         return res.redirect(`${frontendUrl}/signup?error=invalid_state`)
       }
 
-      const { phoneNumber, planType, redirectTo } = statePayload
+      const { phoneNumber, planType, redirectTo, userName } = statePayload
 
-      // ── Exchange code, create/find user, link tokens ──
-      const result = await AuthService.handleGoogleCallback(code, phoneNumber, planType)
+      // ── Exchange code, create/find user, link tokens, persist settings.user_name if provided ──
+      const result = await AuthService.handleGoogleCallback(code, phoneNumber, planType, userName || null)
 
       // ── Redirect to frontend with JWT ──
       // If redirectTo is set (e.g. '/settings'), use that instead of /signup

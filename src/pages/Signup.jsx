@@ -177,8 +177,9 @@ const GoogleAuthStep = ({
 /**
  * Phone Number Step Component (First Step)
  */
-const PhoneNumberStep = ({ onSubmit, isLoading, error, initialPhoneNumber }) => {
+const PhoneNumberStep = ({ onSubmit, isLoading, error, initialPhoneNumber, initialUserName }) => {
   const [phoneNumber, setPhoneNumber] = useState(initialPhoneNumber || '')
+  const [userName, setUserName] = useState(initialUserName || '')
   const [localError, setLocalError] = useState(null)
 
   const handleSubmit = async (e) => {
@@ -190,8 +191,13 @@ const PhoneNumberStep = ({ onSubmit, isLoading, error, initialPhoneNumber }) => 
       setLocalError('אנא הזן מספר טלפון תקין')
       return
     }
+    const trimmedName = (userName || '').trim()
+    if (!trimmedName) {
+      setLocalError('אנא הזן איך תרצה שדונה תקראה לך')
+      return
+    }
     
-    const result = await onSubmit(phoneNumber)
+    const result = await onSubmit(phoneNumber, trimmedName)
     if (!result.success) {
       setLocalError(result.error)
     }
@@ -200,9 +206,7 @@ const PhoneNumberStep = ({ onSubmit, isLoading, error, initialPhoneNumber }) => 
   const displayError = localError || error
 
   return (
-    <div className="signup-step fade-in">המזכירה האישית שלך
-
-
+    <div className="signup-step fade-in">
       {/* Logo */}
       <div className="flex justify-center mb-6">
         <Logo size="lg" className="hover:scale-105 transition-transform duration-300" />
@@ -238,9 +242,26 @@ const PhoneNumberStep = ({ onSubmit, isLoading, error, initialPhoneNumber }) => 
           />
         </div>
         
-        <p className="text-sm text-gray-500 mb-6 text-right">
+        <p className="text-sm text-gray-500 mb-4 text-right">
           דונה תשלח לך הודעות והתראות לוואטסאפ הזה
         </p>
+
+        <label className="block text-gray-700 font-semibold mb-3 text-right">
+          איך תרצה שדונה תקראה לך?
+        </label>
+        <div className="relative mb-6">
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-xl">
+            👤
+          </div>
+          <input
+            type="text"
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+            placeholder="השם שלך"
+            className="phone-input w-full py-4 pr-12 pl-4 text-lg border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none transition-colors text-right"
+            dir="rtl"
+          />
+        </div>
         
         {/* Error Message */}
         {displayError && (
@@ -509,6 +530,7 @@ const Signup = () => {
             isLoading={isLoading}
             error={error}
             initialPhoneNumber={signupState.whatsappNumber}
+            initialUserName={signupState.userName}
           />
         )
       
@@ -536,6 +558,8 @@ const Signup = () => {
             onSubmit={submitPhoneNumber}
             isLoading={isLoading}
             error={error}
+            initialPhoneNumber={signupState.whatsappNumber}
+            initialUserName={signupState.userName}
           />
         )
     }

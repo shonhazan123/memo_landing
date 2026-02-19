@@ -114,11 +114,14 @@ const api = {
      * Get Google OAuth URL
      * @param {string} phoneNumber - Formatted phone number from phone step
      * @param {string} planType - User plan type
+     * @param {string|null} redirectTo - Frontend path after OAuth (e.g. '/settings')
+     * @param {string|null} userName - Display name for settings.user_name (optional)
      * @returns {Promise<{authUrl: string}>}
      */
-    getGoogleAuthUrl: async (phoneNumber, planType = 'standard', redirectTo = null) => {
+    getGoogleAuthUrl: async (phoneNumber, planType = 'standard', redirectTo = null, userName = null) => {
       let url = `/auth/google?phoneNumber=${encodeURIComponent(phoneNumber)}&planType=${planType}`
       if (redirectTo) url += `&redirectTo=${encodeURIComponent(redirectTo)}`
+      if (userName) url += `&userName=${encodeURIComponent(userName)}`
       return request(url)
     },
     
@@ -171,12 +174,15 @@ const api = {
      * Validate phone number and check if user is already registered.
      * Does NOT create a user in the database.
      * @param {string} phoneNumber - User's phone number
+     * @param {string|null} userName - Display name for settings.user_name (optional)
      * @returns {Promise<{isNewUser: boolean, registered: boolean, formattedNumber?: string, user?: Object, jwtToken?: string, hasGoogleConnection: boolean}>}
      */
-    checkPhone: async (phoneNumber) => {
+    checkPhone: async (phoneNumber, userName = null) => {
+      const body = { phoneNumber }
+      if (userName != null && String(userName).trim()) body.userName = String(userName).trim()
       return request('/users/check-phone', {
         method: 'POST',
-        body: JSON.stringify({ phoneNumber })
+        body: JSON.stringify(body)
       })
     },
     

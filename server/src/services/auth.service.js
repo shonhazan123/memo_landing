@@ -26,17 +26,19 @@ class AuthService {
 
   /**
    * Create a signed OAuth state token.
-   * Encodes phoneNumber, planType, and optional redirectTo so the
-   * callback can register the user and redirect appropriately.
+   * Encodes phoneNumber, planType, optional redirectTo, and optional userName so the
+   * callback can register the user and persist settings.user_name.
    *
    * @param {string} phoneNumber - Formatted phone (+972...)
    * @param {string} planType
    * @param {string|null} redirectTo - Frontend path to redirect after OAuth (e.g. '/settings')
+   * @param {string|null} userName - Display name for settings.user_name (optional)
    * @returns {string} Signed state token (JWT)
    */
-  createOAuthState(phoneNumber, planType = 'standard', redirectTo = null) {
+  createOAuthState(phoneNumber, planType = 'standard', redirectTo = null, userName = null) {
     const payload = { phoneNumber, planType, purpose: 'oauth_state' }
     if (redirectTo) payload.redirectTo = redirectTo
+    if (userName) payload.userName = userName
     return jwt.sign(payload, JWT_SECRET, { expiresIn: OAUTH_STATE_EXPIRES_IN })
   }
 
@@ -45,7 +47,7 @@ class AuthService {
    * Returns the payload if valid, null if tampered or expired.
    *
    * @param {string} stateToken
-   * @returns {{ phoneNumber: string, planType: string, redirectTo?: string } | null}
+   * @returns {{ phoneNumber: string, planType: string, redirectTo?: string, userName?: string } | null}
    */
   verifyOAuthState(stateToken) {
     try {
@@ -54,7 +56,8 @@ class AuthService {
       return {
         phoneNumber: decoded.phoneNumber,
         planType: decoded.planType,
-        redirectTo: decoded.redirectTo || null
+        redirectTo: decoded.redirectTo || null,
+        userName: decoded.userName || null
       }
     } catch {
       return null
@@ -72,12 +75,13 @@ class AuthService {
    * @param {string} options.phoneNumber - Formatted phone (encoded into state)
    * @param {string} options.planType    - User plan type
    * @param {string|null} options.redirectTo - Frontend path to redirect after OAuth
+   * @param {string|null} options.userName - Display name for settings.user_name (optional)
    * @returns {string} Authorization URL
    */
   getGoogleAuthUrl(options = {}) {
-    const { phoneNumber, planType = 'standard', redirectTo = null } = options
+    const { phoneNumber, planType = 'standard', redirectTo = null, userName = null } = options
 
-    const state = this.createOAuthState(phoneNumber, planType, redirectTo)
+    const state = this.createOAuthState(phoneNumber, planType, redirectTo, userName)
 
     const oauth2Client = createOAuth2Client()
     const scopes = getScopesForPlan(planType)
@@ -104,14 +108,15 @@ class AuthService {
   /**
    * Handle Google OAuth callback.
    * Finds or creates the user by phone number, links Google
-   * profile and tokens, and returns a JWT.
+   * profile and tokens, persists settings.user_name if provided, and returns a JWT.
    *
    * @param {string} code        - Authorization code from Google
    * @param {string} phoneNumber - From the signed state token
    * @param {string} planType    - From the signed state token
+   * @param {string|null} userName - Display name for settings.user_name (optional)
    * @returns {Promise<{user: Object, jwtToken: string}>}
    */
-  async handleGoogleCallback(code, phoneNumber, planType = 'standard') {
+  async handleGoogleCallback(code, phoneNumber, planType = 'standard', userName = null) {
     if (!phoneNumber) {
       throw new Error('Phone number is required.')
     }
@@ -139,6 +144,26 @@ class AuthService {
     if (planType && planType !== user.plan_type) {
       await UserModel.update(user.id, { plan_type: planType })
       user.plan_type = planType
+    }
+
+    // Persist display name into settings.user_name (from signup "איך תרצה שדונה תקראה לך?")
+    if (userName && typeof userName === 'string' && userName.trim()) {
+      const currentSettings =
+        typeof user.settings === 'object' && user.settings !== null
+          ? user.settings
+          : typeof user.settings === 'string'
+            ? (() => {
+                try {
+                  return JSON.parse(user.settings)
+                } catch {
+                  return {}
+                }
+              })()
+            : {}
+      const newSettings = { ...currentSettings, user_name: userName.trim() }
+      // UserModel.update accepts object or string for settings and uses ::jsonb cast
+      await UserModel.update(user.id, { settings: newSettings })
+      user.settings = newSettings
     }
 
     // Store/update Google tokens
