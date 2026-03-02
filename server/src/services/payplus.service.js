@@ -78,7 +78,7 @@ async function generatePaymentLink({ amount, planName, customerEmail, customerNa
     },
   }
 
-  const url = `${getPayPlusBaseUrl()}/PaymentPages/generateLink`
+  const url = `https://restapidev.payplus.co.il/api/v1.0/PaymentPages/generateLink`
   const response = await fetch(url, {
     method: 'POST',
     headers: {
@@ -92,6 +92,10 @@ async function generatePaymentLink({ amount, planName, customerEmail, customerNa
   const data = await response.json().catch(() => ({}))
 
   if (!response.ok) {
+    // Log full response in dev to debug 403 (do not log request headers – they contain secrets)
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('[PayPlus]', response.status, response.statusText, 'Response body:', JSON.stringify(data))
+    }
     // 403 = wrong credentials or using production credentials with staging URL (or vice versa)
     const description = data?.results?.description || data?.message
     const code = data?.results?.code
