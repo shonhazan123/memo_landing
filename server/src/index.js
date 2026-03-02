@@ -26,6 +26,7 @@ dotenv.config({ path: rootEnvPath }) // This will not override existing variable
 // Import routes
 import authRoutes from './routes/auth.routes.js'
 import userRoutes from './routes/user.routes.js'
+import paymentRoutes from './routes/payment.routes.js'
 
 // Create Express app
 const app = express()
@@ -87,6 +88,7 @@ app.get('/health', (req, res) => {
 // API routes
 app.use('/api/auth', authRoutes)
 app.use('/api/users', userRoutes)
+app.use('/api/payment', paymentRoutes)
 
 // ===========================================
 // ERROR HANDLING

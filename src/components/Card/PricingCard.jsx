@@ -10,6 +10,7 @@ const PricingCard = ({
   features = [], 
   badge,
   ctaText = 'נסה בחינם',
+  disabled = false,
   onCtaClick,
   className = '' 
 }) => {
@@ -50,6 +51,7 @@ const PricingCard = ({
           variant="primary"
           className="w-full mb-6 bg-indigo-500 hover:bg-indigo-600"
           onClick={onCtaClick}
+          disabled={disabled}
         >
           {ctaText}
         </Button>

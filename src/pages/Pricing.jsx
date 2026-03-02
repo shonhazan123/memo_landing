@@ -4,6 +4,7 @@ import Button from '../components/Button/Button'
 import StarBorder from '../components/StarBorder/StarBorder'
 import ScrollReveal from '../components/ScrollReveal/ScrollReveal'
 import BlurText from '../components/BlurText/BlurText'
+import api from '../api/client'
 import './Pricing.css'
 
 const FAQItem = ({ question, answer }) => {
@@ -34,10 +35,13 @@ const FAQItem = ({ question, answer }) => {
 
 const Pricing = () => {
   const [billingPeriod, setBillingPeriod] = useState('monthly') // 'monthly' or 'annual'
+  const [paymentLoading, setPaymentLoading] = useState(null) // planId when loading
+  const [paymentError, setPaymentError] = useState(null)
   
   const plans = {
     monthly: [
       {
+        planId: 'basic',
         name: 'בסיסי',
         price: '₪21',
         period: 'חודש',
@@ -53,6 +57,7 @@ const Pricing = () => {
         ],
       },
       {
+        planId: 'pro',
         name: 'מקצועי',
         price: '₪28',
         period: 'חודש',
@@ -70,6 +75,7 @@ const Pricing = () => {
         ],
       },
       {
+        planId: 'business',
         name: 'עסקי',
         price: '₪42',
         period: 'חודש',
@@ -84,6 +90,7 @@ const Pricing = () => {
     ],
     annual: [
       {
+        planId: 'basic',
         name: 'בסיסי',
         price: '₪15',
         originalPrice: '₪21',
@@ -101,6 +108,7 @@ const Pricing = () => {
         ],
       },
       {
+        planId: 'pro',
         name: 'מקצועי',
         price: '₪20',
         originalPrice: '₪28',
@@ -120,6 +128,7 @@ const Pricing = () => {
         ],
       },
       {
+        planId: 'business',
         name: 'עסקי',
         price: '₪30',
         originalPrice: '₪42',
@@ -172,6 +181,22 @@ const Pricing = () => {
   ]
   
   const currentPlans = plans[billingPeriod]
+
+  const handlePurchaseClick = async (plan) => {
+    if (!plan.planId) {
+      window.location.href = '/login'
+      return
+    }
+    setPaymentError(null)
+    setPaymentLoading(plan.planId)
+    try {
+      const { paymentPageLink } = await api.payment.createLink(plan.planId, billingPeriod)
+      if (paymentPageLink) window.location.href = paymentPageLink
+    } catch (err) {
+      setPaymentError(err.message || err.data?.message || 'לא ניתן לפתוח דף תשלום. נסה שוב או פנה אלינו.')
+      setPaymentLoading(null)
+    }
+  }
   
   return (
     <div dir="rtl" className="min-h-screen bg-white">
@@ -233,6 +258,11 @@ const Pricing = () => {
               </button>
             </div>
           </div>
+          {paymentError && (
+            <p className="text-red-600 text-center mt-4" role="alert">
+              {paymentError}
+            </p>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {currentPlans.map((plan, index) => (
               <PricingCard
@@ -245,7 +275,9 @@ const Pricing = () => {
                 badge={plan.badge}
                 isPopular={plan.isPopular}
                 features={plan.features}
-                onCtaClick={() => window.location.href = '/login'}
+                ctaText={paymentLoading === plan.planId ? 'מעביר לדף תשלום...' : 'נסה בחינם'}
+                disabled={!!paymentLoading}
+                onCtaClick={() => handlePurchaseClick(plan)}
               />
             ))}
           </div>

@@ -252,6 +252,7 @@ mimo-website/
 - Full authentication flow implemented with Google OAuth + Phone Number + WhatsApp
 - All design tokens from design system implemented via Tailwind
 - Authentication documentation: See `docs/project-instruction/authentication-flow.md`
+- Payment (PayPlus) documentation: See `docs/project-instruction/payment-flow.md`
 - Database schema: See `src/backend/database/schema.sql`
 
 ## Required Dependencies
@@ -283,6 +284,15 @@ Create `.env` file with:
 REACT_APP_SUPABASE_URL=your_supabase_url
 REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
+
+For PayPlus payment page (pricing purchase flow), set in server `.env` (see `docs/project-instruction/payment-flow.md`):
+```
+PAYPLUS_API_KEY=your_payplus_api_key
+PAYPLUS_SECRET_KEY=your_payplus_secret_key
+PAYPLUS_PAGE_UID=your_payment_page_uid
+FRONTEND_URL=https://your-site.com
+```
+Optional: `PAYPLUS_BASE_URL` for sandbox (e.g. `https://restapidev.payplus.co.il/api/v1.0`).
 
 ## Next Steps
 1. Initialize React project

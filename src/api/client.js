@@ -231,7 +231,29 @@ const api = {
     deleteAccount: async () => {
       return request('/users/me', { method: 'DELETE' })
     }
-  }
+  },
+
+  // Payment (PayPlus) - create link and redirect to payment page
+  payment: {
+    /**
+     * Create a PayPlus payment page link for a pricing plan.
+     * @param {string} planId - 'basic' | 'pro' | 'business'
+     * @param {string} billingPeriod - 'monthly' | 'annual'
+     * @param {Object} [options] - optional customerEmail, customerName
+     * @returns {Promise<{ paymentPageLink: string, pageRequestUid: string, amount: number, planName: string }>}
+     */
+    createLink: async (planId, billingPeriod, options = {}) => {
+      return request('/payment/create-link', {
+        method: 'POST',
+        body: JSON.stringify({
+          planId,
+          billingPeriod,
+          customerEmail: options.customerEmail,
+          customerName: options.customerName,
+        }),
+      })
+    },
+  },
 }
 
 export default api
