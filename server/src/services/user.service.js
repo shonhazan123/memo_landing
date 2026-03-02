@@ -8,7 +8,7 @@ import GoogleTokenModel from '../models/GoogleToken.model.js'
 
 // Mimo WhatsApp number - update this with actual number
 const MIMO_WHATSAPP_NUMBER = process.env.MIMO_WHATSAPP_NUMBER || '972501234567'
-const MIMO_WELCOME_MESSAGE = 'היי דונה! סיימתי את ההרשמה ואני מוכן להתחיל 🎉'
+const MIMO_WELCOME_MESSAGE = "היי דונה , איך את יכולה לעזור לי ? 🤔"
 
 class UserService {
   /**

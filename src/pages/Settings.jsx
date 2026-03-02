@@ -73,9 +73,11 @@ const ConnectionRow = ({ icon: Icon, label, connected, email }) => (
 
 // ─── Connections Section ─────────────────────────────────
 const ConnectionsSection = ({ user, onReconnect, isRedirecting }) => {
-  const scopes = user?.googleScopes || []
+  const scopes = Array.isArray(user?.googleScopes) ? user.googleScopes : []
+  const hasGoogleLinked = !!user?.email
   const gmailConnected = scopes.includes(GMAIL_SCOPE)
-  const calendarConnected = scopes.includes(CALENDAR_SCOPE)
+  // Calendar: connected if we have calendar scope, or if Google is linked but scope list wasn't returned (e.g. API/table mismatch)
+  const calendarConnected = scopes.includes(CALENDAR_SCOPE) || (hasGoogleLinked && scopes.length === 0)
 
   return (
     <div className="settings-card">

@@ -9,6 +9,7 @@
  */
 
 import AuthService from '../services/auth.service.js'
+import UserService from '../services/user.service.js'
 
 /** Helper: read FRONTEND_URL once, with fallback. */
 const getFrontendUrl = () =>
@@ -153,16 +154,13 @@ class AuthController {
         return res.status(401).json({ error: 'Invalid or expired token' })
       }
 
-      res.json({
-        user: {
-          id: user.id,
-          email: user.google_email,
-          name: user.name,
-          whatsappNumber: user.whatsapp_number,
-          planType: user.plan_type,
-          onboardingComplete: user.onboarding_complete
-        }
-      })
+      // Use UserService so response includes googleScopes from user_google_tokens
+      const formattedUser = await UserService.getUserById(user.id)
+      if (!formattedUser) {
+        return res.status(401).json({ error: 'User not found' })
+      }
+
+      res.json({ user: formattedUser })
     } catch (error) {
       next(error)
     }

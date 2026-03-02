@@ -93,19 +93,21 @@
 
 ## Future Work
 
-### 1. Bug Fix -- Connection status shows "not connected" when user has valid Google + Calendar tokens
+### 1. ~~Bug Fix~~ FIXED -- Connection status shows "not connected" when user has valid Google + Calendar tokens
 
-**Problem:** The settings page derives Gmail/Calendar connection status from `user.googleScopes`, which comes from the `scope TEXT[]` column in `user_google_tokens`. If the scope array was stored differently than expected (e.g. using shorthand scope names like `email` / `calendar` instead of full URLs like `https://www.googleapis.com/auth/calendar`), the UI scope check will fail and show "לא מחובר" even though the connection is valid.
+**Problem:** The settings page derives Gmail/Calendar connection status from `user.googleScopes`, which comes from the `scope TEXT[]` column in `user_google_tokens`. The `/api/auth/me` (getCurrentUser) endpoint was building the user object manually and **never included `googleScopes`**, so the frontend always saw an empty list and showed "לא מחובר" for both.
 
-**Investigation steps:**
-- Query the actual `scope` value stored in `user_google_tokens` for a real user and compare it to the scope strings checked in `Settings.jsx` (`GMAIL_SCOPE` and `CALENDAR_SCOPE` constants)
-- Check `auth.service.js` `handleGoogleCallback()` where `normalizedScopes` is built from `tokens.scope.split(' ')` -- verify the split produces the full URL strings
-- If the stored format differs, update either the storage logic or the frontend scope constants to match
+**Fix applied:**
+- **Backend:** `server/src/controllers/auth.controller.js` — `getCurrentUser` now uses `UserService.getUserById(user.id)` so the response includes `googleScopes` from `user_google_tokens` (same shape as other user endpoints).
+- **Frontend:** `src/pages/Settings.jsx` — Connections section uses `Array.isArray(user?.googleScopes) ? user.googleScopes : []` so scope list is always an array.
+
+**Scope strings used in Settings (must match DB):**
+- Gmail: `https://www.googleapis.com/auth/gmail.modify`
+- Calendar: `https://www.googleapis.com/auth/calendar`
 
 **Files involved:**
-- `src/pages/Settings.jsx` -- `GMAIL_SCOPE` and `CALENDAR_SCOPE` constants
-- `server/src/services/auth.service.js` -- `handleGoogleCallback()` scope normalization
-- `server/src/models/GoogleToken.model.js` -- `upsert()` scope storage
+- `server/src/controllers/auth.controller.js` — getCurrentUser returns formatted user with googleScopes
+- `src/pages/Settings.jsx` — GMAIL_SCOPE, CALENDAR_SCOPE, safe googleScopes read
 
 ### 2. Add user name field to the phone number step during sign-up
 

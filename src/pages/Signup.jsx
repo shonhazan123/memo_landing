@@ -305,7 +305,7 @@ const WhatsAppRedirectStep = ({ user, whatsappNumber, onComplete, getWhatsAppUrl
   
   useEffect(() => {
     const fetchUrl = async () => {
-      const url = await getWhatsAppUrl('היי דונה! סיימתי את ההרשמה ואני מוכן להתחיל 🎉')
+      const url = await getWhatsAppUrl("היי דונה , איך את יכולה לעזור לי ? 🤔")
       setWhatsappUrl(url)
     }
     fetchUrl()
