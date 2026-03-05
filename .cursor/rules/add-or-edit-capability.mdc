@@ -1,0 +1,24 @@
+---
+description: When adding or editing a capability (superpower), follow the runbook so all references are updated
+globs: src/data/abilities.js, src/data/conversations/*.js, src/pages/Pricing.jsx, src/components/AbilityCard/AbilityCard.jsx
+alwaysApply: false
+---
+
+# Add or Edit a Capability
+
+When adding a **new** capability or **editing** an existing one, you must follow the runbook so nothing is missed.
+
+**Read and follow:** `docs/project-instruction/add-or-edit-capability.md`
+
+That document is the single source of truth. It covers:
+
+1. **Central definition** — `src/data/abilities.js` (id, slug, title, description, image, conversationsFile)
+2. **Picture** — add image under `public/photos/`, set `image` in abilities.js
+3. **Detail page link** — route is `/superpowers/:slug`; no code change if slug is set in abilities.js
+4. **Example use cases** — create/edit `src/data/conversations/<conversationsFile>.js` with `conversations` array (heading, subheading, userMessage, donnaResponse, timestamp)
+5. **Home gallery** — automatic from abilities.js (no extra step)
+6. **Superpowers grid** — automatic from abilities.js (no extra step)
+7. **Pricing** — add feature line to the right plan(s) in `Pricing.jsx` (plans.monthly + plans.annual) and one row in `comparisonRows` with basic/pro/business
+8. **Optional** — "Coming soon" badge in `AbilityCard.jsx` if the capability is coming soon
+
+Before making changes, read the full runbook and use its checklist so every reference is added or updated.

@@ -73,6 +73,7 @@ mimo-website/
 │   └── package.json
 ├── docs/
 │   └── project-instruction/
+│       ├── add-or-edit-capability.md   # Runbook: add/edit capability (all references)
 │       ├── design-system.md
 │       ├── project-plan.md
 │       └── authentication-flow.md
@@ -148,6 +149,8 @@ mimo-website/
 - **Calendar:** Creating events, complex requests (e.g. free tomorrow + set meeting with X at 8am), updating work hours, and questions (e.g. doctor appointments in upcoming month).
 - **Google Workspace:** Search/locate files, answer questions about document content, return links to documents (e.g. wedding Excel, renovation contract).
 - **Emails:** Quick summary of today's emails, adding email-related items as todos, replying with draft text and asking for confirmation before sending.
+
+**Adding or editing a capability:** See the runbook `docs/project-instruction/add-or-edit-capability.md` for the full checklist (picture, conversation examples, gallery, pricing, comparison table, optional coming-soon badge). The Cursor rule in `.cursor/rules/add-or-edit-capability.mdc` instructs the agent to follow that runbook when working on capability-related files.
 
 ### Phase 5: Pricing Page ✅
 - [ ] Hero section with title/subtitle

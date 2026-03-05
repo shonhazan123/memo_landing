@@ -22,6 +22,14 @@ export const abilities = [
   },
   {
     id: 3,
+    slug: 'second-brain',
+    title: 'מוח שני',
+    description: 'דונה זוכרת בשבילך — רעיונות, פרטי קשר, סיכומים ומידע חשוב. שמירה מאובטחת ושליפה בטבעיות, רק בלשאול.',
+    image: '/photos/Second_brain.png',
+    conversationsFile: 'second-brain'
+  },
+  {
+    id: 4,
     slug: 'emails',
     title: 'אימיילים',
     description: 'ניהול אימיילים בצורה חכמה. דונה עוזרת לך לנהל, לסנן, ולענות על אימיילים חשובים.',
@@ -29,7 +37,7 @@ export const abilities = [
     conversationsFile: 'emails'
   },
   {
-    id: 4,
+    id: 5,
     slug: 'google-workspace',
     title: 'Google Work Space',
     description: 'אינטגרציה מלאה עם Google Workspace. ניהול מסמכים, קבצים, וכל הכלים של Google במקום אחד.',
