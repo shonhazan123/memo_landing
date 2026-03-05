@@ -52,9 +52,9 @@ So: **ensure the ability has a correct `slug` in `abilities.js`**; the link is a
   - `id` — number
   - `heading` — Hebrew title for the example
   - `subheading` — short Hebrew subtitle
-  - `userMessage` — user text (e.g. WhatsApp message)
-  - `donnaResponse` — Donna’s reply (string; use `\n` for newlines; use `**text**` for bold)
-  - `timestamp` — string (e.g. `'16:20'`)
+  - **Either** single exchange: `userMessage`, `donnaResponse`, `timestamp`
+  - **Or** multi-turn: `exchanges` — array of `{ userMessage, donnaResponse, timestamp }` (same topic in one “phone” with multiple user/agent turns)
+  - In `donnaResponse` use `\n` for newlines and `**text**` for bold
 
 - **Edit:** Change or add items in the same file; ensure the file name still matches `conversationsFile` in `abilities.js`.
 

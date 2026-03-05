@@ -172,32 +172,38 @@ const ConversationGallery = ({ conversations = [], className = '' }) => {
                     </div>
                   </div>
 
-                  {/* Messages Container */}
+                  {/* Messages Container: support single exchange or multiple exchanges (exchanges array) */}
                   <div className="conversation-card-messages-container">
-                    {/* User Message */}
-                    <div className="conversation-card-user-message-bubble">
-                      <div className="conversation-card-message-content">
-                        <p className="conversation-card-message-text">{conversation.userMessage}</p>
-                        <div className="conversation-card-message-timestamp">{conversation.timestamp}</div>
-                      </div>
-                    </div>
-
-                    {/* Donna Response */}
-                    <div className="conversation-card-donna-message-bubble">
-                      <div className="conversation-card-message-content">
-                        <p className="conversation-card-message-text">
-                          {typeof conversation.donnaResponse === 'string'
-                            ? formatDonnaResponse(conversation.donnaResponse)
-                            : conversation.donnaResponse}
-                        </p>
-                        <div className="conversation-card-message-footer">
-                          <svg width="8" height="9" viewBox="0 0 8 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M0.00118164 0.561182L7.87706 8.43882" stroke="#3B82F6" strokeWidth="1" strokeLinecap="round"/>
-                          </svg>
-                          <span className="conversation-card-message-timestamp">{conversation.timestamp}</span>
+                    {(conversation.exchanges && conversation.exchanges.length > 0
+                      ? conversation.exchanges
+                      : [{ userMessage: conversation.userMessage, donnaResponse: conversation.donnaResponse, timestamp: conversation.timestamp }]
+                    ).map((ex, exIndex) => (
+                      <React.Fragment key={exIndex}>
+                        {/* User Message */}
+                        <div className="conversation-card-user-message-bubble">
+                          <div className="conversation-card-message-content">
+                            <p className="conversation-card-message-text">{ex.userMessage}</p>
+                            <div className="conversation-card-message-timestamp">{ex.timestamp}</div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
+                        {/* Donna Response */}
+                        <div className="conversation-card-donna-message-bubble">
+                          <div className="conversation-card-message-content">
+                            <p className="conversation-card-message-text">
+                              {typeof ex.donnaResponse === 'string'
+                                ? formatDonnaResponse(ex.donnaResponse)
+                                : ex.donnaResponse}
+                            </p>
+                            <div className="conversation-card-message-footer">
+                              <svg width="8" height="9" viewBox="0 0 8 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M0.00118164 0.561182L7.87706 8.43882" stroke="#3B82F6" strokeWidth="1" strokeLinecap="round"/>
+                              </svg>
+                              <span className="conversation-card-message-timestamp">{ex.timestamp}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </React.Fragment>
+                    ))}
                   </div>
                 </div>
               </div>
