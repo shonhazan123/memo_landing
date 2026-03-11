@@ -230,7 +230,15 @@ const api = {
      */
     deleteAccount: async () => {
       return request('/users/me', { method: 'DELETE' })
-    }
+    },
+
+    /**
+     * Cancel subscription at period end (no account deletion). Stops future charges; access until subscriptionPeriodEnd.
+     * @returns {Promise<{ success: boolean, subscriptionPeriodEnd: string|null, cancelAtPeriodEnd: boolean, user: Object }>}
+     */
+    cancelSubscription: async () => {
+      return request('/users/me/cancel-subscription', { method: 'POST' })
+    },
   },
 
   // Payment (PayPlus) - create link and redirect to payment page

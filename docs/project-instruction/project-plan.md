@@ -213,7 +213,10 @@ mimo-website/
 - ✅ Footer component (site-wide, with links to Home, Superpowers, Pricing, Privacy, Terms, Cancellation & Refund Policy)
 - ✅ Privacy policy page (/privacy) with full policy text
 - ✅ Terms of Service page (/terms)
-- ✅ Cancellation policy page (/cancellation-policy) — Israeli regulation "מדיניות ביטול עסקה" per חוק הגנת הצרכן; linked from footer and Pricing checkout notice. Support: donnai.help@gmail.com, 054-391-1602.
+- ✅ Cancellation policy page (/cancellation-policy) — Israeli regulation "מדיניות ביטול עסקה" per חוק הגנת הצרכן; linked from footer and Pricing checkout notice. Support: donnai.help@gmail.com, 054-391-1602. **Policy text:** No contact form; cancellation via account settings or email/phone only.
+- ✅ **Cancellation = access change at period end** (no user delete): POST /api/users/me/cancel-subscription; subscription_status, cancel_at_period_end, subscription_period_end; daily cron revokes access when period ends.
+- ✅ **14-day trial:** subscription_status 'trial', subscription_period_end = first charge date; PayPlus start_date (today+14) when using RecurringPayments; UI shows trial end and "החיוב הראשון ב-[date]".
+- ✅ **Payment result messages** on Pricing: success/failure/cancel blocks (Signup-quality UI) via `payment=` query; query cleared after display.
 
 ### In Progress
 - 🔄 Testing and QA for authentication flow
@@ -258,6 +261,7 @@ mimo-website/
 - All design tokens from design system implemented via Tailwind
 - Authentication documentation: See `docs/project-instruction/authentication-flow.md`
 - Payment (PayPlus) documentation: See `docs/project-instruction/payment-flow.md`
+- Support and cancellation (no contact form; cancel at period end): See `docs/project-instruction/support-and-cancellation.md`
 - Database schema: See `src/backend/database/schema.sql`
 
 ## Required Dependencies

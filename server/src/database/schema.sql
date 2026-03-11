@@ -17,6 +17,9 @@ CREATE TABLE IF NOT EXISTS users (
   timezone TEXT DEFAULT 'Asia/Jerusalem',
   settings JSONB DEFAULT '{}',
   onboarding_complete BOOLEAN DEFAULT false,
+  subscription_period_end DATE,
+  cancel_at_period_end BOOLEAN DEFAULT false,
+  subscription_status TEXT DEFAULT 'active' CHECK (subscription_status IN ('active', 'no_access', 'trial', 'cancelled_pending', 'payment_failed')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

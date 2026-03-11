@@ -151,16 +151,24 @@ class UserService {
    * @returns {Object} Formatted user
    */
   formatUser(user, googleTokens = null) {
+    const settings = user.settings && typeof user.settings === 'object'
+      ? user.settings
+      : (typeof user.settings === 'string' ? (() => { try { return JSON.parse(user.settings) } catch { return {} } })() : {})
     return {
       id: user.id,
       email: user.google_email || null,
-      name: user.name || null,
+      name: user.name || settings?.user_name || null,
       whatsappNumber: user.whatsapp_number,
       planType: user.plan_type,
       timezone: user.timezone,
       onboardingComplete: user.onboarding_complete,
       createdAt: user.created_at,
-      googleScopes: googleTokens?.scope || []
+      googleScopes: googleTokens?.scope || [],
+      // Subscription (policy: access at period end, no user delete on cancel)
+      subscriptionStatus: user.subscription_status || 'active',
+      subscriptionPeriodEnd: user.subscription_period_end || null,
+      cancelAtPeriodEnd: !!user.cancel_at_period_end,
+      firstChargeDate: settings?.first_charge_date || null,
     }
   }
 }

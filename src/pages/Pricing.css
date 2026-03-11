@@ -1,5 +1,96 @@
 /* Custom styles for Pricing page */
 
+/* Payment result message cards (Signup-quality: rounded, gradient icon, clear typography) */
+.pricing-message-card {
+  padding: 1.5rem 2rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pricing-message-success {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 1px solid #bbf7d0;
+}
+
+.pricing-message-failure {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border: 1px solid #fecaca;
+}
+
+.pricing-message-cancel {
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  border: 1px solid #e5e7eb;
+}
+
+.pricing-message-icon {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.pricing-message-icon.success {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #fff;
+}
+
+.pricing-message-icon.failure {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff;
+  font-size: 1.5rem;
+}
+
+.pricing-message-icon.cancel {
+  background: #e5e7eb;
+  color: #6b7280;
+  font-size: 1.25rem;
+}
+
+.pricing-message-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.pricing-message-body {
+  font-size: 0.9375rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.pricing-message-body a {
+  color: #4f46e5;
+  font-weight: 500;
+}
+
+.pricing-message-dismiss {
+  padding: 0.5rem 1.25rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: #fff;
+  border: 2px solid #e5e7eb;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pricing-message-dismiss:hover {
+  border-color: #4f46e5;
+  color: #4f46e5;
+}
+
 /* Section background transitions - fade into each other, no hard cuts */
 .pricing-cards-section {
   background-image:

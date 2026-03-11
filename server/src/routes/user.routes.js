@@ -24,6 +24,9 @@ router.put('/me/phone', requireAuth, UserController.updatePhone.bind(UserControl
 // POST /api/users/me/complete-onboarding - Complete onboarding (requires auth)
 router.post('/me/complete-onboarding', requireAuth, UserController.completeOnboarding.bind(UserController))
 
+// POST /api/users/me/cancel-subscription - Cancel at period end (requires auth)
+router.post('/me/cancel-subscription', requireAuth, UserController.cancelSubscription.bind(UserController))
+
 // GET /api/users/whatsapp-info - Get WhatsApp info (public)
 router.get('/whatsapp-info', UserController.getWhatsAppInfo.bind(UserController))
 

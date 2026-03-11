@@ -7,6 +7,7 @@ import UserService from '../services/user.service.js'
 import UserModel from '../models/User.model.js'
 import GoogleTokenModel from '../models/GoogleToken.model.js'
 import AuthService from '../services/auth.service.js'
+import SubscriptionService from '../services/subscription.service.js'
 
 class UserController {
   /**
@@ -174,6 +175,37 @@ class UserController {
     try {
       const deletedUserId = await UserService.deleteUser(req.userId)
       res.json({ success: true, deletedUserId })
+    } catch (error) {
+      if (error.message === 'User not found') {
+        return res.status(404).json({ error: 'User not found' })
+      }
+      next(error)
+    }
+  }
+
+  /**
+   * POST /api/users/me/cancel-subscription
+   * Cancel at period end; do not delete user. Cancels recurring in PayPlus if recurring_uid in settings.
+   */
+  async cancelSubscription(req, res, next) {
+    try {
+      const userId = req.userId
+      const user = await UserModel.findById(userId)
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' })
+      }
+      const settings = user.settings && typeof user.settings === 'object' ? user.settings : {}
+      const recurringPaymentUid = settings.recurring_payment_uid || null
+
+      const result = await SubscriptionService.cancelSubscription(userId, recurringPaymentUid)
+
+      const updated = await UserModel.findById(userId)
+      res.json({
+        success: true,
+        subscriptionPeriodEnd: result.subscriptionPeriodEnd,
+        cancelAtPeriodEnd: true,
+        user: UserService.formatUser(updated),
+      })
     } catch (error) {
       if (error.message === 'User not found') {
         return res.status(404).json({ error: 'User not found' })

@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import PricingCard from '../components/Card/PricingCard'
 import Button from '../components/Button/Button'
 import StarBorder from '../components/StarBorder/StarBorder'
@@ -35,10 +35,12 @@ const FAQItem = ({ question, answer }) => {
 }
 
 const Pricing = () => {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [billingPeriod, setBillingPeriod] = useState('monthly') // 'monthly' or 'annual'
   const [paymentLoading, setPaymentLoading] = useState(null) // planId when loading
   const [paymentError, setPaymentError] = useState(null)
-  
+  const paymentResult = searchParams.get('payment') // 'success' | 'failure' | 'cancel'
+
   const plans = {
     monthly: [
       {
@@ -190,6 +192,27 @@ const Pricing = () => {
   
   const currentPlans = plans[billingPeriod]
 
+  // Clear payment result from URL after showing (and optional auto-dismiss)
+  useEffect(() => {
+    if (!paymentResult) return
+    const t = setTimeout(() => {
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev)
+        next.delete('payment')
+        return next
+      }, { replace: true })
+    }, 8000)
+    return () => clearTimeout(t)
+  }, [paymentResult, setSearchParams])
+
+  const dismissPaymentMessage = () => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev)
+      next.delete('payment')
+      return next
+    }, { replace: true })
+  }
+
   const handlePurchaseClick = async (plan) => {
     if (!plan.planId) {
       window.location.href = '/login'
@@ -208,6 +231,47 @@ const Pricing = () => {
   
   return (
     <div dir="rtl" className="min-h-screen bg-white">
+      {/* Payment result message (Signup-quality: clear card, gradient checkmark / error) */}
+      {paymentResult === 'success' && (
+        <div className="max-w-2xl mx-auto px-4 pt-8">
+          <div className="pricing-message-card pricing-message-success">
+            <div className="pricing-message-icon success">
+              <span className="text-white text-3xl">✓</span>
+            </div>
+            <h3 className="pricing-message-title">התשלום בוצע בהצלחה. תודה.</h3>
+            <button type="button" onClick={dismissPaymentMessage} className="pricing-message-dismiss">
+              סגור
+            </button>
+          </div>
+        </div>
+      )}
+      {paymentResult === 'failure' && (
+        <div className="max-w-2xl mx-auto px-4 pt-8">
+          <div className="pricing-message-card pricing-message-failure">
+            <div className="pricing-message-icon failure">!</div>
+            <h3 className="pricing-message-title">התשלום לא בוצע</h3>
+            <p className="pricing-message-body">
+              ניתן לנסות שוב או לפנות לתמיכה: <a href="mailto:donnai.help@gmail.com">donnai.help@gmail.com</a> או <a href="tel:+972543911602">054-391-1602</a>.
+            </p>
+            <button type="button" onClick={dismissPaymentMessage} className="pricing-message-dismiss">
+              סגור
+            </button>
+          </div>
+        </div>
+      )}
+      {paymentResult === 'cancel' && (
+        <div className="max-w-2xl mx-auto px-4 pt-8">
+          <div className="pricing-message-card pricing-message-cancel">
+            <div className="pricing-message-icon cancel">○</div>
+            <h3 className="pricing-message-title">התשלום בוטל</h3>
+            <p className="pricing-message-body">ניתן לנסות שוב בכל עת.</p>
+            <button type="button" onClick={dismissPaymentMessage} className="pricing-message-dismiss">
+              סגור
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
       <section className="py-16 md:py-24 pricing-hero-section">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

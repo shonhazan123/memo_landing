@@ -645,9 +645,16 @@ When creating new components, ensure:
 - `bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 rounded-full`
 - Confirmation modal: `bg-white rounded-3xl p-8 max-w-md shadow-2xl` with red confirm button
 
-### Navigation -- Authenticated State
-- When `isAuthenticated === true`: CTA button replaced with circular user icon (40x40px, gradient-border-pill, `lucide-react` User icon)
-- Navigates to `/settings`, tooltip "הגדרות" on hover
+### Support (no contact form)
+- Support is **email and phone only**: donnai.help@gmail.com, 054-391-1602 (mailto/tel links in Privacy, Terms, CancellationPolicy).
+- There is no contact form or contact backend; the cancellation policy does not promise a form.
+
+### Payment result messages (Pricing)
+- After PayPlus redirect, the user lands on `/pricing?payment=success|failure|cancel`. Pricing page reads `payment` from the URL and shows a clear card/banner (Signup-quality): rounded card, gradient icon (success = green checkmark, failure = red, cancel = neutral), short message, dismiss button. Query param is cleared after display or after a short delay so the message does not reappear on refresh.
+
+### Cancellation and delete modals (Settings)
+- **Cancel subscription modal**: Explains that cancellation takes effect at period end; no further charges; access until [date]. Buttons: "אשר ביטול מנוי" (primary) and "חזור". Same design tokens as Signup modals (rounded card, typography, spacing).
+- **Delete account modal**: For actual account/data deletion. Copy clarifies that for "ביטול מנוי בלבד" the user should use "בטל מנוי" instead. Support email link (donnai.help@gmail.com) for help.
 
 ## 🎓 Design Principles Summary
 - **Mobile-First** - Design for small screens, enhance for large

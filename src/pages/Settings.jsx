@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import api from '../api/client'
 import { Mail, Calendar, User, RefreshCw, AlertTriangle, LogOut, CreditCard, ExternalLink } from 'lucide-react'
 import './Settings.css'
 
@@ -109,9 +110,18 @@ const ConnectionsSection = ({ user, onReconnect, isRedirecting }) => {
 }
 
 // ─── Subscription Section ────────────────────────────────
-const SubscriptionSection = ({ user, onChangePlan, onCancelClick }) => {
+const SubscriptionSection = ({ user, onChangePlan, onCancelClick, onDeleteClick }) => {
   const planType = user?.planType || 'free'
   const features = PLAN_FEATURES[planType] || PLAN_FEATURES.free
+  const subscriptionStatus = user?.subscriptionStatus || 'active'
+  const cancelAtPeriodEnd = user?.cancelAtPeriodEnd
+  const subscriptionPeriodEnd = user?.subscriptionPeriodEnd
+  const firstChargeDate = user?.firstChargeDate
+
+  const isTrial = subscriptionStatus === 'trial'
+  const periodEndDisplay = subscriptionPeriodEnd
+    ? new Date(subscriptionPeriodEnd).toLocaleDateString('he-IL', { year: 'numeric', month: 'long', day: 'numeric' })
+    : null
 
   return (
     <div className="settings-card">
@@ -122,6 +132,16 @@ const SubscriptionSection = ({ user, onChangePlan, onCancelClick }) => {
           <span className="plan-type-label">המסלול הנוכחי שלך</span>
         </div>
       </div>
+      {isTrial && firstChargeDate && (
+        <p className="plan-trial-message">
+          תקופת ניסיון — החיוב הראשון ב־{periodEndDisplay}
+        </p>
+      )}
+      {cancelAtPeriodEnd && periodEndDisplay && (
+        <p className="plan-cancel-pending-message">
+          המנוי יסתיים ב־{periodEndDisplay}. לא יגבה חיוב נוסף.
+        </p>
+      )}
       <ul className="plan-features">
         {features.map((feature, i) => (
           <li key={i} className="plan-feature">
@@ -137,14 +157,56 @@ const SubscriptionSection = ({ user, onChangePlan, onCancelClick }) => {
           <ExternalLink className="w-3.5 h-3.5 opacity-50" />
         </button>
         <button className="cancel-plan-button" onClick={onCancelClick}>
-          בטל מנוי ומחק חשבון
+          בטל מנוי
+        </button>
+        <button className="delete-account-button" onClick={onDeleteClick}>
+          מחק חשבון
         </button>
       </div>
     </div>
   )
 }
 
-// ─── Confirmation Modal ──────────────────────────────────
+// ─── Confirmation Modals (Signup-quality: rounded card, clear typography) ──────────────────────────────────
+const CancelSubscriptionModal = ({ isOpen, periodEndDisplay, onConfirm, onCancel, isSubmitting }) => {
+  if (!isOpen) return null
+
+  return (
+    <div className="modal-overlay" onClick={onCancel}>
+      <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-icon">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+            <span className="text-white text-2xl">⏱</span>
+          </div>
+        </div>
+        <h3 className="modal-title">בטל מנוי</h3>
+        <p className="modal-body">
+          ביטול ייכנס לתוקף עד סוף תקופת החיוב. לא ייגבו חיובים נוספים.
+          {periodEndDisplay && (
+            <> הגישה תישאר פעילה עד <strong>{periodEndDisplay}</strong>.</>
+          )}
+        </p>
+        <div className="modal-actions">
+          <button
+            className="modal-confirm modal-confirm-cancel-sub"
+            onClick={onConfirm}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'מבטל...' : 'אשר ביטול מנוי'}
+          </button>
+          <button
+            className="modal-cancel"
+            onClick={onCancel}
+            disabled={isSubmitting}
+          >
+            חזור
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 const DeleteModal = ({ isOpen, onConfirm, onCancel, isDeleting }) => {
   if (!isOpen) return null
 
@@ -154,10 +216,13 @@ const DeleteModal = ({ isOpen, onConfirm, onCancel, isDeleting }) => {
         <div className="modal-icon">
           <AlertTriangle className="w-8 h-8 text-red-500" />
         </div>
-        <h3 className="modal-title">האם אתה בטוח?</h3>
+        <h3 className="modal-title">מחק חשבון</h3>
         <p className="modal-body">
-          פעולה זו תמחק את החשבון שלך ואת כל המידע הקשור אליו לצמיתות.
-          סוכן הוואטסאפ יפסיק לפעול.
+          פעולה זו תמחק את החשבון ואת כל המידע הקשור אליו לצמיתות. סוכן הוואטסאפ יפסיק לפעול.
+          <br />
+          <span className="modal-body-hint">לביטול מנוי בלבד (ללא מחיקת נתונים) השתמש ב״בטל מנוי״.</span>
+          <br />
+          <a href="mailto:donnai.help@gmail.com" className="modal-support-link">צריך עזרה? donnai.help@gmail.com</a>
         </p>
         <div className="modal-actions">
           <button
@@ -185,9 +250,11 @@ const DeleteModal = ({ isOpen, onConfirm, onCancel, isDeleting }) => {
 // ═══════════════════════════════════════════════════════════
 const Settings = () => {
   const navigate = useNavigate()
-  const { user, disconnect, reconnectGoogle, deleteAccount, isRedirectingToOAuth } = useAuth()
+  const { user, disconnect, reconnectGoogle, deleteAccount, isRedirectingToOAuth, refreshUser } = useAuth()
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [showCancelModal, setShowCancelModal] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isCancelling, setIsCancelling] = useState(false)
 
   const handleDisconnect = () => {
     disconnect()
@@ -198,6 +265,18 @@ const Settings = () => {
     navigate('/pricing')
   }
 
+  const handleCancelSubscriptionConfirm = async () => {
+    setIsCancelling(true)
+    try {
+      const result = await api.users.cancelSubscription()
+      if (result?.user && refreshUser) await refreshUser()
+      setShowCancelModal(false)
+    } catch (err) {
+      console.error(err)
+    }
+    setIsCancelling(false)
+  }
+
   const handleDeleteConfirm = async () => {
     setIsDeleting(true)
     const result = await deleteAccount()
@@ -206,6 +285,10 @@ const Settings = () => {
     }
     setIsDeleting(false)
   }
+
+  const periodEndDisplay = user?.subscriptionPeriodEnd
+    ? new Date(user.subscriptionPeriodEnd).toLocaleDateString('he-IL', { year: 'numeric', month: 'long', day: 'numeric' })
+    : null
 
   return (
     <div className="settings-container">
@@ -218,7 +301,8 @@ const Settings = () => {
       <SubscriptionSection
         user={user}
         onChangePlan={handleChangePlan}
-        onCancelClick={() => setShowDeleteModal(true)}
+        onCancelClick={() => setShowCancelModal(true)}
+        onDeleteClick={() => setShowDeleteModal(true)}
       />
 
       {/* Disconnect button */}
@@ -229,6 +313,13 @@ const Settings = () => {
         </button>
       </div>
 
+      <CancelSubscriptionModal
+        isOpen={showCancelModal}
+        periodEndDisplay={periodEndDisplay}
+        onConfirm={handleCancelSubscriptionConfirm}
+        onCancel={() => setShowCancelModal(false)}
+        isSubmitting={isCancelling}
+      />
       <DeleteModal
         isOpen={showDeleteModal}
         onConfirm={handleDeleteConfirm}

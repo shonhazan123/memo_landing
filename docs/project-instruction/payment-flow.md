@@ -88,7 +88,7 @@ Per [PayPlus FAQ – איך פונים אל דף תשלום באמצעות API](
 - **Pricing page** (`src/pages/Pricing.jsx`): Each plan has a `planId`. On CTA click, `handlePurchaseClick(plan)` calls `api.payment.createLink(plan.planId, billingPeriod)` then redirects to `paymentPageLink`. Loading state and error message are shown. A disclaimer below the pricing cards (Israeli compliance): "בלחיצה על כפתור התשלום הנך מאשר את תנאי השימוש ומדיניות ביטול העסקה בהתאם לחוק הגנת הצרכן", with links to `/terms` and `/cancellation-policy`.
 - **API client** (`src/api/client.js`): `api.payment.createLink(planId, billingPeriod, options)`.
 
-## Callbacks (optional)
+## Callbacks
 
 After payment, PayPlus redirects to:
 
@@ -96,7 +96,19 @@ After payment, PayPlus redirects to:
 - Failure: `/pricing?payment=failure`
 - Cancel: `/pricing?payment=cancel`
 
-You can extend the Pricing page to read `payment` from the URL and show a short success/failure/cancel message.
+The **Pricing page** reads the `payment` query parameter and shows a clear success/failure/cancel message (Signup-quality UI: rounded card, gradient icon, dismiss button). The query param is cleared after display so the message does not reappear on refresh.
+
+## 14-day trial and subscription state
+
+- **Trial**: 14-day free trial; first charge occurs **after** 14 days. Implemented via PayPlus `start_date` = today + 14 and `instant_first_payment: false` when using RecurringPayments/Add. The site stores `subscription_status = 'trial'` and `subscription_period_end` = first charge date (today + 14) in the `users` table; optionally `settings.first_charge_date` for UI.
+- **Trial end date**: Shown in Settings when `subscription_status === 'trial'`; use `subscription_period_end` or `settings.first_charge_date`.
+- **After first charge**: When PayPlus sends a callback after the first charge, set `subscription_status = 'active'` and `subscription_period_end` = next period end (e.g. +1 month). Backend callback: `POST /api/payment/callback` with `{ userId, status: 'success', recurringPaymentUid? }`.
+
+## API
+
+### POST /api/payment/callback
+
+Internal or PayPlus callback to set subscription state. Body: `userId`, `status` ('success' | 'failure'), optional `recurringPaymentUid`. On success, sets user to trial (subscription_period_end = today + 14). On failure, sets subscription_status to no_access.
 
 ## IPN / server callbacks
 

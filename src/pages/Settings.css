@@ -279,6 +279,45 @@
   background: #fee2e2;
 }
 
+.delete-account-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 48px;
+  padding: 0.625rem 1.5rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.delete-account-button:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.plan-trial-message,
+.plan-cancel-pending-message {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.75rem;
+}
+
+.plan-trial-message {
+  background: #fefce8;
+}
+
+.plan-cancel-pending-message {
+  background: #fef3c7;
+}
+
 /* ─── Disconnect Section ────────────────────────────── */
 .disconnect-section {
   display: flex;
@@ -411,6 +450,28 @@
   background: #f9fafb;
 }
 
+.modal-body-hint {
+  font-size: 0.8125rem;
+  color: #9ca3af;
+  margin-top: 0.5rem;
+  display: block;
+}
+
+.modal-support-link {
+  color: #4f46e5;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  display: inline-block;
+}
+
+.modal-confirm-cancel-sub {
+  background: linear-gradient(to right, #f59e0b, #ea580c);
+}
+
+.modal-confirm-cancel-sub:hover:not(:disabled) {
+  background: linear-gradient(to right, #d97706, #c2410c);
+}
+
 /* ═══════════════════════════════════════════════════════
    Desktop overrides (768px+)
    ═══════════════════════════════════════════════════════ */
@@ -477,6 +538,12 @@
   }
 
   .cancel-plan-button {
+    width: auto;
+    min-height: unset;
+    padding: 0.5rem 1.5rem;
+  }
+
+  .delete-account-button {
     width: auto;
     min-height: unset;
     padding: 0.5rem 1.5rem;

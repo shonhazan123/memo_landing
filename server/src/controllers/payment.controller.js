@@ -1,9 +1,12 @@
 /**
  * Payment Controller
- * Handles creating PayPlus payment links for pricing page purchases.
+ * Handles creating PayPlus payment links for pricing page purchases and payment callbacks.
  */
 
 import PayPlusService from '../services/payplus.service.js'
+import SubscriptionService from '../services/subscription.service.js'
+import UserModel from '../models/User.model.js'
+import processLogger from '../lib/processLogger.js'
 
 class PaymentController {
   /**
@@ -52,6 +55,44 @@ class PaymentController {
           message: error.message,
         })
       }
+      next(error)
+    }
+  }
+
+  /**
+   * POST /api/payment/callback
+   * PayPlus or internal callback: set trial or active after payment. Body: { userId, status: 'success'|'failure', recurringPaymentUid? }.
+   * On success: set trial (subscription_status=trial, subscription_period_end=today+14). On failure: set no_access.
+   */
+  async callback(req, res, next) {
+    try {
+      const { userId, status, recurringPaymentUid } = req.body || {}
+      if (!userId || !status) {
+        return res.status(400).json({ error: 'userId and status required' })
+      }
+
+      const user = await UserModel.findById(userId)
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' })
+      }
+
+      if (status === 'success') {
+        const firstChargeDate = PayPlusService.getTrialFirstChargeDate()
+        await SubscriptionService.setTrial(userId, firstChargeDate, {
+          mergeSettings: { first_charge_date: firstChargeDate },
+        })
+        if (recurringPaymentUid) {
+          const settings = user.settings && typeof user.settings === 'object' ? user.settings : {}
+          await UserModel.update(userId, { settings: { ...settings, recurring_payment_uid: recurringPaymentUid } })
+        }
+        processLogger.payment('callback_success', { userId, recurringPaymentUid })
+      } else {
+        await SubscriptionService.setNoAccess(userId, 'payment_failed')
+        processLogger.payment('callback_failure', { userId })
+      }
+
+      res.json({ ok: true })
+    } catch (error) {
       next(error)
     }
   }

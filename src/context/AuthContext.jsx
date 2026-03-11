@@ -448,6 +448,17 @@ export const AuthProvider = ({ children }) => {
     }
   }, [])
 
+  /** Refresh user profile from API (e.g. after cancel subscription). */
+  const refreshUser = useCallback(async () => {
+    try {
+      const { user: userData } = await api.auth.getCurrentUser()
+      setUser(userData)
+      return true
+    } catch {
+      return false
+    }
+  }, [])
+
   // ═══════════════════════════════════════════════════════
   //  Context value
   // ═══════════════════════════════════════════════════════
@@ -468,6 +479,7 @@ export const AuthProvider = ({ children }) => {
     disconnect,
     reconnectGoogle,
     deleteAccount,
+    refreshUser,
 
     // Signup flow actions
     submitPhoneNumber,

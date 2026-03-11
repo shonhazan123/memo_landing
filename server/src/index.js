@@ -90,6 +90,22 @@ app.use('/api/auth', authRoutes)
 app.use('/api/users', userRoutes)
 app.use('/api/payment', paymentRoutes)
 
+// Internal cron endpoint: run period-end revocation (call with CRON_SECRET or from scheduler)
+app.get('/api/cron/period-end-revocation', async (req, res) => {
+  const secret = process.env.CRON_SECRET
+  if (secret && req.query?.secret !== secret) {
+    return res.status(401).json({ error: 'Unauthorized' })
+  }
+  try {
+    const { runPeriodEndRevocation } = await import('./jobs/periodEndRevocation.job.js')
+    const result = await runPeriodEndRevocation()
+    res.json({ ok: true, ...result })
+  } catch (err) {
+    console.error('Period-end revocation failed:', err)
+    res.status(500).json({ error: err.message })
+  }
+})
+
 // ===========================================
 // ERROR HANDLING
 // ===========================================

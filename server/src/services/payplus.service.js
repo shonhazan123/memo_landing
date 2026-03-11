@@ -138,9 +138,63 @@ function getPlanDisplayName(planId) {
   return names[planId] || planId
 }
 
+/**
+ * Cancel a recurring payment in PayPlus so no future charges occur.
+ * Requires PAYPLUS_TERMINAL_UID when PayPlus expects it in the body.
+ * @param {string} recurringPaymentUid - PayPlus recurring_payment_uid (from user settings or callback)
+ * @returns {Promise<void>}
+ */
+async function cancelRecurring(recurringPaymentUid) {
+  const apiKey = process.env.PAYPLUS_API_KEY
+  const secretKey = process.env.PAYPLUS_SECRET_KEY
+  const terminalUid = process.env.PAYPLUS_TERMINAL_UID
+
+  if (!apiKey || !secretKey) {
+    throw new Error('PayPlus is not configured')
+  }
+  const baseUrl = getPayPlusBaseUrl()
+  const url = `${baseUrl}RecurringPayments/DeleteRecurring/${recurringPaymentUid}`
+
+  const body = {}
+  if (terminalUid) body.terminal_uid = terminalUid
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'api-key': apiKey,
+      'secret-key': secretKey,
+    },
+    body: JSON.stringify(body),
+  })
+
+  const data = await response.json().catch(() => ({}))
+
+  if (!response.ok) {
+    const description = data?.results?.description || data?.message
+    throw new Error(description || `PayPlus cancel recurring failed: ${response.status}`)
+  }
+
+  if (data?.results?.status !== 'success') {
+    throw new Error(data?.results?.description || 'Failed to cancel recurring payment')
+  }
+}
+
+/**
+ * Compute first charge date for 14-day trial (today + 14 days, ISO date string).
+ * @returns {string} 'YYYY-MM-DD'
+ */
+function getTrialFirstChargeDate() {
+  const d = new Date()
+  d.setDate(d.getDate() + 14)
+  return d.toISOString().slice(0, 10)
+}
+
 export default {
   generatePaymentLink,
   getAmountForPlan,
   getPlanDisplayName,
+  getTrialFirstChargeDate,
+  cancelRecurring,
   PLAN_AMOUNTS,
 }

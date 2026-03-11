@@ -201,6 +201,47 @@ class UserModel {
     }
     return result.rows[0].id
   }
+
+  // ─── Subscription (policy: no user delete on cancel; access revoked at period end) ───
+
+  /**
+   * Set cancel-at-period-end; does not delete user.
+   * @param {string} id - User UUID
+   * @returns {Promise<UserRecord>}
+   */
+  async setCancelAtPeriodEnd(id) {
+    return this.update(id, { cancel_at_period_end: true })
+  }
+
+  /**
+   * Set subscription status and optional period end (e.g. trial start, revocation).
+   * @param {string} id - User UUID
+   * @param {Object} data - { subscription_status, subscription_period_end?, cancel_at_period_end? }
+   * @returns {Promise<UserRecord>}
+   */
+  async updateSubscription(id, data) {
+    const updates = {}
+    if (data.subscription_status !== undefined) updates.subscription_status = data.subscription_status
+    if (data.subscription_period_end !== undefined) updates.subscription_period_end = data.subscription_period_end
+    if (data.cancel_at_period_end !== undefined) updates.cancel_at_period_end = data.cancel_at_period_end
+    if (Object.keys(updates).length === 0) return this.findById(id)
+    return this.update(id, updates)
+  }
+
+  /**
+   * Find users who requested cancellation and whose period has ended (for daily job).
+   * @returns {Promise<UserRecord[]>}
+   */
+  async findUsersForPeriodEndRevocation() {
+    const result = await query(
+      `SELECT id, subscription_status, subscription_period_end, cancel_at_period_end
+       FROM users
+       WHERE cancel_at_period_end = true
+         AND subscription_period_end IS NOT NULL
+         AND subscription_period_end <= CURRENT_DATE`
+    )
+    return result.rows
+  }
 }
 
 export default new UserModel()
