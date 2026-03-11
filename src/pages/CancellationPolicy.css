@@ -1,17 +1,17 @@
-.refund-page {
+.cancellation-page {
   min-height: 100vh;
   background: linear-gradient(180deg, #faf5ff 0%, #f5f3ff 30%, #fdf2f8 100%);
   padding: 2rem 1rem 4rem;
 }
 
-.refund-container {
+.cancellation-container {
   max-width: 48rem;
   margin-left: auto;
   margin-right: auto;
 }
 
 /* Back link */
-.refund-back-link {
+.cancellation-back-link {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -27,25 +27,25 @@
   transition: color 0.2s, background 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 
-.refund-back-link:hover {
+.cancellation-back-link:hover {
   color: var(--theme-accent, #E050AE);
   background: #fff;
   border-color: rgba(224, 80, 174, 0.2);
   box-shadow: 0 4px 12px rgba(224, 80, 174, 0.12);
 }
 
-.refund-back-arrow {
+.cancellation-back-arrow {
   font-size: 1rem;
   line-height: 1;
 }
 
 /* Header */
-.refund-header {
+.cancellation-header {
   margin-bottom: 2rem;
   text-align: center;
 }
 
-.refund-title {
+.cancellation-title {
   font-size: 2.25rem;
   font-weight: 700;
   margin-bottom: 0.25rem;
@@ -56,18 +56,18 @@
 }
 
 @media (min-width: 768px) {
-  .refund-title {
+  .cancellation-title {
     font-size: 3rem;
   }
 }
 
-.refund-subtitle {
+.cancellation-subtitle {
   font-size: 1rem;
   color: #6b7280;
   margin-bottom: 0.5rem;
 }
 
-.refund-updated {
+.cancellation-updated {
   display: inline-block;
   font-size: 0.8125rem;
   color: #9ca3af;
@@ -77,30 +77,8 @@
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-/* Intro */
-.refund-intro {
-  max-width: 42rem;
-  margin: 0 auto 2.5rem;
-  padding: 1.25rem 1.5rem;
-  background: rgba(255, 255, 255, 0.7);
-  border-radius: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
-}
-
-.refund-intro p {
-  margin: 0 0 0.75rem;
-  font-size: 0.9375rem;
-  line-height: 1.7;
-  color: #374151;
-}
-
-.refund-intro p:last-child {
-  margin-bottom: 0;
-}
-
 /* Content card */
-.refund-content {
+.cancellation-content {
   background: #fff;
   border-radius: 1.25rem;
   padding: 2rem 1.5rem;
@@ -108,25 +86,25 @@
 }
 
 @media (min-width: 640px) {
-  .refund-content {
+  .cancellation-content {
     padding: 2.5rem 2.5rem;
   }
 }
 
 /* Sections */
-.refund-section {
+.cancellation-section {
   margin-bottom: 2.5rem;
   padding-bottom: 2rem;
   border-bottom: 1px solid #f3f4f6;
 }
 
-.refund-section:last-child {
+.cancellation-section:last-child {
   margin-bottom: 0;
   padding-bottom: 0;
   border-bottom: none;
 }
 
-.refund-content h2 {
+.cancellation-content h2 {
   font-size: 1.375rem;
   font-weight: 600;
   color: #111827;
@@ -137,12 +115,12 @@
 }
 
 @media (min-width: 768px) {
-  .refund-content h2 {
+  .cancellation-content h2 {
     font-size: 1.5rem;
   }
 }
 
-.refund-content h3 {
+.cancellation-content h3 {
   font-size: 1.0625rem;
   font-weight: 600;
   color: #1f2937;
@@ -150,46 +128,46 @@
   margin-bottom: 0.5rem;
 }
 
-.refund-content p {
+.cancellation-content p {
   font-size: 0.9375rem;
   line-height: 1.75;
   color: #4b5563;
   margin-bottom: 1rem;
 }
 
-.refund-content p:last-child {
+.cancellation-content p:last-child {
   margin-bottom: 0;
 }
 
-.refund-content ul,
-.refund-content ol {
+.cancellation-content ul,
+.cancellation-content ol {
   margin: 0.5rem 0 1rem;
   padding-right: 1.5rem;
   padding-left: 0;
 }
 
-.refund-content li {
+.cancellation-content li {
   font-size: 0.9375rem;
   line-height: 1.7;
   color: #4b5563;
   margin-bottom: 0.35rem;
 }
 
-.refund-content li:last-child {
+.cancellation-content li:last-child {
   margin-bottom: 0;
 }
 
-.refund-content strong {
+.cancellation-content strong {
   color: #1f2937;
   font-weight: 600;
 }
 
 /* Contact section callout */
-.refund-contact-section {
+.cancellation-contact-section {
   border-bottom: none;
 }
 
-.refund-contact-box {
+.cancellation-contact-box {
   margin-top: 1rem;
   padding: 1.25rem 1.5rem;
   background: linear-gradient(135deg, #faf5ff 0%, #fdf2f8 100%);
@@ -197,29 +175,29 @@
   border-radius: 0.75rem;
 }
 
-.refund-contact-box p {
+.cancellation-contact-box p {
   margin-bottom: 0.5rem;
 }
 
-.refund-contact-box p:last-child {
+.cancellation-contact-box p:last-child {
   margin-bottom: 0;
 }
 
-.refund-content a {
+.cancellation-content a {
   color: var(--theme-accent, #E050AE);
   font-weight: 500;
   text-decoration: none;
   transition: color 0.2s, text-decoration 0.2s;
 }
 
-.refund-content a:hover {
+.cancellation-content a:hover {
   color: var(--theme-text-gradient-end, #EC4899);
   text-decoration: underline;
 }
 
 /* Focus for accessibility */
-.refund-back-link:focus-visible,
-.refund-content a:focus-visible {
+.cancellation-back-link:focus-visible,
+.cancellation-content a:focus-visible {
   outline: 2px solid var(--theme-accent);
   outline-offset: 2px;
 }

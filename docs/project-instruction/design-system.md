@@ -515,7 +515,7 @@ Remove friction from onboarding. Make the user feel confident about connecting t
 - **Location**: `src/components/Footer/` (Footer.jsx, Footer.css)
 - **Usage**: Rendered in App.jsx below main content; appears on all pages
 - **Layout**: Dark footer (bg-zinc-900), RTL, max-w-7xl container; top row: brand (logo + tagline) and links; bottom row: copyright
-- **Links**: דף הבית, יכולות, תמחור, מדיניות פרטיות (Privacy → `/privacy`), תנאי שימוש (Terms → `/terms`), מדיניות ביטול והחזרים (Cancellation & Refund Policy → `/refund-policy`)
+- **Links**: דף הבית, יכולות, תמחור, מדיניות פרטיות (Privacy → `/privacy`), תנאי שימוש (Terms → `/terms`), מדיניות ביטול עסקה (Cancellation Policy → `/cancellation-policy`)
 - **Styling**: text-gray-300/400, hover accent (--theme-accent), border-t border-white/10 above copyright
 - **Accessibility**: role="contentinfo", aria-label on logo link
 
@@ -532,9 +532,9 @@ Remove friction from onboarding. Make the user feel confident about connecting t
 - **Purpose**: Displays Terms of Service; layout matches Privacy (RTL, back link, sections).
 
 ### Cancellation & Refund Policy Page
-- **Location**: `src/pages/RefundPolicy.jsx`, `src/pages/RefundPolicy.css`
-- **Route**: `/refund-policy`
-- **Purpose**: Formal Cancellation & Refund Policy for SaaS/payment-processor compliance (subscription, cancellation, refunds, free trial, automatic renewal, failed payments, termination, account deletion, policy updates). Linked from footer and from Pricing page disclaimer near checkout.
+- **Location**: `src/pages/CancellationPolicy.jsx`, `src/pages/CancellationPolicy.css`
+- **Route**: `/cancellation-policy`
+- **Purpose**: Israeli regulation — "מדיניות ביטול עסקה" per חוק הגנת הצרכן (Consumer Protection Law): עסקה מתמשכת, right to cancel at any time, billing stops after cancellation, automatic renewal disclosure, refunds policy, contact. Linked from footer and Pricing checkout notice. Support: donnai.help@gmail.com, 054-391-1602.
 
 ### Smooth Scroll Navigation
 - **Anchor Links**: href="#home", href="#superpowers", href="#pricing"

@@ -161,7 +161,7 @@ const Privacy = () => {
             <p>Deletion options include:</p>
             <ul>
               <li>Sending a deletion request via WhatsApp (e.g., &quot;Delete my data&quot;)</li>
-              <li>Contacting us by email at privacy@donnaai.app</li>
+              <li>Contacting us by email at donnai.help@gmail.com</li>
             </ul>
             <p>Upon deletion:</p>
             <ul>
@@ -198,7 +198,8 @@ const Privacy = () => {
             <h2>12. Contact Information</h2>
             <p>For privacy-related questions or requests, contact us at:</p>
             <div className="privacy-contact-box">
-              <p><strong>Email:</strong> <a href="mailto:privacy@donnaai.app">privacy@donnaai.app</a></p>
+              <p><strong>Email:</strong> <a href="mailto:donnai.help@gmail.com">donnai.help@gmail.com</a></p>
+              <p><strong>Phone:</strong> <a href="tel:+972543911602">054-391-1602</a></p>
               <p><strong>Website:</strong> <a href="https://donnai.io" target="_blank" rel="noopener noreferrer">https://donnai.io</a></p>
             </div>
           </section>

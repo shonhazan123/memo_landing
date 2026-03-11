@@ -85,7 +85,7 @@ Per [PayPlus FAQ – איך פונים אל דף תשלום באמצעות API](
 
 ## Frontend
 
-- **Pricing page** (`src/pages/Pricing.jsx`): Each plan has a `planId`. On CTA click, `handlePurchaseClick(plan)` calls `api.payment.createLink(plan.planId, billingPeriod)` then redirects to `paymentPageLink`. Loading state and error message are shown. A disclaimer below the pricing cards states: "By completing this purchase you agree to the Terms of Service and Cancellation Policy" (Hebrew), with links to `/terms` and `/refund-policy`.
+- **Pricing page** (`src/pages/Pricing.jsx`): Each plan has a `planId`. On CTA click, `handlePurchaseClick(plan)` calls `api.payment.createLink(plan.planId, billingPeriod)` then redirects to `paymentPageLink`. Loading state and error message are shown. A disclaimer below the pricing cards (Israeli compliance): "בלחיצה על כפתור התשלום הנך מאשר את תנאי השימוש ומדיניות ביטול העסקה בהתאם לחוק הגנת הצרכן", with links to `/terms` and `/cancellation-policy`.
 - **API client** (`src/api/client.js`): `api.payment.createLink(planId, billingPeriod, options)`.
 
 ## Callbacks (optional)

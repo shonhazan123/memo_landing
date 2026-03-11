@@ -156,7 +156,8 @@ const Terms = () => {
             <h2>15. פרטי יצירת קשר</h2>
             <p>לשאלות או בקשות הקשורות לתנאי שימוש אלה, אנא צרו איתנו קשר:</p>
             <div className="terms-contact-box">
-              <p><strong>אימייל:</strong> <a href="mailto:legal@donnaai.app">legal@donnaai.app</a></p>
+              <p><strong>אימייל:</strong> <a href="mailto:donnai.help@gmail.com">donnai.help@gmail.com</a></p>
+              <p><strong>טלפון:</strong> <a href="tel:+972543911602">054-391-1602</a></p>
               <p><strong>אתר:</strong> <a href="https://donnai.io" target="_blank" rel="noopener noreferrer">https://donnai.io</a></p>
             </div>
           </section>

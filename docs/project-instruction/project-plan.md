@@ -213,7 +213,7 @@ mimo-website/
 - ✅ Footer component (site-wide, with links to Home, Superpowers, Pricing, Privacy, Terms, Cancellation & Refund Policy)
 - ✅ Privacy policy page (/privacy) with full policy text
 - ✅ Terms of Service page (/terms)
-- ✅ Cancellation & Refund Policy page (/refund-policy); linked from footer and Pricing checkout disclaimer
+- ✅ Cancellation policy page (/cancellation-policy) — Israeli regulation "מדיניות ביטול עסקה" per חוק הגנת הצרכן; linked from footer and Pricing checkout notice. Support: donnai.help@gmail.com, 054-391-1602.
 
 ### In Progress
 - 🔄 Testing and QA for authentication flow

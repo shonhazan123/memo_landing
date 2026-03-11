@@ -290,10 +290,11 @@ const Pricing = () => {
             ))}
           </div>
           <p className="text-center text-sm text-gray-500 mt-6" dir="rtl">
-            בהשלמת הרכישה אתה מסכים ל
-            <Link to="/terms" className="text-[var(--theme-accent)] font-medium hover:underline mx-1">תנאי השימוש</Link>
-            ול
-            <Link to="/refund-policy" className="text-[var(--theme-accent)] font-medium hover:underline mx-1">מדיניות הביטול וההחזרים</Link>.
+            בלחיצה על כפתור התשלום הנך מאשר את{' '}
+            <Link to="/terms" className="text-[var(--theme-accent)] font-medium hover:underline">תנאי השימוש</Link>
+            ו
+            <Link to="/cancellation-policy" className="text-[var(--theme-accent)] font-medium hover:underline mx-1">מדיניות ביטול העסקה</Link>
+            בהתאם לחוק הגנת הצרכן.
           </p>
         </div>
       </section>
