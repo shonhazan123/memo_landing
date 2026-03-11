@@ -20,8 +20,9 @@ const Footer = () => {
             <Link to="/" className="footer-link">דף הבית</Link>
             <Link to="/superpowers" className="footer-link">יכולות</Link>
             <Link to="/pricing" className="footer-link">תמחור</Link>
-            <a href="https://donnai.io/privacy" className="footer-link">מדיניות פרטיות</a>
-            <a href="https://donnai.io/terms" className="footer-link">תנאי שימוש</a>
+            <Link to="/privacy" className="footer-link">מדיניות פרטיות</Link>
+            <Link to="/terms" className="footer-link">תנאי שימוש</Link>
+            <Link to="/refund-policy" className="footer-link">מדיניות ביטול והחזרים</Link>
           </div>
         </div>
         <div className="footer-bottom">

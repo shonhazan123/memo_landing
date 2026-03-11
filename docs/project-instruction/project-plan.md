@@ -210,8 +210,10 @@ mimo-website/
 - ✅ RTL support implemented
 - ✅ Responsive design implemented
 - ✅ Project structure scalable and organized
-- ✅ Footer component (site-wide, with links to Home, Superpowers, Pricing, Privacy)
-- ✅ Privacy policy page (/privacy) with placeholder content for policy text
+- ✅ Footer component (site-wide, with links to Home, Superpowers, Pricing, Privacy, Terms, Cancellation & Refund Policy)
+- ✅ Privacy policy page (/privacy) with full policy text
+- ✅ Terms of Service page (/terms)
+- ✅ Cancellation & Refund Policy page (/refund-policy); linked from footer and Pricing checkout disclaimer
 
 ### In Progress
 - 🔄 Testing and QA for authentication flow

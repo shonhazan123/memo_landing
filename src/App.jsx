@@ -15,6 +15,7 @@ import Signup from './pages/Signup'
 import Settings from './pages/Settings'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
+import RefundPolicy from './pages/RefundPolicy'
 import './styles/index.css'
 
 function ScrollToTop() {
@@ -96,6 +97,7 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
+            <Route path="/refund-policy" element={<RefundPolicy />} />
 
             {/* Protected dashboard routes (own layout, no CardNav/Footer) */}
             <Route element={<ProtectedRoute />}>

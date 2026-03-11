@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 import PricingCard from '../components/Card/PricingCard'
 import Button from '../components/Button/Button'
 import StarBorder from '../components/StarBorder/StarBorder'
@@ -288,6 +289,12 @@ const Pricing = () => {
               />
             ))}
           </div>
+          <p className="text-center text-sm text-gray-500 mt-6" dir="rtl">
+            בהשלמת הרכישה אתה מסכים ל
+            <Link to="/terms" className="text-[var(--theme-accent)] font-medium hover:underline mx-1">תנאי השימוש</Link>
+            ול
+            <Link to="/refund-policy" className="text-[var(--theme-accent)] font-medium hover:underline mx-1">מדיניות הביטול וההחזרים</Link>.
+          </p>
         </div>
       </section>
       
