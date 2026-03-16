@@ -39,6 +39,7 @@ const Pricing = () => {
   const [billingPeriod, setBillingPeriod] = useState('monthly') // 'monthly' or 'annual'
   const [paymentLoading, setPaymentLoading] = useState(null) // planId when loading
   const [paymentError, setPaymentError] = useState(null)
+  const [paymentReturnReady, setPaymentReturnReady] = useState(false)
   const paymentResult = searchParams.get('payment') // 'success' | 'failure' | 'cancel'
 
   const plans = {
@@ -192,7 +193,17 @@ const Pricing = () => {
   
   const currentPlans = plans[billingPeriod]
 
-  // Clear payment result from URL after showing (and optional auto-dismiss)
+  // When returning with ?payment=..., show loading then overlay: delay then set paymentReturnReady
+  useEffect(() => {
+    if (!paymentResult) {
+      setPaymentReturnReady(false)
+      return
+    }
+    const t = setTimeout(() => setPaymentReturnReady(true), 1000)
+    return () => clearTimeout(t)
+  }, [paymentResult])
+
+  // Clear payment result from URL after showing (optional auto-dismiss)
   useEffect(() => {
     if (!paymentResult) return
     const t = setTimeout(() => {
@@ -231,43 +242,66 @@ const Pricing = () => {
   
   return (
     <div dir="rtl" className="min-h-screen bg-white">
-      {/* Payment result message (Signup-quality: clear card, gradient checkmark / error) */}
-      {paymentResult === 'success' && (
-        <div className="max-w-2xl mx-auto px-4 pt-8">
-          <div className="pricing-message-card pricing-message-success">
-            <div className="pricing-message-icon success">
-              <span className="text-white text-3xl">✓</span>
-            </div>
-            <h3 className="pricing-message-title">התשלום בוצע בהצלחה. תודה.</h3>
-            <button type="button" onClick={dismissPaymentMessage} className="pricing-message-dismiss">
-              סגור
-            </button>
+      {/* Full-page loading when returning from PayPlus with ?payment=... */}
+      {paymentResult && !paymentReturnReady && (
+        <div className="pricing-return-loading" aria-live="polite">
+          <div className="pricing-return-loading-content">
+            <div className="pricing-return-loading-spinner" />
+            <p className="pricing-return-loading-text">טוען...</p>
           </div>
         </div>
       )}
-      {paymentResult === 'failure' && (
-        <div className="max-w-2xl mx-auto px-4 pt-8">
-          <div className="pricing-message-card pricing-message-failure">
-            <div className="pricing-message-icon failure">!</div>
-            <h3 className="pricing-message-title">התשלום לא בוצע</h3>
-            <p className="pricing-message-body">
-              ניתן לנסות שוב או לפנות לתמיכה: <a href="mailto:donnai.help@gmail.com">donnai.help@gmail.com</a> או <a href="tel:+972543911602">054-391-1602</a>.
-            </p>
-            <button type="button" onClick={dismissPaymentMessage} className="pricing-message-dismiss">
-              סגור
-            </button>
-          </div>
-        </div>
-      )}
-      {paymentResult === 'cancel' && (
-        <div className="max-w-2xl mx-auto px-4 pt-8">
-          <div className="pricing-message-card pricing-message-cancel">
-            <div className="pricing-message-icon cancel">○</div>
-            <h3 className="pricing-message-title">התשלום בוטל</h3>
-            <p className="pricing-message-body">ניתן לנסות שוב בכל עת.</p>
-            <button type="button" onClick={dismissPaymentMessage} className="pricing-message-dismiss">
-              סגור
-            </button>
+
+      {/* Overlay: darkened backdrop + floating result card (success/failure/cancel) */}
+      {paymentResult && paymentReturnReady && (
+        <div
+          className="pricing-result-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label={paymentResult === 'success' ? 'תוצאת תשלום' : paymentResult === 'failure' ? 'התשלום נכשל' : 'התשלום בוטל'}
+        >
+          <div
+            className="pricing-result-backdrop"
+            aria-hidden="true"
+            onClick={dismissPaymentMessage}
+          />
+          <div
+            className="pricing-result-card-wrapper"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {paymentResult === 'success' && (
+              <div className="pricing-message-card pricing-message-success">
+                <div className="pricing-message-icon success">
+                  <span className="text-white text-3xl">✓</span>
+                </div>
+                <h3 className="pricing-message-title">התשלום בוצע בהצלחה. תודה.</h3>
+                <button type="button" onClick={dismissPaymentMessage} className="pricing-message-dismiss">
+                  אישור
+                </button>
+              </div>
+            )}
+            {paymentResult === 'failure' && (
+              <div className="pricing-message-card pricing-message-failure">
+                <div className="pricing-message-icon failure">!</div>
+                <h3 className="pricing-message-title">התשלום לא בוצע</h3>
+                <p className="pricing-message-body">
+                  ניתן לנסות שוב או לפנות לתמיכה: <a href="mailto:donnai.help@gmail.com">donnai.help@gmail.com</a> או <a href="tel:+972543911602">054-391-1602</a>.
+                </p>
+                <button type="button" onClick={dismissPaymentMessage} className="pricing-message-dismiss">
+                  אישור
+                </button>
+              </div>
+            )}
+            {paymentResult === 'cancel' && (
+              <div className="pricing-message-card pricing-message-cancel">
+                <div className="pricing-message-icon cancel">○</div>
+                <h3 className="pricing-message-title">התשלום בוטל</h3>
+                <p className="pricing-message-body">ניתן לנסות שוב בכל עת.</p>
+                <button type="button" onClick={dismissPaymentMessage} className="pricing-message-dismiss">
+                  אישור
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

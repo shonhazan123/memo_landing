@@ -9,11 +9,11 @@ When a user clicks the purchase/try button on a pricing plan (Pricing page), the
 1. **User** selects a plan (בסיסי / מקצועי / עסקי) and billing period (חודשי / שנתי) on `/pricing`.
 2. **User** clicks the CTA button ("נסה בחינם").
 3. **Frontend** calls `POST /api/payment/create-link` with `{ planId, billingPeriod }`.
-4. **Backend** validates `planId` and `billingPeriod`, maps them to an amount (ILS), then calls PayPlus `PaymentPages/generateLink` with:
+4. **Backend** validates `planId` and `billingPeriod`, computes the charge amount, then calls PayPlus `PaymentPages/generateLink` with:
    - `payment_page_uid` – from env (your PayPlus payment page)
-   - `amount`, `currency_code` (ILS)
+   - `amount`, `currency_code` (ILS): for **monthly** = per-month price; for **annual** = full year total (12 × per-month rate, e.g. 180 / 240 / 360)
    - `refURL_success`, `refURL_failure`, `refURL_cancel` – redirect back to `/pricing?payment=success|failure|cancel`
-   - `items` – single line item with plan name and amount
+   - `items` – single line item: for monthly the plan name (e.g. "בסיסי"); for annual the plan name plus " (שנתי)" and the full-year amount
 5. **Backend** returns `{ paymentPageLink, pageRequestUid, amount, planName }`.
 6. **Frontend** redirects the user to `paymentPageLink` (PayPlus hosted page).
 7. **User** completes or cancels payment on PayPlus; PayPlus redirects back to our site per the refURLs.
@@ -22,13 +22,13 @@ When a user clicks the purchase/try button on a pricing plan (Pricing page), the
 
 Defined in `server/src/services/payplus.service.js`:
 
-| planId   | Monthly (ILS) | Annual (ILS) |
-|----------|----------------|--------------|
-| basic    | 21             | 15           |
-| pro      | 28             | 20           |
-| business | 42             | 30           |
+| planId   | Monthly (ILS) | Annual per month (ILS) | Annual total on payment page (ILS) |
+|----------|----------------|-------------------------|--------------------------------------|
+| basic    | 21             | 15                      | 180                                  |
+| pro      | 28             | 20                      | 240                                  |
+| business | 42             | 30                      | 360                                  |
 
-Amounts are enforced on the server; the frontend only sends `planId` and `billingPeriod`.
+For **monthly**, the PayPlus payment page shows the normal monthly price. For **annual**, it shows the full year amount (12 × the annual per-month rate). Amounts are enforced on the server; the frontend only sends `planId` and `billingPeriod`.
 
 ## Environment variables
 
@@ -96,7 +96,7 @@ After payment, PayPlus redirects to:
 - Failure: `/pricing?payment=failure`
 - Cancel: `/pricing?payment=cancel`
 
-The **Pricing page** reads the `payment` query parameter and shows a clear success/failure/cancel message (Signup-quality UI: rounded card, gradient icon, dismiss button). The query param is cleared after display so the message does not reappear on refresh.
+On return to `/pricing?payment=...`, the **Pricing page** first shows a full-page loading screen (spinner + "טוען...") for about one second. It then shows a floating confirmation card (success, failure, or cancel) as an overlay above the full pricing page: a darkened backdrop covers the page, with a centered card (Signup-quality UI: rounded card, gradient icon, same copy as before) and a single confirmation button ("אישור"). Clicking the button or the backdrop dismisses the overlay and clears the `payment` query param so the user is back on the normal pricing page. The query param is also cleared automatically after 8 seconds so the message does not reappear on refresh.
 
 ## 14-day trial and subscription state
 

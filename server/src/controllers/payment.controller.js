@@ -25,13 +25,14 @@ class PaymentController {
         })
       }
 
-      const amount = PayPlusService.getAmountForPlan(planId, billingPeriod)
+      const amount = PayPlusService.getChargeAmountForPlan(planId, billingPeriod)
       const planName = PayPlusService.getPlanDisplayName(planId)
+      const itemName = billingPeriod === 'annual' ? `${planName} (שנתי)` : planName
 
       const { payment_page_link, page_request_uid } =
         await PayPlusService.generatePaymentLink({
           amount,
-          planName,
+          planName: itemName,
           customerEmail: customerEmail || undefined,
           customerName: customerName || undefined,
         })

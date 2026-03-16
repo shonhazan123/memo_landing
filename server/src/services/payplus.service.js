@@ -114,7 +114,7 @@ async function generatePaymentLink({ amount, planName, customerEmail, customerNa
 }
 
 /**
- * Get amount in ILS for a plan and billing period.
+ * Get amount in ILS for a plan and billing period (per-month rate).
  * @param {string} planId - 'basic' | 'pro' | 'business'
  * @param {string} billingPeriod - 'monthly' | 'annual'
  * @returns {number}
@@ -125,6 +125,18 @@ function getAmountForPlan(planId, billingPeriod) {
   const amount = period[planId]
   if (amount == null) throw new Error('Invalid plan')
   return amount
+}
+
+/**
+ * Get the charge amount to send to PayPlus: monthly = per-month price, annual = full year total (12 × per-month).
+ * @param {string} planId - 'basic' | 'pro' | 'business'
+ * @param {string} billingPeriod - 'monthly' | 'annual'
+ * @returns {number}
+ */
+function getChargeAmountForPlan(planId, billingPeriod) {
+  const perMonth = getAmountForPlan(planId, billingPeriod)
+  if (billingPeriod === 'annual') return perMonth * 12
+  return perMonth
 }
 
 /**
@@ -190,6 +202,7 @@ function getTrialFirstChargeDate() {
 export default {
   generatePaymentLink,
   getAmountForPlan,
+  getChargeAmountForPlan,
   getPlanDisplayName,
   getTrialFirstChargeDate,
   cancelRecurring,

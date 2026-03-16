@@ -91,6 +91,90 @@
   color: #4f46e5;
 }
 
+/* Full-page loading when returning from PayPlus with ?payment=... */
+.pricing-return-loading {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.pricing-return-loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pricing-return-loading-spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 3px solid #e5e7eb;
+  border-top-color: #4f46e5;
+  border-radius: 50%;
+  animation: pricing-spin 0.8s linear infinite;
+}
+
+@keyframes pricing-spin {
+  to { transform: rotate(360deg); }
+}
+
+.pricing-return-loading-text {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Payment result overlay: full-screen darkened backdrop + centered card (above header/nav) */
+.pricing-result-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.pricing-result-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  animation: pricingResultFadeIn 0.2s ease-out;
+  cursor: pointer;
+}
+
+@keyframes pricingResultFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.pricing-result-card-wrapper {
+  position: relative;
+  z-index: 10000;
+  max-width: 28rem;
+  width: 100%;
+  margin: 0 auto;
+  animation: pricingResultSlideUp 0.3s ease-out;
+  cursor: default;
+}
+
+@keyframes pricingResultSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Section background transitions - fade into each other, no hard cuts */
 .pricing-cards-section {
   background-image:
