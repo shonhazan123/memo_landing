@@ -108,7 +108,7 @@ class AuthController {
       if (!redirectTo) {
         redirectUrl.searchParams.set(
           'step',
-          result.user.onboardingComplete ? 'completed' : 'whatsapp_redirect'
+          result.user.onboardingComplete ? 'completed' : 'choose_plan'
         )
       }
 
