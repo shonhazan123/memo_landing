@@ -25,14 +25,17 @@ const PLAN_AMOUNTS = {
 
 /**
  * Generate a PayPlus payment page link.
+ * Uses recurring_settings so monthly = charge every 1 month, annual = charge every 12 months.
  * @param {Object} options
- * @param {number} options.amount - Amount in ILS
+ * @param {number} options.amount - Amount in ILS (per charge: monthly = 1 month, annual = full year)
  * @param {string} options.planName - Display name for the plan (e.g. "בסיסי")
+ * @param {string} options.billingPeriod - 'monthly' | 'annual' (sets recurring interval)
  * @param {string} [options.customerEmail] - Customer email (optional)
  * @param {string} [options.customerName] - Customer name (optional)
+ * @param {string} [options.sessionId] - Payment session ID for webhook correlation
  * @returns {Promise<{ payment_page_link: string, page_request_uid: string }>}
  */
-async function generatePaymentLink({ amount, planName, customerEmail, customerName }) {
+async function generatePaymentLink({ amount, planName, billingPeriod, customerEmail, customerName, sessionId }) {
   const apiKey = process.env.PAYPLUS_API_KEY
   const secretKey = process.env.PAYPLUS_SECRET_KEY
   const paymentPageUid = process.env.PAYPLUS_PAGE_UID
@@ -44,8 +47,12 @@ async function generatePaymentLink({ amount, planName, customerEmail, customerNa
   }
 
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173'
+  const backendUrl = process.env.BACKEND_URL || 'http://localhost:3001'
 
-  const chargeMethod = 3
+  const chargeMethod = 3 // Recurring
+
+  // recurring_type 2 = monthly; recurring_range 1 = every 1 month, 12 = every 12 months (yearly)
+  const recurringRange = billingPeriod === 'annual' ? 12 : 1
 
   const body = {
     payment_page_uid: paymentPageUid,
@@ -58,24 +65,39 @@ async function generatePaymentLink({ amount, planName, customerEmail, customerNa
     refURL_success: `${frontendUrl}/pricing?payment=success`,
     refURL_failure: `${frontendUrl}/pricing?payment=failure`,
     refURL_cancel: `${frontendUrl}/pricing?payment=cancel`,
-    // more_info (up to 19 chars) - for order/plan tracking in callbacks
+    refURL_callback: `${backendUrl}/api/payment/webhook`,
     more_info: `${planName}-${amount}`.slice(0, 19),
     items: [
       {
         name: planName,
         quantity: 1,
-        value: Math.round(amount * 100), // value in agorot
+        value: Math.round(amount * 100),
         price: amount,
       },
     ],
-    // PayPlus FAQ: customer (customer_name + email) required for invoice/receipt; send minimal for compatibility
     customer: {
       customer_name: customerName || 'לקוח',
       email: customerEmail || 'guest@test.local',
     },
+    recurring_settings: {
+      instant_first_payment: false,
+      recurring_type: 2, // monthly
+      recurring_range: recurringRange, // 1 = every month, 12 = every 12 months (yearly)
+      number_of_charges: 0, // unlimited
+      start_date_on_payment_date: true,
+      start_date: 1, // day of month when start_date_on_payment_date is used
+      jump_payments: 14, // 14 days free trial before first charge
+      successful_invoice: false,
+      customer_failure_email: true,
+      send_customer_success_email: true,
+    },
   }
 
-  const url = `https://restapidev.payplus.co.il/api/v1.0/PaymentPages/generateLink`
+  if (sessionId) {
+    body.more_info_1 = sessionId
+  }
+
+  const url ='https://restapidev.payplus.co.il/api/v1.0/PaymentPages/generateLink'
   const response = await fetch(url, {
     method: 'POST',
     headers: {

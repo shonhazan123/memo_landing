@@ -46,7 +46,7 @@ export const SCOPES = {
 /**
  * Get scopes based on user plan type
  * All users get calendar access regardless of plan
- * @param {string} planType - 'free' | 'standard' | 'pro' (not used, kept for compatibility)
+ * @param {string} planType - 'free' | 'standard' | 'pro' | 'business' (not used, kept for compatibility)
  * @returns {string[]} Array of OAuth scopes
  */
 export const getScopesForPlan = (planType = 'standard') => {

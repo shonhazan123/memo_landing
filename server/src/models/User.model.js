@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid'
  * @typedef {Object} UserRecord
  * @property {string} id - UUID
  * @property {string} whatsapp_number - User's WhatsApp number (NOT NULL, UNIQUE)
- * @property {string} plan_type - 'free' | 'standard' | 'pro' (NOT NULL, default 'standard')
+ * @property {string} plan_type - 'free' | 'standard' | 'pro' | 'business' (NOT NULL, default 'standard')
  * @property {string} timezone - User timezone (default 'Asia/Jerusalem')
  * @property {Object} settings - User settings JSONB (default '{}')
  * @property {string|null} google_email - User's Google email

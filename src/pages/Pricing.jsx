@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import PricingCard from '../components/Card/PricingCard'
 import Button from '../components/Button/Button'
 import StarBorder from '../components/StarBorder/StarBorder'
 import ScrollReveal from '../components/ScrollReveal/ScrollReveal'
 import BlurText from '../components/BlurText/BlurText'
+import { useAuth } from '../context/AuthContext'
 import api from '../api/client'
 import './Pricing.css'
 
@@ -36,7 +37,9 @@ const FAQItem = ({ question, answer }) => {
 
 const Pricing = () => {
   const [searchParams, setSearchParams] = useSearchParams()
-  const [billingPeriod, setBillingPeriod] = useState('monthly') // 'monthly' or 'annual'
+  const navigate = useNavigate()
+  const { isAuthenticated, user } = useAuth()
+  const [billingPeriod, setBillingPeriod] = useState(() => searchParams.get('billing') || 'monthly')
   const [paymentLoading, setPaymentLoading] = useState(null) // planId when loading
   const [paymentError, setPaymentError] = useState(null)
   const [paymentReturnReady, setPaymentReturnReady] = useState(false)
@@ -226,15 +229,32 @@ const Pricing = () => {
 
   const handlePurchaseClick = async (plan) => {
     if (!plan.planId) {
-      window.location.href = '/login'
+      navigate('/login')
       return
     }
+
+    if (!isAuthenticated) {
+      const returnUrl = `/pricing?plan=${plan.planId}&billing=${billingPeriod}`
+      navigate(`/signup?returnTo=${encodeURIComponent(returnUrl)}`)
+      return
+    }
+
     setPaymentError(null)
     setPaymentLoading(plan.planId)
     try {
       const { paymentPageLink } = await api.payment.createLink(plan.planId, billingPeriod)
       if (paymentPageLink) window.location.href = paymentPageLink
     } catch (err) {
+      if (err.status === 401) {
+        const returnUrl = `/pricing?plan=${plan.planId}&billing=${billingPeriod}`
+        navigate(`/signup?returnTo=${encodeURIComponent(returnUrl)}`)
+        return
+      }
+      if (err.status === 409) {
+        setPaymentError(err.data?.message || 'יש לך כבר מנוי פעיל לתוכנית זו.')
+        setPaymentLoading(null)
+        return
+      }
       setPaymentError(err.message || err.data?.message || 'לא ניתן לפתוח דף תשלום. נסה שוב או פנה אלינו.')
       setPaymentLoading(null)
     }

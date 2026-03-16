@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
   whatsapp_number TEXT UNIQUE, -- User's WhatsApp number (e.g., '+972501234567')
   google_email TEXT, -- User's Google email
   name TEXT, -- User's display name
-  plan_type TEXT DEFAULT 'standard' CHECK (plan_type IN ('free', 'standard', 'pro')),
+  plan_type TEXT DEFAULT 'standard' CHECK (plan_type IN ('free', 'standard', 'pro', 'business')),
   timezone TEXT DEFAULT 'Asia/Jerusalem',
   settings JSONB DEFAULT '{}',
   onboarding_complete BOOLEAN DEFAULT false,
@@ -48,6 +48,29 @@ CREATE TABLE IF NOT EXISTS user_google_tokens (
 
 -- Index for faster lookups
 CREATE INDEX IF NOT EXISTS idx_user_google_tokens_user_id ON user_google_tokens(user_id);
+
+-- ============================================
+-- PAYMENT SESSIONS TABLE
+-- ============================================
+CREATE TABLE IF NOT EXISTS payment_sessions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  plan_id TEXT NOT NULL,
+  billing_period TEXT NOT NULL CHECK (billing_period IN ('monthly', 'annual')),
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'failed', 'expired')),
+  amount NUMERIC(10,2) NOT NULL,
+  payplus_page_request_uid TEXT,
+  payplus_transaction_uid TEXT,
+  idempotency_key TEXT UNIQUE,
+  expires_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_payment_sessions_user_id ON payment_sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_payment_sessions_user_status ON payment_sessions(user_id, status);
+CREATE INDEX IF NOT EXISTS idx_payment_sessions_payplus_uid ON payment_sessions(payplus_page_request_uid);
+CREATE INDEX IF NOT EXISTS idx_payment_sessions_idempotency ON payment_sessions(idempotency_key);
 
 -- ============================================
 -- DATABASE FUNCTIONS
@@ -90,6 +113,12 @@ CREATE TRIGGER update_users_updated_at
 DROP TRIGGER IF EXISTS update_user_google_tokens_updated_at ON user_google_tokens;
 CREATE TRIGGER update_user_google_tokens_updated_at
   BEFORE UPDATE ON user_google_tokens
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_payment_sessions_updated_at ON payment_sessions;
+CREATE TRIGGER update_payment_sessions_updated_at
+  BEFORE UPDATE ON payment_sessions
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
