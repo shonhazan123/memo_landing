@@ -92,7 +92,7 @@ Set in server `.env` (or Vercel env):
 | `PAYPLUS_CHARGE_METHOD` | Optional. Default `1` (regular charge J4). Use `0` for card check only (J2) in staging. |
 | `PAYPLUS_WEBHOOK_SECRET` | Optional. If set, incoming webhooks must include this value in the `x-payplus-secret` header. |
 | `FRONTEND_URL`      | Base URL of the site (used for success/failure/cancel redirects) |
-| `BACKEND_URL`       | Base URL of the backend (used for `refURL_callback` webhook URL). Default `http://localhost:3001`. |
+| `BACKEND_URL`       | (Not used for PayPlus webhook.) Webhook callback URL is hardcoded to `https://donnai.io/api/payment/webhook` in `payplus.service.js`. |
 
 If PayPlus env vars are missing, `POST /api/payment/create-link` returns 503 with a message that payment is not configured.
 
@@ -135,17 +135,20 @@ Per [PayPlus FAQ](https://www.payplus.co.il/faq/סליקה-אינטרנטית/ח
 - 409 -- Duplicate subscription (same plan already active) or payment already in progress
 - 503 -- PayPlus not configured (missing env)
 
-### POST /api/payment/webhook (no auth -- verified by secret)
+### GET/POST /api/payment/webhook (no auth -- verified by secret)
 
-PayPlus server-to-server callback. Called automatically by PayPlus after payment completes or fails.
+PayPlus server-to-server callback. Called automatically by PayPlus after payment completes or fails. Both GET and POST are accepted (PayPlus may send either).
 
 The handler:
-1. Optionally verifies `x-payplus-secret` header against `PAYPLUS_WEBHOOK_SECRET`.
-2. Finds the `payment_session` by `page_request_uid`.
-3. On success (`status_code = '000'`): updates `users.plan_type`, sets subscription to trial, marks session completed.
-4. On failure: marks session failed; user plan unchanged.
+1. Normalizes payload: if body is a JSON string, parses it; if body is empty, uses query (for GET).
+2. Optionally verifies `x-payplus-secret` header against `PAYPLUS_WEBHOOK_SECRET`.
+3. Finds the payment session: by `transaction.payment_request_uid` (or root `page_request_uid`); if not found, by `more_info_1` (we send our `sessionId` there when creating the link).
+4. On success (`status_code` is `'000'`, `'0'`, `'00'`, or `0`): (1) updates user `subscription_status` to `trial` and `subscription_period_end`; (2) updates user `plan_type` to the paid plan; (3) marks the payment session `completed`.
+5. On failure: marks session `failed`; user plan unchanged.
 
 Always returns 200 to prevent PayPlus retries.
+
+**Important:** `refURL_callback` is set to `BACKEND_URL + '/api/payment/webhook'`. PayPlus must be able to reach this URL from the internet. If the backend runs on `localhost`, the webhook will never be called. For local testing use a tunnel (e.g. ngrok) and set `BACKEND_URL` to the tunnel URL; in production use the deployed backend URL.
 
 ### POST /api/payment/callback (legacy/internal)
 
@@ -185,6 +188,12 @@ On return to `/pricing?payment=...`, the Pricing page first shows a full-page lo
 - If the webhook reports failure: user's `plan_type` and `subscription_status` remain **unchanged**.
 - The `payment_sessions` row is marked `status = 'failed'`.
 - Frontend: user is redirected to `/pricing?payment=failure`; existing UI behaviour shows the failure message.
+
+## Troubleshooting: session stays pending / user plan not updated
+
+1. **Webhook not reachable** — If the backend is on localhost, PayPlus cannot call `refURL_callback`. Set `BACKEND_URL` to a public URL (e.g. ngrok tunnel or deployed server) so PayPlus can POST/GET to `/api/payment/webhook`.
+2. **Check logs** — The webhook logs `webhook_received` (with `pageRequestUid`, `moreInfo1`, `paymentStatus`), `webhook_status_check` (`isSuccess`), and `webhook_success` or `webhook_failure`. If you see `webhook_session_not_found`, the payload may use different field names; we fall back to `more_info_1` (our session ID) for lookup.
+3. **Success code** — We treat `status_code` as success when it is `'000'`, `'0'`, `'00'`, or number `0`. If PayPlus sends another code for success, add it in `payment.controller.js` (webhook `isSuccess` check).
 
 ## Files
 

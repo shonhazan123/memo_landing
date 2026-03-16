@@ -149,22 +149,35 @@ class PaymentController {
    */
   async webhook(req, res, next) {
     try {
-      // PayPlus sends callback as POST (body) or GET (query); transaction is nested under transaction
-      const payload = req.body && Object.keys(req.body).length > 0 ? req.body : req.query || {}
+      // Normalize payload: PayPlus may send POST JSON (body) or GET (query). Body might be raw string.
+      let payload = req.body
+      if (typeof payload === 'string' && payload.length > 0) {
+        try {
+          payload = JSON.parse(payload)
+        } catch {
+          payload = {}
+        }
+      }
+      if (!payload || typeof payload !== 'object' || Object.keys(payload).length === 0) {
+        payload = req.query || {}
+      }
+
       const transaction = payload.transaction || {}
-      // PayPlus docs: payment_request_uid is inside transaction (not page_request_uid at root)
       const transactionUid = transaction.uid || payload.transaction_uid
       const pageRequestUid =
         transaction.payment_request_uid || payload.page_request_uid || payload.payment_request_uid
       const paymentStatus =
-        transaction.status_code || payload.transaction?.status_code || payload.status_code
-      const moreInfo = transaction.more_info || payload.more_info
+        transaction.status_code ?? payload.transaction?.status_code ?? payload.status_code
+      const moreInfo1Raw = transaction.more_info_1 ?? payload.more_info_1
+      const moreInfo1 = moreInfo1Raw != null ? String(moreInfo1Raw) : undefined
 
       processLogger.payment('webhook_received', {
         transactionUid,
         pageRequestUid,
         paymentStatus,
-        moreInfo,
+        paymentStatusType: typeof paymentStatus,
+        moreInfo1,
+        method: req.method,
       })
 
       // Verify webhook secret if configured
@@ -179,14 +192,21 @@ class PaymentController {
         }
       }
 
-      // Find the payment session by page_request_uid
+      // Find the payment session: by payment_request_uid first, then by more_info_1 (we send session id there)
       let session = null
       if (pageRequestUid) {
         session = await PaymentSessionModel.findByPageRequestUid(pageRequestUid)
       }
+      if (!session && moreInfo1) {
+        session = await PaymentSessionModel.findById(moreInfo1)
+      }
 
       if (!session) {
-        processLogger.payment('webhook_session_not_found', { pageRequestUid, transactionUid })
+        processLogger.payment('webhook_session_not_found', {
+          pageRequestUid,
+          moreInfo1,
+          transactionUid,
+        })
         return res.status(200).json({ ok: true, warning: 'Session not found' })
       }
 
@@ -202,15 +222,24 @@ class PaymentController {
         return res.status(200).json({ ok: true, warning: 'User not found' })
       }
 
-      // PayPlus status_code: 000 = success (approved)
-      const isSuccess = paymentStatus === '000' || String(paymentStatus) === '0'
+      // PayPlus status_code: 000 or 0 = success (approved); accept string or number
+      const statusStr = paymentStatus != null ? String(paymentStatus).trim() : ''
+      const isSuccess =
+        statusStr === '000' || statusStr === '0' || statusStr === '00' || paymentStatus === 0
+
+      processLogger.payment('webhook_status_check', {
+        sessionId: session.id,
+        paymentStatus: statusStr || paymentStatus,
+        isSuccess,
+      })
 
       if (isSuccess) {
-        // Update user plan
+        // 1) Update user subscription (trial + period end)
         await UserModel.updateSubscription(userId, {
           subscription_status: 'trial',
           subscription_period_end: PayPlusService.getTrialFirstChargeDate(),
         })
+        // 2) Update user plan to the paid plan
         const planTypeForDb = planIdToDbPlan(session.plan_id)
         await UserModel.update(userId, { plan_type: planTypeForDb })
 
@@ -229,11 +258,13 @@ class PaymentController {
           })
         }
 
+        // 3) Mark payment session completed (so UI shows success, not pending)
         await PaymentSessionModel.setCompleted(session.id, transactionUid)
         processLogger.payment('webhook_success', {
           userId,
           sessionId: session.id,
           planId: session.plan_id,
+          planTypeForDb,
           transactionUid,
         })
       } else {

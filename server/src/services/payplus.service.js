@@ -47,7 +47,8 @@ async function generatePaymentLink({ amount, planName, billingPeriod, customerEm
   }
 
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173'
-  const backendUrl = process.env.BACKEND_URL || 'http://localhost:3001'
+  // Hardcoded production backend URL for PayPlus webhook callback (same host as create-link).
+  const backendUrl = 'https://donnai.io'
 
   const chargeMethod = 3 // Recurring
 

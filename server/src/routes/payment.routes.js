@@ -12,7 +12,8 @@ const router = Router()
 // POST /api/payment/create-link - Create PayPlus payment page link (requires auth)
 router.post('/create-link', requireAuth, PaymentController.createLink.bind(PaymentController))
 
-// POST /api/payment/webhook - PayPlus server-to-server webhook (no auth — verified by secret)
+// PayPlus server-to-server webhook (GET or POST; no auth — verified by secret if set)
+router.get('/webhook', PaymentController.webhook.bind(PaymentController))
 router.post('/webhook', PaymentController.webhook.bind(PaymentController))
 
 // POST /api/payment/callback - Internal payment result callback (set trial / no_access)
