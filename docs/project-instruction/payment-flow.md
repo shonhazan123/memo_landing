@@ -135,6 +135,27 @@ Per [PayPlus FAQ](https://www.payplus.co.il/faq/סליקה-אינטרנטית/ח
 - 409 -- Duplicate subscription (same plan already active) or payment already in progress
 - 503 -- PayPlus not configured (missing env)
 
+### POST /api/payment/redeem-code (requires auth)
+
+**Request body:**
+
+- `code` (required): Promo code string
+
+**Response (200):**
+
+```json
+{
+  "success": true,
+  "planType": "pro"
+}
+```
+
+**Errors:**
+
+- 400 -- Invalid or missing code
+- 401 -- Not authenticated
+- 404 -- User not found
+
 ### GET/POST /api/payment/webhook (no auth -- verified by secret)
 
 PayPlus server-to-server callback. Called automatically by PayPlus after payment completes or fails. Both GET and POST are accepted (PayPlus may send either).
@@ -169,13 +190,26 @@ The **webhook** is the primary source of truth for payment confirmation. This en
 
 After payment, PayPlus redirects to:
 
-- Success: `/pricing?payment=success`
-- Failure: `/pricing?payment=failure`
-- Cancel: `/pricing?payment=cancel`
+- Success: `/talk-to-dona?payment=success`
+- Failure: `/signup?payment=failure`
+- Cancel: `/signup?payment=cancel`
 
 These redirects are **display only** -- the user's plan is NOT updated on redirect. Plan changes happen exclusively through the webhook.
 
-On return to `/pricing?payment=...`, the Pricing page first shows a full-page loading screen (spinner + "טוען...") for about one second. It then shows a floating confirmation card (success, failure, or cancel) as an overlay. The query param is cleared automatically after 8 seconds.
+On **success**, the user lands on the `/talk-to-dona` page which shows a brief loading spinner then a floating confirmation card (green checkmark + "התשלום בוצע בהצלחה. תודה.") as an overlay. The user can dismiss it or it auto-clears after 8 seconds. Below the card is the account summary and WhatsApp CTA.
+
+On **failure/cancel**, the user is redirected back to `/signup` where the Choose Plan step reads `?payment=failure|cancel` from the URL, shows an inline error message, and clears the query param.
+
+## Promo code redemption
+
+A promo code input is shown **above** the plan cards in the Choose Plan step (signup flow). When a valid code is submitted:
+
+- **Endpoint:** `POST /api/payment/redeem-code` (requires auth)
+- **Body:** `{ code: string }`
+- **Validation:** Code is checked against a hardcoded list in the backend controller (`VALID_PROMO_CODES` array in `payment.controller.js`).
+- **On success:** Sets `users.plan_type = 'pro'`, `users.subscription_status = 'active'`, `users.subscription_period_end = NULL` (permanent, no expiry). Returns `{ success: true, planType: 'pro' }`.
+- **On invalid:** Returns 400 with `{ message: 'קוד לא תקין' }`.
+- **Frontend:** On success, navigates to `/talk-to-dona`.
 
 ## 14-day trial and subscription state
 
@@ -206,6 +240,7 @@ On return to `/pricing?payment=...`, the Pricing page first shows a full-page lo
 | Payment session model | `server/src/models/PaymentSession.model.js` |
 | User model | `server/src/models/User.model.js` |
 | Frontend pricing | `src/pages/Pricing.jsx` |
+| Talk to Dona page | `src/pages/TalkToDona.jsx` |
 | API client | `src/api/client.js` |
 | Migrations | `server/src/database/migrations/002_plan_type_alignment.sql`, `003_payment_sessions.sql` |
 | Schema | `server/src/database/schema.sql` |

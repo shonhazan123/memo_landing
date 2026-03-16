@@ -12,6 +12,7 @@ import AbilityDetail from './pages/AbilityDetail'
 import Pricing from './pages/Pricing'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
+import TalkToDona from './pages/TalkToDona'
 import Settings from './pages/Settings'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
@@ -95,6 +96,7 @@ function App() {
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/talk-to-dona" element={<TalkToDona />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/cancellation-policy" element={<CancellationPolicy />} />

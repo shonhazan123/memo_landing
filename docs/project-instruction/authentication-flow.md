@@ -92,6 +92,15 @@ server/src/
 Registration (DB insert) only happens when Google OAuth completes successfully.
 This ensures we never have orphaned users or partial registrations.
 
+### Signup Steps (overview)
+
+1. **Phone Number + Display Name** — validate only, no DB write
+2. **Google Sign-in** — creates user in DB on callback
+3. **Choose a Plan** — compact plan picker (promo code input + 3 paid plans); user selects a plan then:
+   - **Promo code**: `POST /api/payment/redeem-code` validates a hardcoded code and sets `plan_type = 'pro'` permanently → navigate to `/talk-to-dona`
+   - **Paid plan**: `POST /api/payment/create-link` → redirect to PayPlus → on success → `/talk-to-dona?payment=success`; on failure/cancel → `/signup?payment=failure|cancel`
+4. **Talk to Dona** (`/talk-to-dona`) — account summary + WhatsApp CTA + payment success confirmation card; calls `completeOnboarding()` when the user clicks "Start conversation"
+
 ### Step 1: Phone Number and Display Name (validate only — no DB write)
 
 The frontend collects the WhatsApp number and a display name in response to **"איך תרצה שדונה תקראה לך?"** (What would you like Dona to call you?). Both are kept in signup state (e.g. localStorage); no user row is created yet.
@@ -172,7 +181,9 @@ Dedicated utility file containing all persistence, recovery, and validation logi
 - **OAuth redirect marker** (`sessionStorage`): `setOAuthRedirectPending`, `isOAuthRedirectPending`, `clearOAuthRedirectPending`
 - **State validation**: `isSignupStateStale`, `determineStepFromUser`
 - **Error messages** (Hebrew): `getErrorMessage`, `isUserNotFoundError`, `getGoogleSignInErrorMessage`
-- **Constants**: `SIGNUP_STEPS`, `getInitialSignupState`
+- **Constants**: `SIGNUP_STEPS` (`PHONE_NUMBER`, `GOOGLE_AUTH`, `CHOOSE_PLAN`, `WHATSAPP_REDIRECT`, `COMPLETED`), `getInitialSignupState`
+
+`determineStepFromUser` returns `CHOOSE_PLAN` (not `WHATSAPP_REDIRECT`) when the user has `whatsappNumber` + `email` but `!onboardingComplete`. This ensures first-time users see the plan picker after Google sign-in.
 
 ### Auth Context (`src/context/AuthContext.jsx`)
 

@@ -14,6 +14,8 @@ import processLogger from '../lib/processLogger.js'
 const PLAN_RANK = { free: 0, standard: 1, basic: 1, pro: 2, business: 3 }
 const ACTIVE_STATUSES = ['active', 'trial', 'cancelled_pending']
 
+const VALID_PROMO_CODES = ['DONNA2025', 'VIPACCESS']
+
 /** Map pricing planId to DB plan_type (basic -> standard). */
 function planIdToDbPlan(planId) {
   return planId === 'basic' ? 'standard' : planId
@@ -318,6 +320,46 @@ class PaymentController {
       }
 
       res.json({ ok: true })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  /**
+   * POST /api/payment/redeem-code
+   * Validates a promo code and grants the user permanent Pro access.
+   * Body: { code: string }
+   */
+  async redeemCode(req, res, next) {
+    try {
+      const { code } = req.body || {}
+
+      if (!code || typeof code !== 'string') {
+        return res.status(400).json({ error: 'Missing code', message: 'קוד לא תקין' })
+      }
+
+      const normalizedCode = code.trim().toUpperCase()
+      if (!VALID_PROMO_CODES.includes(normalizedCode)) {
+        return res.status(400).json({ error: 'Invalid code', message: 'קוד לא תקין' })
+      }
+
+      const user = await UserModel.findById(req.userId)
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' })
+      }
+
+      await UserModel.update(user.id, { plan_type: 'pro' })
+      await UserModel.updateSubscription(user.id, {
+        subscription_status: 'active',
+        subscription_period_end: null,
+      })
+
+      processLogger.payment('promo_code_redeemed', {
+        userId: user.id,
+        code: normalizedCode,
+      })
+
+      res.json({ success: true, planType: 'pro' })
     } catch (error) {
       next(error)
     }

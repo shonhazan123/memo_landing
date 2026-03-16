@@ -16,6 +16,7 @@ const SIGNUP_STATE_EXPIRY_MS = 24 * 60 * 60 * 1000 // 24 hours
 export const SIGNUP_STEPS = {
   PHONE_NUMBER: 'phone_number',
   GOOGLE_AUTH: 'google_auth',
+  CHOOSE_PLAN: 'choose_plan',
   WHATSAPP_REDIRECT: 'whatsapp_redirect',
   COMPLETED: 'completed'
 }
@@ -139,6 +140,7 @@ export function isSignupStateStale(signupState, hasValidAuth) {
 
   // Post-Google steps require auth
   const stepRequiresAuth =
+    signupState.step === SIGNUP_STEPS.CHOOSE_PLAN ||
     signupState.step === SIGNUP_STEPS.WHATSAPP_REDIRECT ||
     signupState.step === SIGNUP_STEPS.COMPLETED
 
@@ -163,7 +165,7 @@ export function determineStepFromUser(userData) {
   if (!userData) return SIGNUP_STEPS.PHONE_NUMBER
 
   if (userData.onboardingComplete) return SIGNUP_STEPS.COMPLETED
-  if (userData.whatsappNumber && userData.email) return SIGNUP_STEPS.WHATSAPP_REDIRECT
+  if (userData.whatsappNumber && userData.email) return SIGNUP_STEPS.CHOOSE_PLAN
   if (userData.whatsappNumber) return SIGNUP_STEPS.GOOGLE_AUTH
 
   return SIGNUP_STEPS.PHONE_NUMBER

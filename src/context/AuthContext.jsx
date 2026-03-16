@@ -258,7 +258,7 @@ export const AuthProvider = ({ children }) => {
         updateSignupState({
           step: result.user.onboardingComplete
             ? SIGNUP_STEPS.COMPLETED
-            : SIGNUP_STEPS.WHATSAPP_REDIRECT,
+            : SIGNUP_STEPS.CHOOSE_PLAN,
           userId: result.user.id,
           whatsappNumber: result.user.whatsappNumber,
           formattedNumber: result.formattedNumber || result.user.whatsappNumber,
@@ -488,6 +488,7 @@ export const AuthProvider = ({ children }) => {
     cancelOAuthRedirect,
     resetSignupFlow,
     getWhatsAppUrl,
+    updateSignupState,
 
     // Constants
     SIGNUP_STEPS

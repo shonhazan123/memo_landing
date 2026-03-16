@@ -261,6 +261,18 @@ const api = {
         }),
       })
     },
+
+    /**
+     * Redeem a promo code to get permanent Pro access.
+     * @param {string} code - Promo code
+     * @returns {Promise<{ success: boolean, planType: string }>}
+     */
+    redeemCode: async (code) => {
+      return request('/payment/redeem-code', {
+        method: 'POST',
+        body: JSON.stringify({ code }),
+      })
+    },
   },
 }
 

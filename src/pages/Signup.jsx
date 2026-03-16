@@ -6,11 +6,12 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth, SIGNUP_STEPS } from '../context/AuthContext'
 import Button from '../components/Button/Button'
 import Logo from '../components/Logo/Logo'
 import StarBorder from '../components/StarBorder/StarBorder'
+import api from '../api/client'
 import './Signup.css'
 
 /**
@@ -387,6 +388,281 @@ const WhatsAppRedirectStep = ({ user, whatsappNumber, onComplete, getWhatsAppUrl
 }
 
 /**
+ * Choose Plan Step Component
+ * Shown after Google sign-in. Promo code input at top, then billing toggle + 3 plan cards.
+ */
+const PLANS = {
+  monthly: [
+    {
+      planId: 'basic',
+      name: 'בסיסי',
+      price: '₪21',
+      period: 'חודש',
+      description: 'תזכורות, רשימות, סנכרון יומן ועוד',
+      features: ['תזכורות ללא הגבלה', 'רשימות מרובות', 'תמיכה ב-WhatsApp', 'סנכרון עם Google Calendar', 'הקלטות קוליות', 'ניהול יומן', 'זכרון אישי', 'תדרוך בוקר'],
+    },
+    {
+      planId: 'pro',
+      name: 'מקצועי',
+      price: '₪28',
+      period: 'חודש',
+      description: 'סנכרון Gmail, ניתוח תמונות, תזכורות חכמות',
+      badge: 'הכי פופולרי',
+      isPopular: true,
+      features: ['כל מה שבבסיסי', 'סנכרון עם Gmail', 'ניתוח תמונות', 'תכנון מטרות והצבת יעדים', 'תזכורות חכמות', 'נודניקים', 'עדיפות בתמיכה'],
+    },
+    {
+      planId: 'business',
+      name: 'עסקי',
+      price: '₪42',
+      period: 'חודש',
+      description: 'Google Drive, Docs, Sheets ועוד',
+      features: ['כל מה שבמקצועי', 'חיפוש מידע ב-Google Docs / Sheets', 'סנכרון עם Google Drive', 'יצירת מסמכים ב-Google Docs', 'יצירת גיליונות ב-Google Sheets'],
+    },
+  ],
+  annual: [
+    {
+      planId: 'basic',
+      name: 'בסיסי',
+      price: '₪15',
+      originalPrice: '₪21',
+      period: 'חודש',
+      savings: '30%',
+      description: 'תזכורות, רשימות, סנכרון יומן ועוד',
+      features: ['תזכורות ללא הגבלה', 'רשימות מרובות', 'תמיכה ב-WhatsApp', 'סנכרון עם Google Calendar', 'הקלטות קוליות', 'ניהול יומן', 'זכרון אישי', 'תדרוך בוקר'],
+    },
+    {
+      planId: 'pro',
+      name: 'מקצועי',
+      price: '₪20',
+      originalPrice: '₪28',
+      period: 'חודש',
+      savings: '30%',
+      description: 'סנכרון Gmail, ניתוח תמונות, תזכורות חכמות',
+      badge: 'הכי פופולרי',
+      isPopular: true,
+      features: ['כל מה שבבסיסי', 'סנכרון עם Gmail', 'ניתוח תמונות', 'תכנון מטרות והצבת יעדים', 'תזכורות חכמות', 'נודניקים', 'עדיפות בתמיכה'],
+    },
+    {
+      planId: 'business',
+      name: 'עסקי',
+      price: '₪30',
+      originalPrice: '₪42',
+      period: 'חודש',
+      savings: '30%',
+      description: 'Google Drive, Docs, Sheets ועוד',
+      features: ['כל מה שבמקצועי', 'חיפוש מידע ב-Google Docs / Sheets', 'סנכרון עם Google Drive', 'יצירת מסמכים ב-Google Docs', 'יצירת גיליונות ב-Google Sheets'],
+    },
+  ],
+}
+
+const ChoosePlanStep = ({ onPlanChosen }) => {
+  const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [promoCode, setPromoCode] = useState('')
+  const [promoLoading, setPromoLoading] = useState(false)
+  const [promoError, setPromoError] = useState(null)
+  const [billingPeriod, setBillingPeriod] = useState('monthly')
+  const [selectedPlanId, setSelectedPlanId] = useState('pro')
+  const [paymentLoading, setPaymentLoading] = useState(false)
+  const [paymentError, setPaymentError] = useState(null)
+  const [expandedPlan, setExpandedPlan] = useState(null)
+
+  const paymentResult = searchParams.get('payment')
+
+  useEffect(() => {
+    if (paymentResult === 'failure') {
+      setPaymentError('התשלום לא בוצע. ניתן לנסות שוב.')
+    } else if (paymentResult === 'cancel') {
+      setPaymentError('התשלום בוטל. ניתן לנסות שוב בכל עת.')
+    }
+    if (paymentResult) {
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev)
+        next.delete('payment')
+        return next
+      }, { replace: true })
+    }
+  }, [paymentResult, setSearchParams])
+
+  const currentPlans = PLANS[billingPeriod]
+
+  const handlePromoSubmit = async (e) => {
+    e.preventDefault()
+    if (!promoCode.trim()) return
+
+    setPromoError(null)
+    setPromoLoading(true)
+    try {
+      await api.payment.redeemCode(promoCode.trim())
+      onPlanChosen()
+      navigate('/talk-to-dona')
+    } catch (err) {
+      setPromoError(err.data?.message || err.message || 'קוד לא תקין')
+    } finally {
+      setPromoLoading(false)
+    }
+  }
+
+  const handleContinue = async () => {
+    if (!selectedPlanId) return
+
+    setPaymentError(null)
+    setPaymentLoading(true)
+    try {
+      const { paymentPageLink } = await api.payment.createLink(selectedPlanId, billingPeriod)
+      if (paymentPageLink) window.location.href = paymentPageLink
+    } catch (err) {
+      if (err.status === 409) {
+        setPaymentError(err.data?.message || 'יש לך כבר מנוי פעיל לתוכנית זו.')
+      } else {
+        setPaymentError(err.message || 'לא ניתן לפתוח דף תשלום. נסה שוב.')
+      }
+      setPaymentLoading(false)
+    }
+  }
+
+  return (
+    <div className="signup-step fade-in choose-plan-step">
+      <h1 className="text-2xl font-bold text-gray-900 mb-2 text-center">בחר תוכנית</h1>
+      <p className="text-gray-500 text-sm mb-6 text-center">14 ימי ניסיון חינם לכל תוכנית</p>
+
+      {/* Promo code section */}
+      <form onSubmit={handlePromoSubmit} className="promo-code-section mb-4">
+        <div className="flex gap-2 items-center">
+          <input
+            type="text"
+            value={promoCode}
+            onChange={(e) => setPromoCode(e.target.value)}
+            placeholder="יש לך קוד?"
+            className="promo-code-input flex-1 py-2.5 px-4 text-sm border border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none transition-colors text-right"
+            dir="rtl"
+          />
+          <button
+            type="submit"
+            disabled={promoLoading || !promoCode.trim()}
+            className="promo-code-btn py-2.5 px-4 text-sm font-medium rounded-xl transition-all duration-200 disabled:opacity-50"
+          >
+            {promoLoading ? '...' : 'הפעל'}
+          </button>
+        </div>
+        {promoError && (
+          <p className="text-red-500 text-xs mt-1.5 text-right">{promoError}</p>
+        )}
+      </form>
+
+      <div className="choose-plan-divider">
+        <span className="choose-plan-divider-text">או בחר תוכנית</span>
+      </div>
+
+      {/* Billing toggle */}
+      <div className="flex justify-center mb-5 mt-4">
+        <div className="billing-toggle-compact">
+          <button
+            onClick={() => setBillingPeriod('monthly')}
+            className={`billing-toggle-btn ${billingPeriod === 'monthly' ? 'active' : ''}`}
+          >
+            חודשי
+          </button>
+          <button
+            onClick={() => setBillingPeriod('annual')}
+            className={`billing-toggle-btn ${billingPeriod === 'annual' ? 'active' : ''}`}
+          >
+            שנתי
+            <span className="billing-toggle-badge">-30%</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Plan cards */}
+      <div className="plan-cards-list">
+        {currentPlans.map((plan) => (
+          <div
+            key={plan.planId}
+            className={`plan-card-compact ${selectedPlanId === plan.planId ? 'selected' : ''} ${plan.isPopular ? 'popular' : ''}`}
+            onClick={() => setSelectedPlanId(plan.planId)}
+          >
+            <div className="plan-card-header">
+              <div className="plan-card-info">
+                <div className="flex items-center gap-2">
+                  <span className="plan-card-name">{plan.name}</span>
+                  {plan.badge && (
+                    <span className="plan-card-badge">{plan.badge}</span>
+                  )}
+                </div>
+                <div className="plan-card-price-row">
+                  <span className="plan-card-price">{plan.price}</span>
+                  {plan.originalPrice && (
+                    <span className="plan-card-original-price">{plan.originalPrice}</span>
+                  )}
+                  <span className="plan-card-period">/ {plan.period}</span>
+                </div>
+                <p className="plan-card-desc">{plan.description}</p>
+              </div>
+              <div className={`plan-card-radio ${selectedPlanId === plan.planId ? 'checked' : ''}`}>
+                {selectedPlanId === plan.planId && (
+                  <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                )}
+              </div>
+            </div>
+
+            {/* See benefits expand */}
+            <button
+              type="button"
+              className="plan-card-expand-btn"
+              onClick={(e) => {
+                e.stopPropagation()
+                setExpandedPlan(expandedPlan === plan.planId ? null : plan.planId)
+              }}
+            >
+              <span>{expandedPlan === plan.planId ? 'הסתר יתרונות' : 'ראה יתרונות'}</span>
+              <svg
+                className={`w-4 h-4 transition-transform duration-200 ${expandedPlan === plan.planId ? 'rotate-180' : ''}`}
+                fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {expandedPlan === plan.planId && (
+              <ul className="plan-card-features">
+                {plan.features.map((f, i) => (
+                  <li key={i}>
+                    <span className="text-green-500">✓</span>
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Payment error */}
+      {paymentError && (
+        <p className="text-red-500 text-sm text-center mt-3">{paymentError}</p>
+      )}
+
+      {/* Continue button */}
+      <div className="mt-5">
+        <StarBorder color="var(--theme-accent)" speed="5s" className="rounded-full w-full">
+          <Button
+            variant="primary"
+            className="w-full"
+            onClick={handleContinue}
+            disabled={paymentLoading || !selectedPlanId}
+          >
+            {paymentLoading ? 'מעביר לדף תשלום...' : 'המשך'}
+          </Button>
+        </StarBorder>
+      </div>
+    </div>
+  )
+}
+
+/**
  * Completed Step Component (for returning users)
  */
 const CompletedStep = ({ user, getWhatsAppUrl }) => {
@@ -450,6 +726,7 @@ const ProgressIndicator = ({ currentStep, SIGNUP_STEPS }) => {
   const steps = [
     { key: SIGNUP_STEPS.PHONE_NUMBER, label: 'טלפון' },
     { key: SIGNUP_STEPS.GOOGLE_AUTH, label: 'גוגל' },
+    { key: SIGNUP_STEPS.CHOOSE_PLAN, label: 'תוכנית' },
     { key: SIGNUP_STEPS.WHATSAPP_REDIRECT, label: 'וואטסאפ' }
   ]
   
@@ -504,7 +781,8 @@ const Signup = () => {
     goBackToPhoneStep,
     cancelOAuthRedirect,
     getWhatsAppUrl,
-    SIGNUP_STEPS
+    SIGNUP_STEPS,
+    updateSignupState
   } = useAuth()
   
   // Render current step
@@ -534,6 +812,13 @@ const Signup = () => {
           />
         )
       
+      case SIGNUP_STEPS.CHOOSE_PLAN:
+        return (
+          <ChoosePlanStep
+            onPlanChosen={() => updateSignupState({ step: SIGNUP_STEPS.WHATSAPP_REDIRECT })}
+          />
+        )
+
       case SIGNUP_STEPS.WHATSAPP_REDIRECT:
         return (
           <WhatsAppRedirectStep

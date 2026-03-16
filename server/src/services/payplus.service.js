@@ -63,9 +63,9 @@ async function generatePaymentLink({ amount, planName, billingPeriod, customerEm
     sendEmailApproval: true,
     sendEmailFailure: true,
     language_code: 'he',
-    refURL_success: `${frontendUrl}/pricing?payment=success`,
-    refURL_failure: `${frontendUrl}/pricing?payment=failure`,
-    refURL_cancel: `${frontendUrl}/pricing?payment=cancel`,
+    refURL_success: `${frontendUrl}/talk-to-dona?payment=success`,
+    refURL_failure: `${frontendUrl}/signup?payment=failure`,
+    refURL_cancel: `${frontendUrl}/signup?payment=cancel`,
     refURL_callback: `${backendUrl}/api/payment/webhook`,
     more_info: `${planName}-${amount}`.slice(0, 19),
     items: [

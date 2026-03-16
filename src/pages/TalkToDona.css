@@ -1,0 +1,9 @@
+.talk-to-dona-page {
+  position: relative;
+  overflow: hidden;
+}
+
+.talk-to-dona-page .dir-ltr {
+  direction: ltr;
+  unicode-bidi: embed;
+}
