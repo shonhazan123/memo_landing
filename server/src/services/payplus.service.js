@@ -45,10 +45,7 @@ async function generatePaymentLink({ amount, planName, customerEmail, customerNa
 
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173'
 
-  // charge_method: 1 = regular charge (J4). Use 0 for card check only (J2) in staging if needed.
-  const chargeMethod = process.env.PAYPLUS_CHARGE_METHOD
-    ? Number(process.env.PAYPLUS_CHARGE_METHOD)
-    : 1
+  const chargeMethod = 3
 
   const body = {
     payment_page_uid: paymentPageUid,
@@ -56,7 +53,7 @@ async function generatePaymentLink({ amount, planName, customerEmail, customerNa
     amount: Number(amount),
     currency_code: 'ILS',
     sendEmailApproval: true,
-    sendEmailFailure: false,
+    sendEmailFailure: true,
     language_code: 'he',
     refURL_success: `${frontendUrl}/pricing?payment=success`,
     refURL_failure: `${frontendUrl}/pricing?payment=failure`,
