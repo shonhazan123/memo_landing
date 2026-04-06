@@ -309,7 +309,8 @@ export const AuthProvider = ({ children }) => {
 
   // ── Sign in with Google ────────────────────────────────
   // Uses the formatted phone number (not userId) — user is not in DB yet.
-  const signInWithGoogle = useCallback(async () => {
+  // Optional redirectTo: post-auth path (e.g. '/settings') forwarded to the OAuth state.
+  const signInWithGoogle = useCallback(async (redirectTo = null) => {
     const phoneNumber = signupState.formattedNumber || signupState.whatsappNumber
     if (!phoneNumber) {
       setError('אנא הזן מספר טלפון תחילה')
@@ -319,11 +320,10 @@ export const AuthProvider = ({ children }) => {
     setError(null)
 
     try {
-      // Fetch the Google auth URL — phone and optional userName encoded in the signed state token
       const { authUrl } = await api.auth.getGoogleAuthUrl(
         phoneNumber,
         'standard',
-        null,
+        redirectTo || null,
         signupState.userName
       )
 

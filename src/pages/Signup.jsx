@@ -5,9 +5,10 @@
  * Step 3: WhatsApp Conversation Redirect
  */
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth, SIGNUP_STEPS } from '../context/AuthContext'
+import { getSafeRedirectPath } from '../lib/auth-redirect'
 import Button from '../components/Button/Button'
 import Logo from '../components/Logo/Logo'
 import StarBorder from '../components/StarBorder/StarBorder'
@@ -768,6 +769,13 @@ const ProgressIndicator = ({ currentStep, SIGNUP_STEPS }) => {
  * Main Signup Page Component
  */
 const Signup = () => {
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const redirectPath = useMemo(
+    () => getSafeRedirectPath(searchParams.get('redirect')),
+    [searchParams]
+  )
+
   const {
     isLoading,
     isRedirectingToOAuth,
@@ -784,14 +792,26 @@ const Signup = () => {
     SIGNUP_STEPS,
     updateSignupState
   } = useAuth()
-  
+
+  // Wrap phone submit: if returning user + redirect, navigate there immediately
+  const handlePhoneSubmit = async (phoneNumber, userName) => {
+    const result = await submitPhoneNumber(phoneNumber, userName)
+    if (result?.success && !result.shouldConnectGoogle && redirectPath) {
+      navigate(redirectPath, { replace: true })
+    }
+    return result
+  }
+
+  // Wrap Google sign-in to forward the redirect path into OAuth state
+  const handleGoogleSignIn = () => signInWithGoogle(redirectPath)
+
   // Render current step
   const renderStep = () => {
     switch (currentStep) {
       case SIGNUP_STEPS.GOOGLE_AUTH:
         return (
           <GoogleAuthStep 
-            onSignIn={signInWithGoogle}
+            onSignIn={handleGoogleSignIn}
             onGoBackToPhone={goBackToPhoneStep}
             onCancelRedirect={cancelOAuthRedirect}
             isLoading={isLoading}
@@ -804,7 +824,7 @@ const Signup = () => {
       case SIGNUP_STEPS.PHONE_NUMBER:
         return (
           <PhoneNumberStep
-            onSubmit={submitPhoneNumber}
+            onSubmit={handlePhoneSubmit}
             isLoading={isLoading}
             error={error}
             initialPhoneNumber={signupState.whatsappNumber}
@@ -840,7 +860,7 @@ const Signup = () => {
       default:
         return (
           <PhoneNumberStep
-            onSubmit={submitPhoneNumber}
+            onSubmit={handlePhoneSubmit}
             isLoading={isLoading}
             error={error}
             initialPhoneNumber={signupState.whatsappNumber}

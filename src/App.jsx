@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 
 import CardNav from './components/CardNav/CardNav'
@@ -81,6 +81,14 @@ function App() {
       links: [
         { label: 'תוכניות ותמחור', path: '/pricing', ariaLabel: 'תוכניות ותמחור' }
       ]
+    },
+    {
+      label: 'הגדרות',
+      bgColor: '#372047',
+      textColor: '#fff',
+      links: [
+        { label: 'הגדרות חשבון', path: '/settings', ariaLabel: 'הגדרות חשבון', requireAuth: true }
+      ]
     }
   ]
 
@@ -100,6 +108,7 @@ function App() {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/cancellation-policy" element={<CancellationPolicy />} />
+            <Route path="/setting" element={<Navigate to="/settings" replace />} />
 
             {/* Protected dashboard routes (own layout, no CardNav/Footer) */}
             <Route element={<ProtectedRoute />}>

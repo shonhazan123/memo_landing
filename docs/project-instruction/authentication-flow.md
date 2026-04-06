@@ -387,7 +387,15 @@ HTTP status codes:
 
 ### Route
 - `/settings` -- protected by `ProtectedRoute` component, requires `isAuthenticated === true`
+- `/setting` -- alias, redirects to `/settings`
 - Uses `UserDashboardLayout` wrapper (shared by future dashboard pages)
+- **CardNav** includes a **הגדרות** menu item; when clicked by an unauthenticated user, navigates to `/login?redirect=/settings` which chains through signup and redirects back to `/settings` after authentication
+
+### Post-Auth Redirect
+- `ProtectedRoute` appends `?redirect=<encoded path>` when redirecting to `/login`
+- `Login.jsx` forwards the `redirect` param to `/signup?redirect=...`
+- `Signup` reads the `redirect` param: returning users navigate immediately; new users pass `redirectTo` into `signInWithGoogle()` so the backend OAuth callback lands on `/settings?token=...`
+- All redirect values are validated by `getSafeRedirectPath()` (allowlisted prefixes: `/settings`, `/pricing`)
 
 ### Disconnect (Frontend-Only)
 - Clears JWT from localStorage, resets AuthContext state

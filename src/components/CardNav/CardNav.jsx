@@ -34,8 +34,12 @@ const CardNav = ({
     }
   }, [isOpen])
 
-  const handleItemClick = (path) => {
-    navigate(path)
+  const handleItemClick = (path, requireAuth = false) => {
+    if (requireAuth && !isAuthenticated) {
+      navigate(`/login?redirect=${encodeURIComponent(path)}`)
+    } else {
+      navigate(path)
+    }
     setIsOpen(false)
   }
 
@@ -95,7 +99,7 @@ const CardNav = ({
               }}
               onClick={() => {
                 if (item.links && item.links.length > 0) {
-                  handleItemClick(item.links[0].path)
+                  handleItemClick(item.links[0].path, item.links[0].requireAuth)
                 }
               }}
             >
@@ -109,7 +113,7 @@ const CardNav = ({
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
-                      handleItemClick(link.path)
+                      handleItemClick(link.path, link.requireAuth)
                     }}
                     style={{ color: item.textColor }}
                     aria-label={link.ariaLabel || link.label}

@@ -24,7 +24,17 @@ All dashboard pages live under a `ProtectedRoute` guard that verifies authentica
 /dashboard/stats   -- Usage statistics (future)
 ```
 
-Routes are nested: `ProtectedRoute > UserDashboardLayout > [Page]`. The main site's CardNav and Footer are hidden on dashboard routes -- the layout handles its own navigation.
+Routes are nested: `ProtectedRoute > UserDashboardLayout > [Page]`. The main site's CardNav and Footer are hidden on dashboard routes -- the layout handles its own navigation. A `/setting` alias redirects to `/settings` (typo guard).
+
+## Post-Auth Redirect Flow
+
+When an unauthenticated user visits a protected route (e.g. `/settings`) or clicks the **הגדרות** nav item:
+
+1. `ProtectedRoute` redirects to `/login?redirect=/settings`.
+2. `Login.jsx` forwards the `redirect` param to `/signup?redirect=/settings`.
+3. **Returning user** (phone recognized, JWT issued): `Signup` navigates directly to the redirect path.
+4. **New/partial user** (needs Google OAuth): `signInWithGoogle(redirectTo)` encodes `/settings` into the OAuth state JWT; the backend callback redirects to `/settings?token=...`.
+5. Redirect validation uses `getSafeRedirectPath()` (`src/lib/auth-redirect.js`) which allowlists internal paths only.
 
 ## Backend Endpoint Conventions
 
