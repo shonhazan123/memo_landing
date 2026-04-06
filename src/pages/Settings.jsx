@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import api from '../api/client'
-import { Mail, Calendar, User, RefreshCw, AlertTriangle, LogOut, CreditCard, ExternalLink } from 'lucide-react'
+import { Mail, Calendar, RefreshCw, AlertTriangle, LogOut, CreditCard, ExternalLink, Sunrise } from 'lucide-react'
 import './Settings.css'
 
 const GMAIL_SCOPE = 'https://www.googleapis.com/auth/gmail.modify'
@@ -71,6 +71,68 @@ const ConnectionRow = ({ icon: Icon, label, connected, email }) => (
     </div>
   </div>
 )
+
+// ─── Morning brief time (wall clock in users.timezone, not UTC) ─────────────
+const MorningBriefSection = ({ user, onSaved }) => {
+  const serverTime = user?.morningBriefTime || '08:00'
+  const tz = user?.timezone || 'Asia/Jerusalem'
+  const [value, setValue] = useState(serverTime)
+  const [isSaving, setIsSaving] = useState(false)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    setValue(serverTime)
+  }, [serverTime])
+
+  const dirty = value !== serverTime
+
+  const handleSave = async () => {
+    setError(null)
+    setIsSaving(true)
+    try {
+      await api.users.updateMorningBriefTime(value)
+      if (onSaved) await onSaved()
+    } catch (e) {
+      setError(e?.message || 'שמירה נכשלה')
+    }
+    setIsSaving(false)
+  }
+
+  return (
+    <div className="settings-card">
+      <h2 className="settings-section-title morning-brief-title">
+        <Sunrise className="morning-brief-title-icon" aria-hidden />
+        שעת תדריך הבוקר
+      </h2>
+      <p className="morning-brief-hint">
+        השעה נשמרת לפי <strong>אזור הזמן של החשבון שלך</strong> ({tz}) — לא UTC.
+        סוכנים אחרים משתמשים בשילוב של השעה הזו עם האזור הזה כדי לתזמן את התדריך.
+      </p>
+      <div className="morning-brief-row">
+        <label htmlFor="morning-brief-time" className="morning-brief-label">
+          שעת שליחה
+        </label>
+        <input
+          id="morning-brief-time"
+          type="time"
+          className="morning-brief-time-input"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          step={60}
+        />
+      </div>
+      {error && <p className="morning-brief-error" role="alert">{error}</p>}
+      <button
+        type="button"
+        className="morning-brief-save"
+        onClick={handleSave}
+        disabled={isSaving || !dirty}
+      >
+        {isSaving ? 'שומר...' : 'שמור שעה'}
+      </button>
+    </div>
+  )
+}
 
 // ─── Connections Section ─────────────────────────────────
 const ConnectionsSection = ({ user, onReconnect, isRedirecting }) => {
@@ -293,6 +355,7 @@ const Settings = () => {
   return (
     <div className="settings-container">
       <ProfileSection user={user} />
+      <MorningBriefSection user={user} onSaved={refreshUser} />
       <ConnectionsSection
         user={user}
         onReconnect={reconnectGoogle}

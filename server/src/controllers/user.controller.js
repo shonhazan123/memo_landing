@@ -187,6 +187,26 @@ class UserController {
    * POST /api/users/me/cancel-subscription
    * Cancel at period end; do not delete user. Cancels recurring in PayPlus if recurring_uid in settings.
    */
+  /**
+   * PUT /api/users/me/morning-brief-time
+   * Update morning_brief_time (TIME, local wall clock with users.timezone)
+   */
+  async updateMorningBriefTime(req, res, next) {
+    try {
+      const { morningBriefTime } = req.body
+      if (morningBriefTime == null || typeof morningBriefTime !== 'string') {
+        return res.status(400).json({ error: 'morningBriefTime is required (HH:mm)' })
+      }
+      const user = await UserService.updateMorningBriefTime(req.userId, morningBriefTime)
+      res.json({ user })
+    } catch (error) {
+      if (error.message === 'Invalid morning brief time') {
+        return res.status(400).json({ error: error.message })
+      }
+      next(error)
+    }
+  }
+
   async cancelSubscription(req, res, next) {
     try {
       const userId = req.userId

@@ -21,6 +21,9 @@ router.post('/check-phone', UserController.checkPhone.bind(UserController))
 // PUT /api/users/me/phone - Update phone number (requires auth)
 router.put('/me/phone', requireAuth, UserController.updatePhone.bind(UserController))
 
+// PUT /api/users/me/morning-brief-time - Morning brief send time in user's timezone (requires auth)
+router.put('/me/morning-brief-time', requireAuth, UserController.updateMorningBriefTime.bind(UserController))
+
 // POST /api/users/me/complete-onboarding - Complete onboarding (requires auth)
 router.post('/me/complete-onboarding', requireAuth, UserController.completeOnboarding.bind(UserController))
 

@@ -13,6 +13,7 @@ import { v4 as uuidv4 } from 'uuid'
  * @property {string} whatsapp_number - User's WhatsApp number (NOT NULL, UNIQUE)
  * @property {string} plan_type - 'free' | 'standard' | 'pro' | 'business' (NOT NULL, default 'standard')
  * @property {string} timezone - User timezone (default 'Asia/Jerusalem')
+ * @property {string|Date} morning_brief_time - Local wall time for morning brief (TIME; with timezone column)
  * @property {Object} settings - User settings JSONB (default '{}')
  * @property {string|null} google_email - User's Google email
  * @property {boolean} onboarding_complete - Whether onboarding is complete (NOT NULL, default false)
@@ -125,6 +126,9 @@ class UserModel {
           const val = typeof updates[key] === 'string' ? updates[key] : JSON.stringify(updates[key])
           fields.push(`settings = $${paramIndex}::jsonb`)
           values.push(val)
+        } else if (key === 'morning_brief_time' && typeof updates[key] === 'string') {
+          fields.push(`morning_brief_time = $${paramIndex}::TIME`)
+          values.push(updates[key])
         } else {
           fields.push(`${key} = $${paramIndex}`)
           values.push(updates[key])

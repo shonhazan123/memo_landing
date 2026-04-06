@@ -63,6 +63,7 @@
 ### 4a. Settings Page
 - **File:** `src/pages/Settings.jsx` (new)
   - Section 1: Profile Info (read-only fields)
+  - Section 1b: Morning brief time — `<input type="time">`, copy clarifies wall clock in `user.timezone` (not UTC); saves via `PUT /api/users/me/morning-brief-time`
   - Section 2: Connections (Gmail + Calendar status from `googleScopes`)
   - Section 3: Subscription (plan badge, change plan, delete account with modal)
   - Section 4: Disconnect (frontend-only logout)
@@ -122,6 +123,11 @@
 - `src/api/client.js` -- `auth.getGoogleAuthUrl()` -- pass `name` parameter
 - `server/src/models/User.model.js` -- `findOrCreateByWhatsappNumber()` or `create()` -- accept and store name
 - DB: the `name TEXT` column already exists in the `users` table schema
+
+### ~~4. Morning brief send time~~ DONE
+- **DB:** `server/src/database/migrations/004_morning_brief_time.sql` — `users.morning_brief_time TIME NOT NULL DEFAULT '08:00'`
+- **Backend:** `User.model` updates with `morning_brief_time = $n::TIME`; `UserService.formatUser` exposes `morningBriefTime` + `timezone`; `updateMorningBriefTime`; `UserController.updateMorningBriefTime`; route `PUT /me/morning-brief-time`
+- **Frontend:** `api.users.updateMorningBriefTime`, `Settings.jsx` `MorningBriefSection`, styles in `Settings.css`
 
 ### 3. Improve overall design of the Settings page
 

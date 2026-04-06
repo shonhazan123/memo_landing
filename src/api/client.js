@@ -205,6 +205,18 @@ const api = {
         body: JSON.stringify({ phoneNumber })
       })
     },
+
+    /**
+     * Update morning brief send time (wall clock in user's timezone, not UTC)
+     * @param {string} morningBriefTime - HH:mm (or HH:mm:ss)
+     * @returns {Promise<{ user: Object }>}
+     */
+    updateMorningBriefTime: async (morningBriefTime) => {
+      return request('/users/me/morning-brief-time', {
+        method: 'PUT',
+        body: JSON.stringify({ morningBriefTime })
+      })
+    },
     
     /**
      * Complete onboarding

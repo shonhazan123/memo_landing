@@ -33,6 +33,7 @@ All user-specific endpoints follow the pattern `/api/users/me/*`:
 - `GET /api/users/me` -- User profile (includes Google scopes)
 - `DELETE /api/users/me` -- Delete account
 - `PUT /api/users/me/phone` -- Update phone
+- `PUT /api/users/me/morning-brief-time` -- Body `{ morningBriefTime: "HH:mm" }`; persists `users.morning_brief_time` (PostgreSQL `TIME`, wall clock in `users.timezone`, not UTC)
 - `POST /api/users/me/complete-onboarding` -- Complete onboarding
 
 Future endpoints should follow the same convention:
@@ -43,7 +44,7 @@ Future endpoints should follow the same convention:
 ## State Management
 
 - Authentication state lives in `AuthContext` (React Context)
-- The `user` object from `AuthContext` contains all profile data including `googleScopes`
+- The `user` object from `AuthContext` contains all profile data including `googleScopes`, `timezone`, and `morningBriefTime` (string `HH:mm`, interpreted with `timezone`)
 - Dashboard-specific state (tasks, stats) will use dedicated contexts or hooks as needed
 - Data fetching uses the `api` client (`src/api/client.js`) with automatic JWT header injection
 
@@ -56,6 +57,7 @@ Display tasks created through the WhatsApp agent. Show task status, due dates, a
 Show usage metrics: messages sent, tasks created, calendar events managed, reminders set. Could include charts and activity timelines. Requires aggregation endpoints on the backend.
 
 ### Settings Enhancements
+- Morning brief send time: editable on `/settings`; stored in `users.morning_brief_time` (see migration `004_morning_brief_time.sql`). Downstream jobs combine this with `users.timezone`.
 - Editable profile fields (name, timezone)
 - Notification preferences (stored in the `settings` JSONB column)
 - Language preference

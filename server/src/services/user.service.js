@@ -10,7 +10,48 @@ import GoogleTokenModel from '../models/GoogleToken.model.js'
 const MIMO_WHATSAPP_NUMBER = process.env.MIMO_WHATSAPP_NUMBER || '972501234567'
 const MIMO_WELCOME_MESSAGE = "היי דונה , איך את יכולה לעזור לי ? 🤔"
 
+/** PostgreSQL TIME as HH:mm for <input type="time"> and APIs */
+const MORNING_BRIEF_TIME_RE = /^([01]?\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/
+
 class UserService {
+  /**
+   * Normalize DB TIME value to HH:mm (24h)
+   * @param {string|Date|null|undefined} raw
+   * @returns {string}
+   */
+  formatMorningBriefTime(raw) {
+    if (raw == null) return '08:00'
+    if (typeof raw === 'string') {
+      const m = raw.trim().match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?/)
+      if (!m) return '08:00'
+      const h = String(Math.min(23, parseInt(m[1], 10))).padStart(2, '0')
+      return `${h}:${m[2]}`
+    }
+    if (raw instanceof Date && !Number.isNaN(raw.getTime())) {
+      const h = String(raw.getUTCHours()).padStart(2, '0')
+      const min = String(raw.getUTCMinutes()).padStart(2, '0')
+      return `${h}:${min}`
+    }
+    return '08:00'
+  }
+
+  /**
+   * Validate and normalize morning brief time for PostgreSQL (HH:mm or HH:mm:ss)
+   * @param {string} value
+   * @returns {string} HH:mm:ss
+   */
+  parseMorningBriefTimeForDb(value) {
+    if (typeof value !== 'string' || !MORNING_BRIEF_TIME_RE.test(value.trim())) {
+      throw new Error('Invalid morning brief time')
+    }
+    const trimmed = value.trim()
+    const parts = trimmed.split(':')
+    const h = String(parseInt(parts[0], 10)).padStart(2, '0')
+    const m = parts[1].padStart(2, '0')
+    const s = parts[2] != null ? parts[2].padStart(2, '0') : '00'
+    return `${h}:${m}:${s}`
+  }
+
   /**
    * Get user by ID
    * @param {string} userId - User UUID
@@ -88,6 +129,19 @@ class UserService {
   }
 
   /**
+   * Update morning brief send time (authorized user only; caller must pass userId from JWT)
+   * @param {string} userId
+   * @param {string} morningBriefTime - HH:mm or HH:mm:ss
+   * @returns {Promise<Object>} formatted user
+   */
+  async updateMorningBriefTime(userId, morningBriefTime) {
+    const sqlTime = this.parseMorningBriefTimeForDb(morningBriefTime)
+    const user = await UserModel.update(userId, { morning_brief_time: sqlTime })
+    const googleTokens = await GoogleTokenModel.findByUserId(userId)
+    return this.formatUser(user, googleTokens)
+  }
+
+  /**
    * Get WhatsApp URL for starting conversation with Mimo
    * @param {string} customMessage - Optional custom message
    * @returns {Object} WhatsApp info
@@ -161,6 +215,7 @@ class UserService {
       whatsappNumber: user.whatsapp_number,
       planType: user.plan_type,
       timezone: user.timezone,
+      morningBriefTime: this.formatMorningBriefTime(user.morning_brief_time),
       onboardingComplete: user.onboarding_complete,
       createdAt: user.created_at,
       googleScopes: googleTokens?.scope || [],
