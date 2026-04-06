@@ -389,13 +389,18 @@ HTTP status codes:
 - `/settings` -- protected by `ProtectedRoute` component, requires `isAuthenticated === true`
 - `/setting` -- alias, redirects to `/settings`
 - Uses `UserDashboardLayout` wrapper (shared by future dashboard pages)
-- **CardNav** includes a **הגדרות** menu item; when clicked by an unauthenticated user, navigates to `/login?redirect=/settings` which chains through signup and redirects back to `/settings` after authentication
+- **CardNav** includes a **הגדרות** menu item; when clicked by an unauthenticated user, navigates to `/login?redirect=/settings` which shows the standalone login page; after phone auth the user is redirected to `/settings`
+
+### Login vs Signup (separate pages)
+- `/login` is a **standalone phone-only login page** for existing users. It calls `POST /api/users/check-phone`; if the user is registered it receives a JWT, calls `loginWithToken()` on AuthContext, and navigates to the redirect path.
+- `/signup` is the **multi-step registration flow** (phone + name, Google OAuth, plan picker, WhatsApp). New users are directed here.
+- If a phone number is not found on the login page, an inline message is shown with a link to `/signup`.
 
 ### Post-Auth Redirect
 - `ProtectedRoute` appends `?redirect=<encoded path>` when redirecting to `/login`
-- `Login.jsx` forwards the `redirect` param to `/signup?redirect=...`
-- `Signup` reads the `redirect` param: returning users navigate immediately; new users pass `redirectTo` into `signInWithGoogle()` so the backend OAuth callback lands on `/settings?token=...`
-- All redirect values are validated by `getSafeRedirectPath()` (allowlisted prefixes: `/settings`, `/pricing`)
+- `Login.jsx` reads the `redirect` param, validates with `getSafeRedirectPath()`, and navigates there after successful phone login
+- `Signup` also reads the `redirect` param for edge cases (returning users who land on signup, or new users going through Google OAuth with a redirect in the state)
+- All redirect values are validated by `getSafeRedirectPath()` (`src/lib/auth-redirect.js`, allowlisted prefixes: `/settings`, `/pricing`)
 
 ### Disconnect (Frontend-Only)
 - Clears JWT from localStorage, resets AuthContext state

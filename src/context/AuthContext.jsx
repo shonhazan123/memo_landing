@@ -448,6 +448,15 @@ export const AuthProvider = ({ children }) => {
     }
   }, [])
 
+  /** Lightweight login: set JWT and load profile. Used by the standalone Login page. */
+  const loginWithToken = useCallback(async (jwtToken) => {
+    setToken(jwtToken)
+    const { user: userData } = await api.auth.getCurrentUser()
+    setUser(userData)
+    setIsAuthenticated(true)
+    return userData
+  }, [])
+
   /** Refresh user profile from API (e.g. after cancel subscription). */
   const refreshUser = useCallback(async () => {
     try {
@@ -474,6 +483,7 @@ export const AuthProvider = ({ children }) => {
     currentStep: signupState.step,
 
     // Auth actions
+    loginWithToken,
     signInWithGoogle,
     signOut,
     disconnect,

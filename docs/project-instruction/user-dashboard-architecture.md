@@ -31,10 +31,10 @@ Routes are nested: `ProtectedRoute > UserDashboardLayout > [Page]`. The main sit
 When an unauthenticated user visits a protected route (e.g. `/settings`) or clicks the **הגדרות** nav item:
 
 1. `ProtectedRoute` redirects to `/login?redirect=/settings`.
-2. `Login.jsx` forwards the `redirect` param to `/signup?redirect=/settings`.
-3. **Returning user** (phone recognized, JWT issued): `Signup` navigates directly to the redirect path.
-4. **New/partial user** (needs Google OAuth): `signInWithGoogle(redirectTo)` encodes `/settings` into the OAuth state JWT; the backend callback redirects to `/settings?token=...`.
-5. Redirect validation uses `getSafeRedirectPath()` (`src/lib/auth-redirect.js`) which allowlists internal paths only.
+2. **Login page** (`Login.jsx`): standalone phone-only form. Calls `POST /api/users/check-phone`. If the user is registered, a JWT is issued and `loginWithToken()` sets auth state, then the user is navigated to the `redirect` path.
+3. If the phone is not registered, an inline message is shown with a link to `/signup` (full registration flow).
+4. Redirect validation uses `getSafeRedirectPath()` (`src/lib/auth-redirect.js`) which allowlists internal paths only.
+5. `/signup` still supports its own `redirect` param for edge cases (returning users who land directly on signup, or Google OAuth with a redirect in the state).
 
 ## Backend Endpoint Conventions
 
