@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import api from '../api/client'
-import { Mail, Calendar, RefreshCw, AlertTriangle, LogOut, CreditCard, ExternalLink, Sunrise } from 'lucide-react'
+import { Mail, Calendar, RefreshCw, AlertTriangle, LogOut, CreditCard, ExternalLink, Sunrise, CheckCircle2 } from 'lucide-react'
 import './Settings.css'
 
 const GMAIL_SCOPE = 'https://www.googleapis.com/auth/gmail.modify'
@@ -79,19 +79,34 @@ const MorningBriefSection = ({ user, onSaved }) => {
   const [value, setValue] = useState(serverTime)
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState(null)
+  const [showSaved, setShowSaved] = useState(false)
 
   useEffect(() => {
     setValue(serverTime)
   }, [serverTime])
 
+  useEffect(() => {
+    if (!showSaved) return undefined
+    const t = setTimeout(() => setShowSaved(false), 4000)
+    return () => clearTimeout(t)
+  }, [showSaved])
+
   const dirty = value !== serverTime
+
+  const handleTimeChange = (e) => {
+    setShowSaved(false)
+    setError(null)
+    setValue(e.target.value)
+  }
 
   const handleSave = async () => {
     setError(null)
+    setShowSaved(false)
     setIsSaving(true)
     try {
       await api.users.updateMorningBriefTime(value)
       if (onSaved) await onSaved()
+      setShowSaved(true)
     } catch (e) {
       setError(e?.message || 'שמירה נכשלה')
     }
@@ -117,10 +132,16 @@ const MorningBriefSection = ({ user, onSaved }) => {
           type="time"
           className="morning-brief-time-input"
           value={value}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={handleTimeChange}
           step={60}
         />
       </div>
+      {showSaved && (
+        <p className="morning-brief-success" role="status">
+          <CheckCircle2 className="morning-brief-success-icon" aria-hidden />
+          השעה נשמרה בהצלחה
+        </p>
+      )}
       {error && <p className="morning-brief-error" role="alert">{error}</p>}
       <button
         type="button"
